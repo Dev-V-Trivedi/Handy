@@ -778,6 +778,17 @@ fn default_post_process_providers() -> Vec<PostProcessProvider> {
         });
     }
 
+    // Built-in local model: Oshabe runs its own llama-server on 127.0.0.1.
+    providers.push(PostProcessProvider {
+        id: crate::local_llm::PROVIDER_ID.to_string(),
+        label: "Oshabe local model".to_string(),
+        base_url: format!("http://127.0.0.1:{}/v1", crate::local_llm::PORT),
+        allow_base_url_edit: false,
+        models_endpoint: None,
+        supports_structured_output: false,
+        api_format: PostProcessApiFormat::OpenAi,
+    });
+
     // Local models via Ollama (OpenAI-compatible endpoint, no key needed)
     providers.push(PostProcessProvider {
         id: "ollama".to_string(),

@@ -14,6 +14,7 @@ pub mod engine_supervisor;
 mod helpers;
 mod input;
 mod llm_client;
+mod local_llm;
 mod managers;
 mod meetings;
 mod memory;
@@ -776,6 +777,11 @@ pub fn run(cli_args: CliArgs) {
             commands::meetings::meeting_delete,
             commands::meetings::meeting_save_document,
             commands::meetings::meeting_summarize,
+            commands::local_llm::local_llm_status,
+            commands::local_llm::local_llm_install_runner,
+            commands::local_llm::local_llm_download_model,
+            commands::local_llm::local_llm_delete_model,
+            commands::local_llm::local_llm_use_model,
             commands::ollama::ollama_status,
             commands::ollama::ollama_pull_model,
             commands::ollama::ollama_cancel_pull,
@@ -1158,6 +1164,7 @@ pub fn run(cli_args: CliArgs) {
         // worker process, which exits by itself as soon as this process's end
         // of its stdin closes, even if it is hung. Waiting on an unload here
         // could block quitting behind a hung model load.
+        tauri::RunEvent::Exit => local_llm::stop(),
         _ => {}
     });
 }

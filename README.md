@@ -14,13 +14,16 @@ Oshabe is an independent fork of [Handy](https://github.com/cjpais/Handy) by CJ 
 - **Flow Cleanup prompt.** A default prompt for dictation: strips fillers, keeps only the corrected version when you correct yourself, and leaves mixed Hindi, Telugu and English wording as spoken.
 - **Context tone.** Detects the app you are dictating into (Slack, Outlook, VS Code and more) and adapts the cleanup style. Rules are editable in Settings, Post Process. Works on Windows, macOS and Linux X11.
 - **Custom words.** Fuzzy correction for names and terms you use often.
+- **Meeting notes.** Records your mic and the other side of a call (Zoom, Meet, Teams, Webex, Slack huddles, any browser call) without a bot joining. You get a tidy transcript by speaker and an AI summary with key points, decisions and action items. Start with a shortcut (Ctrl+Alt+M, Option+Shift+M on Mac) or the tray, or let Oshabe ask when a call opens. Save as Word or PDF. Old notes can delete themselves after 30, 90 or 365 days. Tell everyone you are recording; some places require consent.
+- **Setup wizard.** Pick Fast, Balanced or Best instead of reading model names, try it in a practice box, choose cleanup, done.
+- **Built-in offline cleanup model.** One click downloads a small model and its runner into the app folder. No Ollama, no account, no key. Ollama cards are still there if you prefer them.
 
 ## Roadmap
 
 - Snippets: say a trigger phrase, paste saved text
 - Voice edit commands on selected text ("make it shorter")
 - Dictionary that learns from your corrections
-- Bundled small local cleanup model, no Ollama needed
+- Speaker names in meetings, search across all meetings
 - Android and iOS keyboard apps (separate project)
 
 ## Privacy
@@ -70,6 +73,8 @@ Using AI cleanup with Ollama:
 
 - [docs/UPSTREAM-README.md](docs/UPSTREAM-README.md): Handy's original README, still useful for Linux notes, troubleshooting and manual model installation
 - [docs/REBRAND-NOTES.md](docs/REBRAND-NOTES.md): fork status and remaining to-dos
+- [docs/ROADMAP.md](docs/ROADMAP.md): what is done, what is untested, what is next
+- [docs/CODE-SIGNING-POLICY.md](docs/CODE-SIGNING-POLICY.md): how Windows builds are signed
 
 ## License and credits
 

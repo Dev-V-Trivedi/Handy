@@ -550,6 +550,13 @@
         "add": "Add rule",
         "remove": "Remove",
         "hint": "First matching rule wins. Matches the app name or the window title, so web apps like Gmail work inside a browser. Detection works on Windows, macOS and Linux X11."
+      },
+      "builtIn": {
+        "title": "Built-in offline model",
+        "intro": "One click and Oshabe sets up a small AI model on this computer. No account, no API key, no other app. It only runs while it is needed.",
+        "stepRunner": "Step 1 of 2: getting the model runner ({{percent}}%)",
+        "stepModel": "Step 2 of 2: downloading the model ({{percent}}%)",
+        "failed": "Could not set up the offline model"
       }
     },
     "history": {
@@ -916,6 +923,7 @@
     "detectedNo": "Not now",
     "shortcutTitle": "Quick start",
     "promptLabel": "Ask when a call starts",
-    "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked."
+    "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked.",
+    "search": "Search meetings"
   }
 }

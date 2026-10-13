@@ -389,7 +389,16 @@ pub(crate) async fn process_transcription_output(
     let mut post_process_prompt: Option<String> = None;
 
     if post_process {
-        if let Some(processed_text) = post_process_transcription(&settings, &final_text).await {
+        let local_ready = crate::local_llm::prepare(app, &settings).await;
+        if let Err(e) = &local_ready {
+            warn!("Local model unavailable, keeping raw text: {}", e);
+        }
+        let processed = if local_ready.is_ok() {
+            post_process_transcription(&settings, &final_text).await
+        } else {
+            None
+        };
+        if let Some(processed_text) = processed {
             post_processed_text = Some(processed_text.clone());
             final_text = processed_text;
 

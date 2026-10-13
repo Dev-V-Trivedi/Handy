@@ -1,6 +1,6 @@
 # Oshabe roadmap and council notes
 
-Status as of v0.1.2. Written from code review only: the Rust side has never been compiled or run in the dev sandbox, and the Windows build has one confirmed user-reported failure (below).
+Status as of v0.3.0. Rust compiles and 305 unit tests pass in the dev sandbox, but nothing was run on a real Windows or Mac machine by the assistant. Done since v0.1.2: setup wizard, model filters, meeting notes (capture, transcript tidy-up, summary, Word and PDF export, retention, hotkey, tray, call detection), one-click Ollama models. Still open: real-hardware testing of meeting capture, bundled local model, signing, updater keys.
 
 ## Known problems (honest list)
 
@@ -31,7 +31,7 @@ Status as of v0.1.2. Written from code review only: the Rust side has never been
 
 Top blockers: Windows failure, cleanup not out-of-box, onboarding speaks in model names.
 
-## Next: onboarding redesign (v0.2.0 candidate)
+## Done: onboarding redesign (v0.2.0)
 
 Goal: user never sees a model list unless they ask.
 
@@ -43,7 +43,7 @@ Goal: user never sees a model list unless they ask.
 6. Hotkey: confirm or change.
 7. Done. "Advanced: choose models yourself" stays in Settings.
 
-## Next: meeting note taker (v0.3.0 candidate)
+## Done (needs real-machine testing): meeting note taker (v0.3.0)
 
 Works with Zoom, Meet, Teams, Slack huddles, any browser call, because it records the computer's audio. No bot joins the call.
 
@@ -56,14 +56,15 @@ Works with Zoom, Meet, Teams, Slack huddles, any browser call, because it record
 - **Consent:** show a visible recording banner. Recording laws vary by country and some require telling participants. Add a reminder in the UI.
 - **Order:** Windows first, then macOS, then Linux. Needs real-machine testing on each.
 
-## Next: local cleanup model (v0.2.x)
+## Done, untested on real downloads: built-in local cleanup model (v0.4.0)
 
 Do not link llama.cpp into the app. The speech engine already contains ggml 0.26.0 and llama.cpp brings 0.24.0, same symbol names, one process. Instead:
 
 - Cleanup models appear as download cards (Qwen 1.5B, Qwen 3B), same look as speech models.
 - One extra download: the official `llama-server`, started on demand on 127.0.0.1 and stopped on exit.
 - Cleanup goes through the same OpenAI-style path as Ollama, with raw-text fallback.
-- Downloads checked against published SHA-256 (Hugging Face ETag, GitHub asset digest).
+- Downloads checked against published SHA-256 (Hugging Face ETag, GitHub asset digest). The sandbox could not reach GitHub or Hugging Face, so the real download and server start still need one test on Windows and one on Mac.
+- Server is stopped after 10 idle minutes and on exit.
 
 ## Later
 

@@ -23,6 +23,7 @@ import { ShortcutInput } from "../ShortcutInput";
 import { ContextTone } from "../ContextTone";
 import { AlwaysCleanup } from "../AlwaysCleanup";
 import { OllamaModels } from "../OllamaModels";
+import { BuiltInModels } from "../BuiltInModels";
 import { useSettings } from "../../../hooks/useSettings";
 
 const PostProcessingSettingsApiComponent: React.FC = () => {
@@ -471,6 +472,10 @@ export const PostProcessingSettings: React.FC = () => {
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-6">
+      <SettingsGroup title={t("settings.postProcessing.builtIn.title")}>
+        <BuiltInModels />
+      </SettingsGroup>
+
       <SettingsGroup title={t("settings.postProcessing.local.title")}>
         <OllamaModels />
       </SettingsGroup>

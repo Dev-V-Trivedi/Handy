@@ -439,6 +439,46 @@ async meetingSummarize(id: number) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async localLlmStatus() : Promise<Result<LocalLlmStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("local_llm_status") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async localLlmInstallRunner() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("local_llm_install_runner") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async localLlmDownloadModel(id: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("local_llm_download_model", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async localLlmDeleteModel(id: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("local_llm_delete_model", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async localLlmUseModel(id: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("local_llm_use_model", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async ollamaStatus() : Promise<Result<OllamaStatus, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("ollama_status") };
@@ -1122,6 +1162,8 @@ streamTextEvent: "stream-text-event"
  */
 /** Is Ollama reachable, and which models does it already have? */
 export type ActiveMeeting = { id: number; started_at: number; system_audio: boolean; warning: string | null }
+export type LocalLlmStatus = { runner_installed: boolean; models: LocalModelStatus[]; running: string | null }
+export type LocalModelStatus = { id: string; name: string; size_mb: number; installed: boolean }
 export type MeetingRow = { id: number; title: string; started_at: number; ended_at: number | null; has_summary: boolean; segment_count: number }
 export type MeetingSegment = { track: string; start_ms: number; text: string }
 export type MeetingDetail = { id: number; title: string; started_at: number; ended_at: number | null; summary: string | null; segments: MeetingSegment[] }

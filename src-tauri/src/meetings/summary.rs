@@ -127,7 +127,11 @@ async fn ask(
         .get(&provider.id)
         .cloned()
         .unwrap_or_default();
-    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "ollama" | "openrouter");
+    crate::local_llm::prepare(app, &settings).await?;
+    let disable_reasoning = matches!(
+        provider.id.as_str(),
+        "custom" | "ollama" | "openrouter" | "oshabe_local"
+    );
 
     let schema = if want_json && provider.supports_structured_output {
         Some(json!({

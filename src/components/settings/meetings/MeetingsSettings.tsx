@@ -398,6 +398,7 @@ export const MeetingsSettings: React.FC = () => {
   const [rows, setRows] = useState<MeetingRow[]>([]);
   const [live, setLive] = useState<MeetingSegment[]>([]);
   const [title, setTitle] = useState("");
+  const [query, setQuery] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
@@ -687,33 +688,46 @@ export const MeetingsSettings: React.FC = () => {
         </select>
       </label>
       <SettingsGroup title={t("meetings.pastTitle")}>
+        {rows.length > 3 && (
+          <div className="px-4 pt-3">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("meetings.search")}
+            />
+          </div>
+        )}
         {rows.length === 0 ? (
           <p className="px-4 py-3 text-sm text-text/60">{t("meetings.none")}</p>
         ) : (
-          rows.map((row) => (
-            <button
-              key={row.id}
-              type="button"
-              disabled={active?.id === row.id}
-              onClick={() => setSelected(row.id)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-start transition-colors hover:bg-mid-gray/10 disabled:cursor-default disabled:opacity-60"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-text">
-                  {row.title}
+          rows
+            .filter((r) =>
+              r.title.toLowerCase().includes(query.trim().toLowerCase()),
+            )
+            .map((row) => (
+              <button
+                key={row.id}
+                type="button"
+                disabled={active?.id === row.id}
+                onClick={() => setSelected(row.id)}
+                className="flex w-full items-center gap-3 px-4 py-3 text-start transition-colors hover:bg-mid-gray/10 disabled:cursor-default disabled:opacity-60"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-medium text-text">
+                    {row.title}
+                  </div>
+                  <div className="text-xs text-text/50">
+                    {new Date(row.started_at * 1000).toLocaleString()}
+                    {row.ended_at
+                      ? ` · ${formatDuration(row.started_at, row.ended_at)}`
+                      : ""}
+                  </div>
                 </div>
-                <div className="text-xs text-text/50">
-                  {new Date(row.started_at * 1000).toLocaleString()}
-                  {row.ended_at
-                    ? ` · ${formatDuration(row.started_at, row.ended_at)}`
-                    : ""}
-                </div>
-              </div>
-              {row.has_summary && (
-                <Badge variant="success">{t("meetings.summaryReady")}</Badge>
-              )}
-            </button>
-          ))
+                {row.has_summary && (
+                  <Badge variant="success">{t("meetings.summaryReady")}</Badge>
+                )}
+              </button>
+            ))
         )}
       </SettingsGroup>
     </div>
