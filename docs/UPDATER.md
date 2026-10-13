@@ -17,7 +17,7 @@ That key is still Handy's, so updates from Oshabe cannot verify yet. This is saf
 2. In GitHub, repo `Dev-V-Trivedi/oshabe`, Settings, Secrets and variables, Actions:
    - Secret `TAURI_SIGNING_PRIVATE_KEY`: the full contents of `oshabe.key`
    - Secret `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: the password
-   - Variable `SIGN_BINARIES`: `true`
+   - Variable `UPDATER_SIGNING`: `true` (do not set `SIGN_BINARIES`; that one also turns on Apple and Windows certificate steps, which fail without certificates)
 
 3. Put the contents of `oshabe.key.pub` in `src-tauri/tauri.conf.json` as `plugins.updater.pubkey` (or send it to the assistant to do it), bump the version (`bun run bump X.Y.Z`), push.
 

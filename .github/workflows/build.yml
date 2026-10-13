@@ -550,10 +550,37 @@ jobs:
       # treats a set-but-empty APPLE_CERTIFICATE / APPLE_ID as real credentials
       # and fails trying to import or notarize with them.
       - name: Build with Tauri (unsigned)
-        if: ${{ !inputs.sign-binaries }}
+        if: ${{ !inputs.sign-binaries && vars.UPDATER_SIGNING != 'true' }}
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The Vulkan loader and Wayland client library must come from the host
+          # graphics stack. Bundling Ubuntu's copies ahead of the system libraries can
+          # prevent a newer distro's Vulkan ICD or Mesa stack from loading.
+          # linuxdeploy reads this semicolon-separated glob list before it creates
+          # (and Tauri signs and uploads) the AppImage, so the published artifact
+          # is already clean.
+          LINUXDEPLOY_EXCLUDED_LIBRARIES: ${{ contains(inputs.platform, 'ubuntu') && 'libvulkan.so*;libwayland-client.so*' || '' }}
+          # linuxdeploy passes this to appimagetool, which writes it as
+          # X-AppImage-Version for desktop integration tools such as Gear Lever.
+          LINUXDEPLOY_OUTPUT_VERSION: ${{ contains(inputs.platform, 'ubuntu') && steps.get-version.outputs.version || '' }}
+        with:
+          # macOS: wrapper republishes the failure cause as readable annotations.
+          tauriScript: ${{ contains(inputs.platform, 'macos') && 'bash scripts/ci-tauri.sh' || '' }}
+          tagName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
+          releaseName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
+          releaseId: ${{ inputs.release-id }}
+          assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
+          args: ${{ inputs.build-args }}
+
+      - name: Build with Tauri (unsigned, updater-signed)
+        if: ${{ !inputs.sign-binaries && vars.UPDATER_SIGNING == 'true' }}
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Only the auto-update key: no Apple or Azure variables here.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           # The Vulkan loader and Wayland client library must come from the host
           # graphics stack. Bundling Ubuntu's copies ahead of the system libraries can
           # prevent a newer distro's Vulkan ICD or Mesa stack from loading.
