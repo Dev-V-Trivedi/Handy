@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8" />
+<!-- Source for src-tauri/dmg/background.png (660x400). Render with scripts/gen-dmg-background.py -->
+<style>
+  @font-face { font-family: Fredoka; font-weight: 600; src: url("../node_modules/@fontsource/fredoka/files/fredoka-latin-600-normal.woff2"); }
+  @font-face { font-family: Inter; font-weight: 500; src: url("../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"); }
+  html, body { margin: 0; }
+  .c { position: relative; width: 660px; height: 400px; overflow: hidden; background: #fbf8f3; font-family: Inter, system-ui, sans-serif; }
+  .glow { position: absolute; border-radius: 50%; filter: blur(60px); }
+  .g1 { width: 300px; height: 300px; left: -80px; top: -120px; background: rgba(67, 56, 202, .16); }
+  .g2 { width: 260px; height: 260px; right: -70px; bottom: -110px; background: rgba(255, 178, 36, .30); }
+  h1 { position: absolute; left: 0; right: 0; top: 34px; margin: 0; text-align: center; font: 600 30px Fredoka, sans-serif; color: #4338ca; letter-spacing: .2px; }
+  .sub { position: absolute; left: 0; right: 0; top: 78px; text-align: center; font-size: 13px; color: #6b6678; }
+  .hint { position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; font-size: 12.5px; color: #6b6678; }
+  svg.arrow { position: absolute; left: 0; top: 0; }
+</style>
+<div class="c">
+  <div class="glow g1"></div><div class="glow g2"></div>
+  <h1>Install oshabe</h1>
+  <div class="sub">Drag the app into Applications</div>
+  <svg class="arrow" width="660" height="400" viewBox="0 0 660 400">
+    <path d="M262 190 C 310 150, 350 150, 398 188" fill="none" stroke="#4338ca" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 11"/>
+    <path d="M397.1 174.7 L402 191 L385.0 190.0" fill="none" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="330" cy="140" r="5" fill="#ffb224"/>
+  </svg>
+  <div class="hint">First launch: right-click the app and choose Open if macOS asks.</div>
+</div>
