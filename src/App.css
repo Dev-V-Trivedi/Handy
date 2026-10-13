@@ -4,11 +4,15 @@
 /* Register the shared color tokens (src/styles/theme.css) as Tailwind
    utilities */
 @theme inline {
+  --font-sans:
+    "Inter Variable", system-ui, -apple-system, "Segoe UI", "Noto Sans",
+    sans-serif;
   --color-text: var(--color-text);
   --color-background: var(--color-background);
   --color-background-ui: var(--color-background-ui);
   --color-logo-primary: var(--color-logo-primary);
   --color-logo-stroke: var(--color-logo-stroke);
+  --color-logo-accent: var(--color-logo-accent);
   --color-text-stroke: var(--color-text-stroke);
   --color-mid-gray: var(--color-mid-gray);
   --color-warning: var(--color-warning);

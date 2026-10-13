@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Oshabe master symbol — light variant</title>
+  <g fill="#4338CA">
+    <circle cx="490" cy="505" r="255"/>
+    <path d="M312 660 L238 805 Q232 818 247 815 L408 740 Z"/>
+  </g>
+  <g fill="#FFB224">
+    <rect x="324" y="449" width="60" height="120" rx="30"/>
+    <rect x="460" y="355" width="60" height="300" rx="30"/>
+    <rect x="596" y="429" width="60" height="160" rx="30"/>
+    <circle cx="742" cy="227" r="36"/>
+  </g>
+</svg>

@@ -1,18 +1,20 @@
-/* Handy Colors */
+/* Oshabe colors (see docs/BRAND.md) */
 
 :root {
   /* Palette source of truth. Each themed color is defined once as a
      light/dark pair; the active tokens below and the `data-theme` overrides
      in App.css reference these, so a hex value lives in exactly one place. */
-  --light-color-text: #0f0f0f;
-  --light-color-background: #fbfbfb;
-  --light-color-logo-primary: #faa2ca;
-  --light-color-logo-stroke: #382731;
+  --light-color-text: #17141f;
+  --light-color-background: #fbf8f3;
+  --light-color-logo-primary: #4338ca;
+  --light-color-logo-stroke: #1b1830;
+  --light-color-logo-accent: #ffb224;
 
-  --dark-color-text: #fbfbfb;
-  --dark-color-background: #2c2b29;
-  --dark-color-logo-primary: #f28cbb;
-  --dark-color-logo-stroke: #fad1ed;
+  --dark-color-text: #fbf8f3;
+  --dark-color-background: #1b1830;
+  --dark-color-logo-primary: #ffb224;
+  --dark-color-logo-stroke: #ffe2a8;
+  --dark-color-logo-accent: #1b1830;
 
   /* Semantic status colors. First used by SecureInputWarning; intended to
      replace the ad-hoc yellow-500/red-500 usages (e.g. ui/Alert.tsx) over
@@ -23,7 +25,7 @@
   --dark-color-error: #f87171;
 
   /* Tokens that do not change between light and dark */
-  --color-background-ui: #da5893;
+  --color-background-ui: #4338ca;
   --color-text-stroke: #f6f6f6;
   --color-mid-gray: #808080;
 
@@ -33,6 +35,7 @@
   --color-background: var(--light-color-background);
   --color-logo-primary: var(--light-color-logo-primary);
   --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-logo-accent: var(--light-color-logo-accent);
   --color-warning: var(--light-color-warning);
   --color-error: var(--light-color-error);
 }
@@ -43,6 +46,7 @@
     --color-background: var(--dark-color-background);
     --color-logo-primary: var(--dark-color-logo-primary);
     --color-logo-stroke: var(--dark-color-logo-stroke);
+    --color-logo-accent: var(--dark-color-logo-accent);
     --color-warning: var(--dark-color-warning);
     --color-error: var(--dark-color-error);
   }
@@ -63,6 +67,7 @@
   --color-background: var(--light-color-background);
   --color-logo-primary: var(--light-color-logo-primary);
   --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-logo-accent: var(--light-color-logo-accent);
   --color-warning: var(--light-color-warning);
   --color-error: var(--light-color-error);
 }
@@ -72,6 +77,7 @@
   --color-background: var(--dark-color-background);
   --color-logo-primary: var(--dark-color-logo-primary);
   --color-logo-stroke: var(--dark-color-logo-stroke);
+  --color-logo-accent: var(--dark-color-logo-accent);
   --color-warning: var(--dark-color-warning);
   --color-error: var(--dark-color-error);
 }

@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { platform } from "@tauri-apps/plugin-os";
+import "@fontsource-variable/inter";
+import "@fontsource/fredoka/600.css";
 import App from "./App";
 import { installCompatShims } from "./lib/compat";
 import {

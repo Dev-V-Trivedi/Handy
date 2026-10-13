@@ -1,6 +1,6 @@
 # Oshabe brand plan
 
-Status: plan only. Nothing here is applied to the app yet.
+Status: applied. Assets live in `docs/brand/`; tray icons regenerate with `python3 scripts/gen-brand-assets.py`.
 
 ## Concept
 
