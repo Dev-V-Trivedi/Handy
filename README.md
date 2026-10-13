@@ -25,7 +25,17 @@ Oshabe is an independent fork of [Handy](https://github.com/cjpais/Handy) by CJ 
 
 ## Install and build
 
-There are no official releases yet. Build from source:
+Installers are built by GitHub Actions. Download from the Releases page once a release is published:
+
+| OS      | File                          | Notes                                                             |
+| ------- | ----------------------------- | ----------------------------------------------------------------- |
+| Windows | `.exe` (NSIS) or `.msi`       | Unsigned: SmartScreen shows "More info", then "Run anyway"        |
+| macOS   | `.dmg` (Apple Silicon, Intel) | Unsigned: drag to Applications, then right-click the app and Open |
+| Linux   | `.AppImage`, `.deb`, `.rpm`   | AppImage: `chmod +x` and run                                      |
+
+To cut a release: bump `version` in `src-tauri/tauri.conf.json`, then run the Release workflow (Actions tab). It creates a draft release with all installers attached. Publish the draft when ready. Signing turns on when the repo variable `SIGN_BINARIES` is `true` and the signing secrets exist.
+
+Or build from source:
 
 ```bash
 bun install
