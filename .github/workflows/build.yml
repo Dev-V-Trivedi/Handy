@@ -628,11 +628,27 @@ jobs:
             fi
           done
 
+      - name: Friendly artifact name
+        id: friendly
+        shell: bash
+        run: |
+          case "${{ inputs.target }}:${{ inputs.platform }}" in
+            aarch64-apple-darwin:*) n="macos-apple-silicon" ;;
+            x86_64-apple-darwin:*) n="macos-intel" ;;
+            x86_64-pc-windows-msvc:*) n="windows-x64" ;;
+            aarch64-pc-windows-msvc:*) n="windows-arm64" ;;
+            x86_64-unknown-linux-gnu:ubuntu-22.04*) n="linux-x64-deb" ;;
+            x86_64-unknown-linux-gnu:*) n="linux-x64-appimage-rpm" ;;
+            aarch64-unknown-linux-gnu:*) n="linux-arm64" ;;
+            *) n="${{ inputs.platform }}-${{ inputs.target }}" ;;
+          esac
+          echo "name=${{ inputs.asset-prefix }}-$n" >> "$GITHUB_OUTPUT"
+
       - name: Upload artifacts (macOS)
         if: inputs.upload-artifacts && contains(inputs.platform, 'macos')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.asset-prefix }}-${{ inputs.target }}
+          name: ${{ steps.friendly.outputs.name }}
           path: |
             src-tauri/target/${{ inputs.target }}/${{ steps.build-profile.outputs.profile }}/bundle/dmg/*.dmg
             src-tauri/target/${{ inputs.target }}/${{ steps.build-profile.outputs.profile }}/bundle/macos/*.app
@@ -812,7 +828,7 @@ jobs:
         if: inputs.upload-artifacts && contains(inputs.platform, 'ubuntu')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.asset-prefix }}-${{ inputs.platform }}-${{ inputs.target }}
+          name: ${{ steps.friendly.outputs.name }}
           path: |
             src-tauri/target/${{ steps.build-profile.outputs.profile }}/bundle/deb/*.deb
             src-tauri/target/${{ steps.build-profile.outputs.profile }}/bundle/appimage/*.AppImage
@@ -926,7 +942,7 @@ jobs:
         if: inputs.upload-artifacts && contains(inputs.platform, 'windows')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.asset-prefix }}-${{ inputs.target }}
+          name: ${{ steps.friendly.outputs.name }}
           path: |
             src-tauri/target/${{ inputs.target != '' && inputs.target != 'x86_64-pc-windows-msvc' && format('{0}/{1}', inputs.target, steps.build-profile.outputs.profile) || steps.build-profile.outputs.profile }}/bundle/msi/*.msi
             src-tauri/target/${{ inputs.target != '' && inputs.target != 'x86_64-pc-windows-msvc' && format('{0}/{1}', inputs.target, steps.build-profile.outputs.profile) || steps.build-profile.outputs.profile }}/bundle/nsis/*.exe

@@ -33,7 +33,16 @@ Installers are built by GitHub Actions. Download from the Releases page once a r
 | macOS   | `.dmg` (Apple Silicon, Intel) | Unsigned: drag to Applications, then right-click the app and Open |
 | Linux   | `.AppImage`, `.deb`, `.rpm`   | AppImage: `chmod +x` and run                                      |
 
-To cut a release: bump `version` in `src-tauri/tauri.conf.json`, then run the Release workflow (Actions tab). It creates a draft release with all installers attached. Publish the draft when ready. Signing turns on when the repo variable `SIGN_BINARIES` is `true` and the signing secrets exist.
+**Which file?** Test builds from the Actions tab are named by system:
+
+- `oshabe-windows-x64`: normal Windows PCs (Intel or AMD). Unzip, open the `nsis` folder, run the setup `.exe`.
+- `oshabe-windows-arm64`: only Windows on ARM (Snapdragon). On a normal PC it shows "This app can't run on your PC".
+- `oshabe-macos-apple-silicon` (M1 and newer) and `oshabe-macos-intel`.
+- `oshabe-linux-x64-deb`, `oshabe-linux-x64-appimage-rpm`, `oshabe-linux-arm64`.
+
+Check your Windows CPU in Settings > System > About > System type.
+
+To cut a release: run `bun run bump X.Y.Z`, push, then run the Release workflow (Actions tab). It creates a draft release with all installers attached. Publish the draft when ready. Signing turns on when the repo variable `SIGN_BINARIES` is `true` and the signing secrets exist.
 
 Or build from source:
 
