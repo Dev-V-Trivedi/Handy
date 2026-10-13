@@ -174,6 +174,34 @@ async fn post_process_transcription(settings: &AppSettings, transcription: &str)
         return None;
     }
 
+    let prompt = if settings.context_tone_enabled {
+        match tauri::async_runtime::spawn_blocking(crate::active_app::foreground_app)
+            .await
+            .ok()
+            .flatten()
+        {
+            Some(app) => match crate::active_app::match_tone(&settings.app_tone_rules, &app) {
+                Some(rule) => {
+                    debug!(
+                        "Context tone '{}' applied for app '{}' (title: '{}')",
+                        rule.id, app.name, app.title
+                    );
+                    format!("{prompt}{}", crate::active_app::tone_instruction(rule))
+                }
+                None => {
+                    debug!("No tone rule matched app '{}'", app.name);
+                    prompt
+                }
+            },
+            None => {
+                debug!("Foreground app not detected, skipping context tone");
+                prompt
+            }
+        }
+    } else {
+        prompt
+    };
+
     debug!(
         "Starting LLM post-processing with provider '{}' (model: {})",
         provider.id, model

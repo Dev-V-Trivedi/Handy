@@ -470,6 +470,18 @@
         "cancel": "Cancel·leu",
         "selectToEdit": "Seleccioneu una indicació more amunt per veure'n i editar-ne els detalls.",
         "createFirst": "Feu clic a «Creeu una indicació nova» més amunt per crear la primera indicació de postprocessament."
+      },
+      "contextTone": {
+        "title": "Context Tone",
+        "label": "Match tone to the active app",
+        "description": "Detects the app you are dictating into and adjusts the cleanup style (chat, email, code). Needs post-processing enabled.",
+        "patternLabel": "App or window title contains",
+        "patternPlaceholder": "App or window title contains, e.g. slack",
+        "toneLabel": "Tone instruction",
+        "tonePlaceholder": "Style to apply, e.g. Casual, short, no greeting",
+        "add": "Add rule",
+        "remove": "Remove",
+        "hint": "First matching rule wins. Matches the app name or the window title, so web apps like Gmail work inside a browser. Detection works on Windows, macOS and Linux X11."
       }
     },
     "history": {

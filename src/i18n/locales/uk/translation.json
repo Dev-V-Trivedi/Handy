@@ -470,6 +470,18 @@
         "cancel": "Скасувати",
         "selectToEdit": "Оберіть промпт вище для перегляду та редагування його деталей.",
         "createFirst": "Натисніть «Створити новий промпт» вище, щоб створити ваш перший промпт постобробки."
+      },
+      "contextTone": {
+        "title": "Context Tone",
+        "label": "Match tone to the active app",
+        "description": "Detects the app you are dictating into and adjusts the cleanup style (chat, email, code). Needs post-processing enabled.",
+        "patternLabel": "App or window title contains",
+        "patternPlaceholder": "App or window title contains, e.g. slack",
+        "toneLabel": "Tone instruction",
+        "tonePlaceholder": "Style to apply, e.g. Casual, short, no greeting",
+        "add": "Add rule",
+        "remove": "Remove",
+        "hint": "First matching rule wins. Matches the app name or the window title, so web apps like Gmail work inside a browser. Detection works on Windows, macOS and Linux X11."
       }
     },
     "history": {

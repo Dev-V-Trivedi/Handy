@@ -470,6 +470,18 @@
         "cancel": "रद्द करें",
         "selectToEdit": "जानकारी देखने और बदलाव करने के लिए, ऊपर कोई प्रॉम्प्ट चुनें.",
         "createFirst": "अपना पहला पोस्ट-प्रोसेसिंग प्रॉम्प्ट बनाने के लिए, ऊपर 'नया प्रॉम्प्ट बनाएं' पर क्लिक करें."
+      },
+      "contextTone": {
+        "title": "Context Tone",
+        "label": "Match tone to the active app",
+        "description": "Detects the app you are dictating into and adjusts the cleanup style (chat, email, code). Needs post-processing enabled.",
+        "patternLabel": "App or window title contains",
+        "patternPlaceholder": "App or window title contains, e.g. slack",
+        "toneLabel": "Tone instruction",
+        "tonePlaceholder": "Style to apply, e.g. Casual, short, no greeting",
+        "add": "Add rule",
+        "remove": "Remove",
+        "hint": "First matching rule wins. Matches the app name or the window title, so web apps like Gmail work inside a browser. Detection works on Windows, macOS and Linux X11."
       }
     },
     "history": {

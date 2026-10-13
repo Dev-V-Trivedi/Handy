@@ -4,6 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import type {
   AppSettings as Settings,
   AudioDevice,
+  AppToneRule,
   PostProcessApiFormat,
   ChineseScript,
   TranscribeAcceleratorSetting,
@@ -166,6 +167,10 @@ const settingUpdaters: {
     commands.setPostProcessSelectedPrompt(value as string),
   mute_while_recording: (value) =>
     commands.changeMuteWhileRecordingSetting(value as boolean),
+  context_tone_enabled: (value) =>
+    commands.changeContextToneEnabledSetting(value as boolean),
+  app_tone_rules: (value) =>
+    commands.updateAppToneRules(value as AppToneRule[]),
   append_trailing_space: (value) =>
     commands.changeAppendTrailingSpaceSetting(value as boolean),
   log_level: (value) => commands.setLogLevel(value as any),

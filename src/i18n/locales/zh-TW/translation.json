@@ -470,6 +470,18 @@
         "cancel": "取消",
         "selectToEdit": "選擇上方的提示詞以檢視和編輯其詳細資訊",
         "createFirst": "點選上方的「建立新提示詞」來建立您的第一個後處理提示詞"
+      },
+      "contextTone": {
+        "title": "Context Tone",
+        "label": "Match tone to the active app",
+        "description": "Detects the app you are dictating into and adjusts the cleanup style (chat, email, code). Needs post-processing enabled.",
+        "patternLabel": "App or window title contains",
+        "patternPlaceholder": "App or window title contains, e.g. slack",
+        "toneLabel": "Tone instruction",
+        "tonePlaceholder": "Style to apply, e.g. Casual, short, no greeting",
+        "add": "Add rule",
+        "remove": "Remove",
+        "hint": "First matching rule wins. Matches the app name or the window title, so web apps like Gmail work inside a browser. Detection works on Windows, macOS and Linux X11."
       }
     },
     "history": {
