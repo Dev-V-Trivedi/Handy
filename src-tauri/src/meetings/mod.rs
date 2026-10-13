@@ -92,6 +92,25 @@ impl MeetingManager {
         })
     }
 
+    /// Apply the retention setting: remove finished meetings older than the
+    /// chosen number of days. Does nothing when the setting is 0 (keep forever).
+    pub fn purge_expired(&self) {
+        let days = crate::settings::get_settings(&self.app).meeting_retention_days;
+        if days == 0 {
+            return;
+        }
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs() as i64)
+            .unwrap_or(0);
+        let cutoff = now - i64::from(days) * 86_400;
+        match self.store.purge_older_than(cutoff) {
+            Ok(0) => {}
+            Ok(n) => log::info!("Removed {} meetings older than {} days", n, days),
+            Err(e) => log::warn!("Could not remove old meetings: {}", e),
+        }
+    }
+
     pub fn store(&self) -> Arc<MeetingStore> {
         Arc::clone(&self.store)
     }

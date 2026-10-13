@@ -490,6 +490,10 @@ pub struct AppSettings {
     /// post-process hotkey. Falls back to raw text if no provider is set up.
     #[serde(default)]
     pub always_cleanup_enabled: bool,
+    /// Delete finished meeting notes older than this many days. 0 keeps them
+    /// forever. Documents the user exported to their own folder are never touched.
+    #[serde(default)]
+    pub meeting_retention_days: u32,
     #[serde(default = "crate::active_app::default_tone_rules")]
     pub app_tone_rules: Vec<crate::active_app::AppToneRule>,
     #[serde(default)]
@@ -1058,6 +1062,7 @@ pub fn get_default_settings() -> AppSettings {
         post_process_selected_prompt_id: None,
         context_tone_enabled: false,
         always_cleanup_enabled: false,
+        meeting_retention_days: 0,
         app_tone_rules: crate::active_app::default_tone_rules(),
         mute_while_recording: false,
         append_trailing_space: false,

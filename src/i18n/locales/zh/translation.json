@@ -895,9 +895,15 @@
     "transcribeError": "Part of the audio could not be transcribed.",
     "warnSystemAudio": "Could not capture the other side's audio. Only your mic is recorded.",
     "warnMic": "Could not open your mic. Only the other side's audio is recorded.",
-    "saveDocument": "Save as document",
     "saved": "Saved in Documents/Oshabe Meetings",
     "saveFailed": "Could not save the document.",
-    "storageNote": "Everything is stored on this computer only. Open any meeting and press Save as document to get a file in Documents/Oshabe Meetings."
+    "storageNote": "Everything is stored on this computer only. Open a meeting and press Save as Word or Save as PDF to get a file in Documents/Oshabe Meetings.",
+    "saveWord": "Save as Word",
+    "savePdf": "Save as PDF",
+    "retention": {
+      "label": "Delete old meeting notes automatically",
+      "never": "Never",
+      "days": "After {{count}} days"
+    }
   }
 }

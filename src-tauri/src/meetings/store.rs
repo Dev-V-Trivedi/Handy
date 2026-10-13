@@ -164,6 +164,22 @@ impl MeetingStore {
         Ok(())
     }
 
+    /// Delete finished meetings that started before `cutoff` (unix seconds).
+    /// Meetings still being recorded are never touched. Returns how many went.
+    pub fn purge_older_than(&self, cutoff: i64) -> Result<usize> {
+        let conn = self.lock()?;
+        conn.execute(
+            "DELETE FROM segments WHERE meeting_id IN
+             (SELECT id FROM meetings WHERE started_at < ?1 AND ended_at IS NOT NULL)",
+            params![cutoff],
+        )?;
+        let n = conn.execute(
+            "DELETE FROM meetings WHERE started_at < ?1 AND ended_at IS NOT NULL",
+            params![cutoff],
+        )?;
+        Ok(n)
+    }
+
     pub fn list(&self) -> Result<Vec<MeetingRow>> {
         let conn = self.lock()?;
         let mut stmt = conn.prepare(
@@ -273,6 +289,23 @@ mod tests {
 
         store.delete(id).unwrap();
         assert!(store.get(id).unwrap().is_none());
+        let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn purge_removes_only_old_finished_meetings() {
+        let (store, path) = temp_store();
+        let old = store.create("Old", true, 100).unwrap();
+        store.add_segment(old, "you", 0, "x").unwrap();
+        store.finish(old, 200).unwrap();
+        let fresh = store.create("Fresh", true, 10_000).unwrap();
+        store.finish(fresh, 10_100).unwrap();
+        let running = store.create("Running", true, 50).unwrap(); // never finished
+
+        assert_eq!(store.purge_older_than(5_000).unwrap(), 1);
+        assert!(store.get(old).unwrap().is_none());
+        assert!(store.get(fresh).unwrap().is_some());
+        assert!(store.get(running).unwrap().is_some());
         let _ = std::fs::remove_file(path);
     }
 

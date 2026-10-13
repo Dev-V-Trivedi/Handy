@@ -25,6 +25,7 @@ pub async fn meeting_stop(app: AppHandle) -> Result<i64, String> {
     let id = tauri::async_runtime::spawn_blocking(move || mgr_for_stop.stop())
         .await
         .map_err(|e| e.to_string())??;
+    mgr.purge_expired();
     mgr.summarize_in_background(id);
     Ok(id)
 }
@@ -99,16 +100,21 @@ fn safe_file_stem(title: &str) -> String {
     }
 }
 
-/// Save meeting notes as a Markdown document in `Documents/Oshabe Meetings`
-/// and return the file path. Existing files are never overwritten.
+/// Save an exported meeting document (Word or PDF) in
+/// `Documents/Oshabe Meetings` and return the file path. Existing files are
+/// never overwritten.
 #[tauri::command]
 #[specta::specta]
 pub fn meeting_save_document(
     app: AppHandle,
     title: String,
     date: String,
-    content: String,
+    extension: String,
+    content: Vec<u8>,
 ) -> Result<String, String> {
+    if !matches!(extension.as_str(), "docx" | "pdf") {
+        return Err("Unsupported file type".to_string());
+    }
     let base = app
         .path()
         .document_dir()
@@ -117,10 +123,10 @@ pub fn meeting_save_document(
     let dir = base.join("Oshabe Meetings");
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let stem = format!("{} {}", safe_file_stem(&title), safe_file_stem(&date));
-    let mut path = dir.join(format!("{stem}.md"));
+    let mut path = dir.join(format!("{stem}.{extension}"));
     let mut n = 2;
     while path.exists() {
-        path = dir.join(format!("{stem} ({n}).md"));
+        path = dir.join(format!("{stem} ({n}).{extension}"));
         n += 1;
     }
     std::fs::write(&path, content).map_err(|e| e.to_string())?;

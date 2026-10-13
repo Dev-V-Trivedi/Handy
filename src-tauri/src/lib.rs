@@ -219,7 +219,9 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(history_manager.clone());
     match meetings::MeetingManager::new(app_handle) {
         Ok(meeting_manager) => {
-            app_handle.manage(Arc::new(meeting_manager));
+            let meeting_manager = Arc::new(meeting_manager);
+            meeting_manager.purge_expired();
+            app_handle.manage(meeting_manager);
         }
         Err(e) => log::error!("Meeting notes unavailable: {}", e),
     }
@@ -705,6 +707,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_append_trailing_space_setting,
             shortcut::change_context_tone_enabled_setting,
             shortcut::change_always_cleanup_enabled_setting,
+            shortcut::change_meeting_retention_days_setting,
             shortcut::update_app_tone_rules,
             shortcut::change_lazy_stream_close_setting,
             shortcut::change_vad_enabled_setting,

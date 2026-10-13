@@ -20,6 +20,7 @@ import {
   type MeetingRow,
   type MeetingSegment,
 } from "@/bindings";
+import { useSettings } from "../../../hooks/useSettings";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { Button } from "../../ui/Button";
 import { Alert } from "../../ui/Alert";
@@ -210,22 +211,32 @@ const MeetingDetailView: React.FC<{
     await commands.meetingSummarize(id);
   };
 
-  const saveDocument = async () => {
+  const saveDocument = async (kind: "docx" | "pdf") => {
     if (!detail) return;
-    const date = new Date(detail.started_at * 1000).toISOString().slice(0, 10);
-    const res = await commands.meetingSaveDocument(
-      detail.title,
-      date,
-      buildMarkdown(detail, summary, labels),
-    );
-    if (res.status === "ok") {
+    try {
+      const { buildExportDoc, buildDocx, buildPdf } = await import(
+        "./meetingExport"
+      );
+      const doc = buildExportDoc(detail, summary, labels);
+      const bytes =
+        kind === "docx" ? await buildDocx(doc) : await buildPdf(doc);
+      const date = new Date(detail.started_at * 1000)
+        .toISOString()
+        .slice(0, 10);
+      const res = await commands.meetingSaveDocument(
+        detail.title,
+        date,
+        kind,
+        Array.from(bytes),
+      );
+      if (res.status !== "ok") throw new Error(res.error);
       toast.success(t("meetings.saved"));
       try {
         await revealItemInDir(res.data);
       } catch {
         // Saving worked; only showing the folder failed.
       }
-    } else {
+    } catch {
       toast.error(t("meetings.saveFailed"));
     }
   };
@@ -278,11 +289,21 @@ const MeetingDetailView: React.FC<{
         <Button
           size="sm"
           variant="secondary"
-          onClick={() => void saveDocument()}
+          onClick={() => void saveDocument("docx")}
         >
           <span className="flex items-center gap-1.5">
             <FileText className="h-3.5 w-3.5" />
-            {t("meetings.saveDocument")}
+            {t("meetings.saveWord")}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => void saveDocument("pdf")}
+        >
+          <span className="flex items-center gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t("meetings.savePdf")}
           </span>
         </Button>
         <Button
@@ -359,6 +380,7 @@ const MeetingDetailView: React.FC<{
 
 export const MeetingsSettings: React.FC = () => {
   const { t } = useTranslation();
+  const { settings, updateSetting } = useSettings();
   const [active, setActive] = useState<ActiveMeeting | null>(null);
   const [rows, setRows] = useState<MeetingRow[]>([]);
   const [live, setLive] = useState<MeetingSegment[]>([]);
@@ -571,6 +593,24 @@ export const MeetingsSettings: React.FC = () => {
       </SettingsGroup>
 
       <p className="px-1 text-xs text-text/60">{t("meetings.storageNote")}</p>
+      <label className="flex items-center justify-between gap-3 px-1 text-sm">
+        <span>{t("meetings.retention.label")}</span>
+        <select
+          value={String(settings?.meeting_retention_days ?? 0)}
+          onChange={(e) =>
+            void updateSetting("meeting_retention_days", Number(e.target.value))
+          }
+          className="rounded-lg border border-mid-gray/40 bg-transparent px-2 py-1"
+        >
+          {[0, 30, 90, 365].map((d) => (
+            <option key={d} value={d}>
+              {d === 0
+                ? t("meetings.retention.never")
+                : t("meetings.retention.days", { count: d })}
+            </option>
+          ))}
+        </select>
+      </label>
       <SettingsGroup title={t("meetings.pastTitle")}>
         {rows.length === 0 ? (
           <p className="px-4 py-3 text-sm text-text/60">{t("meetings.none")}</p>

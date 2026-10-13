@@ -1352,6 +1352,18 @@ pub fn change_always_cleanup_enabled_setting(app: AppHandle, enabled: bool) -> R
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_meeting_retention_days_setting(app: AppHandle, days: u32) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.meeting_retention_days = days;
+    settings::write_settings(&app, settings);
+    if let Some(mgr) = app.try_state::<std::sync::Arc<crate::meetings::MeetingManager>>() {
+        mgr.purge_expired();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn update_app_tone_rules(
     app: AppHandle,
     rules: Vec<crate::active_app::AppToneRule>,
