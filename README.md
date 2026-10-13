@@ -23,6 +23,12 @@ Oshabe is an independent fork of [Handy](https://github.com/cjpais/Handy) by CJ 
 - Bundled small local cleanup model, no Ollama needed
 - Android and iOS keyboard apps (separate project)
 
+## Privacy
+
+- Speech to text runs on your device. Audio, history, settings and models are stored in your app data folder.
+- No telemetry or analytics.
+- Network is used only for model downloads, update checks, and cleanup if you pick a cloud provider (then the text, never the audio, is sent). Ollama or Apple Intelligence keep cleanup on your machine.
+
 ## Install and build
 
 Installers are built by GitHub Actions. Download from the Releases page once a release is published:

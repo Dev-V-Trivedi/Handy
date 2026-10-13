@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve Handy
+about: Create a report to help us improve Oshabe
 title: "[BUG] "
 labels: ["bug"]
 assignees: ""
@@ -8,7 +8,7 @@ assignees: ""
 
 ## Before You Submit
 
-**Please search [existing issues](https://github.com/cjpais/Handy/issues) to avoid duplicates.** Your bug may already be reported! Right now it's just me maintaining this project so many issues can be overwhelming! Help me out by checking first.
+**Please search [existing issues](https://github.com/Dev-V-Trivedi/oshabe/issues) to avoid duplicates.** Your bug may already be reported! This is a small project, so checking first helps a lot.
 
 ## Bug Description
 
@@ -19,6 +19,10 @@ A clear and concise description of what the bug is.
 **App Version:**
 
 <!-- You can find this in the app settings or about section -->
+
+**Windows/macOS/Linux and CPU type (x64 or arm64):**
+
+**Speech model used (e.g. Parakeet, Nemotron):**
 
 **Operating System:**
 
