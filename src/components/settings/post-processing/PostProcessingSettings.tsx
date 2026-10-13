@@ -88,7 +88,8 @@ const PostProcessingSettingsApiComponent: React.FC = () => {
             </SettingContainer>
           )}
 
-          {state.selectedProvider?.id === "custom" && (
+          {(state.selectedProvider?.id === "custom" ||
+            state.selectedProvider?.id === "ollama") && (
             <SettingContainer
               title={t("settings.postProcessing.api.baseUrl.title")}
               description={t("settings.postProcessing.api.baseUrl.description")}
