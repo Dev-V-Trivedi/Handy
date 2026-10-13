@@ -7,7 +7,9 @@
     "model": "Modèle",
     "quit": "Quitter",
     "cancel": "Annuler",
-    "secureInputWarning": "⚠ Raccourcis bloqués par Secure Input"
+    "secureInputWarning": "⚠ Raccourcis bloqués par Secure Input",
+    "startMeeting": "Start Meeting Notes",
+    "stopMeeting": "Stop Meeting Notes"
   },
   "sidebar": {
     "general": "Général",
@@ -251,6 +253,10 @@
           "transcribe_with_post_process": {
             "name": "Raccourci de post-traitement",
             "description": "Facultatif : Un raccourci dédié qui applique toujours le post-traitement IA à votre transcription."
+          },
+          "meeting_toggle": {
+            "name": "Meeting notes shortcut",
+            "description": "Press once to start meeting notes, press again to stop and get the summary."
           }
         },
         "errors": {
@@ -904,6 +910,12 @@
       "label": "Delete old meeting notes automatically",
       "never": "Never",
       "days": "After {{count}} days"
-    }
+    },
+    "detected": "{{app}} call detected. Take notes?",
+    "detectedYes": "Take notes",
+    "detectedNo": "Not now",
+    "shortcutTitle": "Quick start",
+    "promptLabel": "Ask when a call starts",
+    "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked."
   }
 }

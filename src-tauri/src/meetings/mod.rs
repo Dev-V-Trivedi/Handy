@@ -4,8 +4,10 @@
 //! Everything runs on the device. Only text is saved, never audio.
 
 pub mod capture;
+pub mod detect;
 pub mod store;
 pub mod summary;
+pub mod tidy;
 
 use crate::managers::transcription::TranscriptionManager;
 use crate::settings::get_settings;
@@ -208,6 +210,7 @@ impl MeetingManager {
             worker,
         });
         let _ = self.app.emit("meeting-status", true);
+        crate::tray::sync_tray(&self.app);
         Ok(info)
     }
 
@@ -233,6 +236,7 @@ impl MeetingManager {
             error!("Failed to close meeting {}: {}", id, e);
         }
         let _ = self.app.emit("meeting-status", false);
+        crate::tray::sync_tray(&self.app);
         info!("Meeting {} stopped", id);
         Ok(id)
     }
@@ -484,6 +488,44 @@ fn run_worker(
         worker.flush(buf);
     }
     debug!("Meeting {} worker finished", meeting_id);
+}
+
+/// Start meeting notes if idle, otherwise stop and summarise. Used by the
+/// keyboard shortcut and the tray menu, so it never needs the window open.
+pub fn toggle(app: &AppHandle) {
+    use crate::audio_feedback::{play_feedback_sound, SoundType};
+    let Some(manager) = app
+        .try_state::<Arc<MeetingManager>>()
+        .map(|s| Arc::clone(&s))
+    else {
+        return;
+    };
+    let app = app.clone();
+    tauri::async_runtime::spawn(async move {
+        if manager.active().is_some() {
+            let stopper = Arc::clone(&manager);
+            match tauri::async_runtime::spawn_blocking(move || stopper.stop()).await {
+                Ok(Ok(id)) => {
+                    play_feedback_sound(&app, SoundType::Stop);
+                    manager.purge_expired();
+                    manager.summarize_in_background(id);
+                }
+                Ok(Err(e)) => {
+                    let _ = app.emit("meeting-error", e);
+                }
+                Err(e) => error!("Meeting stop task failed: {}", e),
+            }
+        } else {
+            let starter = Arc::clone(&manager);
+            match tauri::async_runtime::spawn_blocking(move || starter.start(None)).await {
+                Ok(Ok(_)) => play_feedback_sound(&app, SoundType::Start),
+                Ok(Err(e)) => {
+                    let _ = app.emit("meeting-error", e);
+                }
+                Err(e) => error!("Meeting start task failed: {}", e),
+            }
+        }
+    });
 }
 
 #[cfg(test)]

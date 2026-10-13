@@ -50,6 +50,14 @@ pub fn handle_shortcut_event(
         return;
     }
 
+    // Meeting notes: one key press toggles recording on or off.
+    if binding_id == "meeting_toggle" {
+        if is_pressed {
+            crate::meetings::toggle(app);
+        }
+        return;
+    }
+
     let Some(action) = ACTION_MAP.get(binding_id) else {
         warn!(
             "No action defined in ACTION_MAP for shortcut ID '{}'. Shortcut: '{}', Pressed: {}",

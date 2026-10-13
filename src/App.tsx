@@ -18,6 +18,7 @@ import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import SecureInputWarning from "./components/SecureInputWarning";
 import Footer from "./components/footer";
+import { setDetectedCall } from "./lib/meetingDetect";
 import Onboarding, {
   AccessibilityOnboarding,
   MicrophoneOnboarding,
@@ -184,6 +185,17 @@ function App() {
       unlisten.then((fn) => fn());
     };
   }, [t]);
+
+  // A call app (Zoom, Meet, Teams...) came to the front: open Meetings and ask.
+  useEffect(() => {
+    const unlisten = listen<{ app: string }>("meeting-detected", (event) => {
+      setDetectedCall(event.payload.app);
+      setCurrentSection("meetings");
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   // Listen for transcription failures and show a toast.
   // The payload is the backend error message (also logged to handy.log).

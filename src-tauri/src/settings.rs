@@ -494,6 +494,9 @@ pub struct AppSettings {
     /// forever. Documents the user exported to their own folder are never touched.
     #[serde(default)]
     pub meeting_retention_days: u32,
+    /// Ask "Take notes?" when a Zoom, Teams, Meet or Webex call is detected.
+    #[serde(default = "default_meeting_prompt_enabled")]
+    pub meeting_prompt_enabled: bool,
     #[serde(default = "crate::active_app::default_tone_rules")]
     pub app_tone_rules: Vec<crate::active_app::AppToneRule>,
     #[serde(default)]
@@ -587,6 +590,10 @@ fn default_start_hidden() -> bool {
 
 fn default_autostart_enabled() -> bool {
     false
+}
+
+fn default_meeting_prompt_enabled() -> bool {
+    true
 }
 
 fn default_update_checks_enabled() -> bool {
@@ -1008,6 +1015,20 @@ pub fn get_default_settings() -> AppSettings {
             current_binding: default_post_process_shortcut.to_string(),
         },
     );
+    #[cfg(target_os = "macos")]
+    let default_meeting_shortcut = "option+shift+m";
+    #[cfg(not(target_os = "macos"))]
+    let default_meeting_shortcut = "ctrl+alt+m";
+    bindings.insert(
+        "meeting_toggle".to_string(),
+        ShortcutBinding {
+            id: "meeting_toggle".to_string(),
+            name: "Meeting notes".to_string(),
+            description: "Starts or stops meeting notes (transcript and summary).".to_string(),
+            default_binding: default_meeting_shortcut.to_string(),
+            current_binding: default_meeting_shortcut.to_string(),
+        },
+    );
     bindings.insert(
         "cancel".to_string(),
         ShortcutBinding {
@@ -1063,6 +1084,7 @@ pub fn get_default_settings() -> AppSettings {
         context_tone_enabled: false,
         always_cleanup_enabled: false,
         meeting_retention_days: 0,
+        meeting_prompt_enabled: true,
         app_tone_rules: crate::active_app::default_tone_rules(),
         mute_while_recording: false,
         append_trailing_space: false,

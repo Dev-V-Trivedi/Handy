@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 import { toast } from "sonner";
@@ -20,7 +26,14 @@ import {
   type MeetingRow,
   type MeetingSegment,
 } from "@/bindings";
+import {
+  getDetectedCall,
+  setDetectedCall,
+  subscribeDetectedCall,
+} from "../../../lib/meetingDetect";
 import { useSettings } from "../../../hooks/useSettings";
+import { ShortcutInput } from "../ShortcutInput";
+import { ToggleSwitch } from "../../ui/ToggleSwitch";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { Button } from "../../ui/Button";
 import { Alert } from "../../ui/Alert";
@@ -380,7 +393,7 @@ const MeetingDetailView: React.FC<{
 
 export const MeetingsSettings: React.FC = () => {
   const { t } = useTranslation();
-  const { settings, updateSetting } = useSettings();
+  const { settings, updateSetting, isUpdating } = useSettings();
   const [active, setActive] = useState<ActiveMeeting | null>(null);
   const [rows, setRows] = useState<MeetingRow[]>([]);
   const [live, setLive] = useState<MeetingSegment[]>([]);
@@ -448,6 +461,32 @@ export const MeetingsSettings: React.FC = () => {
     const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
   }, [active]);
+
+  // Started or stopped elsewhere (keyboard shortcut, tray menu).
+  useEffect(() => {
+    const unlisten = listen<boolean>("meeting-status", async (event) => {
+      if (event.payload) {
+        const res = await commands.meetingActive();
+        if (res.status === "ok" && res.data) {
+          setActive(res.data);
+          setLive([]);
+          setSelected(null);
+          setDetectedCall(null);
+        }
+      } else {
+        setActive(null);
+        void loadRows();
+      }
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [loadRows]);
+
+  const detectedCall = useSyncExternalStore(
+    subscribeDetectedCall,
+    getDetectedCall,
+  );
 
   useEffect(() => {
     liveEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -518,6 +557,30 @@ export const MeetingsSettings: React.FC = () => {
         <div className="space-y-3 px-4 py-3">
           <p className="text-sm text-text/70">{t("meetings.intro")}</p>
 
+          {!active && detectedCall && (
+            <Alert variant="info" contained>
+              <div className="flex flex-wrap items-center gap-3">
+                <span>{t("meetings.detected", { app: detectedCall })}</span>
+                <Button
+                  size="sm"
+                  disabled={busy}
+                  onClick={() => {
+                    setDetectedCall(null);
+                    void start();
+                  }}
+                >
+                  {t("meetings.detectedYes")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setDetectedCall(null)}
+                >
+                  {t("meetings.detectedNo")}
+                </Button>
+              </div>
+            </Alert>
+          )}
           {active ? (
             <>
               <div className="flex items-center gap-3">
@@ -592,6 +655,18 @@ export const MeetingsSettings: React.FC = () => {
         </div>
       </SettingsGroup>
 
+      <SettingsGroup title={t("meetings.shortcutTitle")}>
+        <ShortcutInput shortcutId="meeting_toggle" grouped={true} />
+        <ToggleSwitch
+          checked={settings?.meeting_prompt_enabled ?? true}
+          onChange={(value) => updateSetting("meeting_prompt_enabled", value)}
+          isUpdating={isUpdating("meeting_prompt_enabled")}
+          label={t("meetings.promptLabel")}
+          description={t("meetings.promptDescription")}
+          descriptionMode="tooltip"
+          grouped={true}
+        />
+      </SettingsGroup>
       <p className="px-1 text-xs text-text/60">{t("meetings.storageNote")}</p>
       <label className="flex items-center justify-between gap-3 px-1 text-sm">
         <span>{t("meetings.retention.label")}</span>

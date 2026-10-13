@@ -7,7 +7,9 @@
     "model": "मोडेल",
     "quit": "बाहिर निस्कनुहोस्",
     "cancel": "रद्द गर्नुहोस्",
-    "secureInputWarning": "⚠ Secure Input ले सर्टकटहरू रोकेको छ"
+    "secureInputWarning": "⚠ Secure Input ले सर्टकटहरू रोकेको छ",
+    "startMeeting": "Start Meeting Notes",
+    "stopMeeting": "Stop Meeting Notes"
   },
   "sidebar": {
     "general": "सामान्य",
@@ -224,6 +226,10 @@
           "transcribe_with_post_process": {
             "name": "पोस्ट-प्रोसेसिङ हटकी",
             "description": "वैकल्पिक: तपाईंको ट्रान्सक्रिप्सनमा सधैँ AI पोस्ट-प्रोसेसिङ लागू गर्ने छुट्टै हटकी।"
+          },
+          "meeting_toggle": {
+            "name": "Meeting notes shortcut",
+            "description": "Press once to start meeting notes, press again to stop and get the summary."
           }
         },
         "errors": {
@@ -904,6 +910,12 @@
       "label": "Delete old meeting notes automatically",
       "never": "Never",
       "days": "After {{count}} days"
-    }
+    },
+    "detected": "{{app}} call detected. Take notes?",
+    "detectedYes": "Take notes",
+    "detectedNo": "Not now",
+    "shortcutTitle": "Quick start",
+    "promptLabel": "Ask when a call starts",
+    "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked."
   }
 }

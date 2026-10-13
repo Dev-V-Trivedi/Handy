@@ -7,7 +7,9 @@
     "model": "Модель",
     "quit": "Выход",
     "cancel": "Отмена",
-    "secureInputWarning": "⚠ Сочетания клавиш заблокированы Secure Input"
+    "secureInputWarning": "⚠ Сочетания клавиш заблокированы Secure Input",
+    "startMeeting": "Start Meeting Notes",
+    "stopMeeting": "Stop Meeting Notes"
   },
   "sidebar": {
     "general": "Общие",
@@ -251,6 +253,10 @@
           "transcribe_with_post_process": {
             "name": "Горячая клавиша постобработки",
             "description": "Специальное сочетание клавиш для ИИ-постобработки вашей транскрипции."
+          },
+          "meeting_toggle": {
+            "name": "Meeting notes shortcut",
+            "description": "Press once to start meeting notes, press again to stop and get the summary."
           }
         },
         "errors": {
@@ -904,6 +910,12 @@
       "label": "Delete old meeting notes automatically",
       "never": "Never",
       "days": "After {{count}} days"
-    }
+    },
+    "detected": "{{app}} call detected. Take notes?",
+    "detectedYes": "Take notes",
+    "detectedNo": "Not now",
+    "shortcutTitle": "Quick start",
+    "promptLabel": "Ask when a call starts",
+    "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked."
   }
 }

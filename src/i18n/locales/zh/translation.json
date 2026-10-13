@@ -7,7 +7,9 @@
     "model": "模型",
     "quit": "退出",
     "cancel": "取消",
-    "secureInputWarning": "⚠ 快捷键被 Secure Input 阻止"
+    "secureInputWarning": "⚠ 快捷键被 Secure Input 阻止",
+    "startMeeting": "Start Meeting Notes",
+    "stopMeeting": "Stop Meeting Notes"
   },
   "sidebar": {
     "general": "通用",
@@ -251,6 +253,10 @@
           "transcribe_with_post_process": {
             "name": "后处理快捷键",
             "description": "可选：一个专用快捷键，始终对您的转录应用 AI 后处理。"
+          },
+          "meeting_toggle": {
+            "name": "Meeting notes shortcut",
+            "description": "Press once to start meeting notes, press again to stop and get the summary."
           }
         },
         "errors": {
@@ -904,6 +910,12 @@
       "label": "Delete old meeting notes automatically",
       "never": "Never",
       "days": "After {{count}} days"
-    }
+    },
+    "detected": "{{app}} call detected. Take notes?",
+    "detectedYes": "Take notes",
+    "detectedNo": "Not now",
+    "shortcutTitle": "Quick start",
+    "promptLabel": "Ask when a call starts",
+    "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked."
   }
 }

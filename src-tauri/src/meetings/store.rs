@@ -241,7 +241,8 @@ impl MeetingStore {
             started_at,
             ended_at,
             summary,
-            segments,
+            // Readers get conversation turns; raw chunks stay in the database.
+            segments: super::tidy::merge_turns(segments),
         }))
     }
 }
@@ -274,7 +275,7 @@ mod tests {
             .unwrap();
         let got = store.get(id).unwrap().unwrap();
         assert_eq!(got.title, "Budget sync");
-        assert_eq!(got.segments[0].text, "hi there"); // ordered by time
+        assert_eq!(got.segments[0].text, "Hi there."); // ordered by time, tidied
         assert!(got.summary.is_some());
 
         // A user rename is never overwritten.

@@ -98,7 +98,7 @@ fn build_console_filter() -> env_filter::Filter {
     builder.build()
 }
 
-fn show_main_window(app: &AppHandle) {
+pub(crate) fn show_main_window(app: &AppHandle) {
     if let Some(main_window) = app.get_webview_window("main") {
         if let Err(e) = main_window.unminimize() {
             log::error!("Failed to unminimize webview window: {}", e);
@@ -221,6 +221,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
         Ok(meeting_manager) => {
             let meeting_manager = Arc::new(meeting_manager);
             meeting_manager.purge_expired();
+            meetings::detect::spawn(app_handle.clone());
             app_handle.manage(meeting_manager);
         }
         Err(e) => log::error!("Meeting notes unavailable: {}", e),
@@ -306,6 +307,9 @@ fn initialize_core_logic(app_handle: &AppHandle) {
                     show_main_window(app);
                     let _ = app.emit("check-for-updates", ());
                 }
+            }
+            "toggle_meeting" => {
+                meetings::toggle(app);
             }
             "copy_last_transcript" => {
                 tray::copy_last_transcript(app);
@@ -708,6 +712,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_context_tone_enabled_setting,
             shortcut::change_always_cleanup_enabled_setting,
             shortcut::change_meeting_retention_days_setting,
+            shortcut::change_meeting_prompt_enabled_setting,
             shortcut::update_app_tone_rules,
             shortcut::change_lazy_stream_close_setting,
             shortcut::change_vad_enabled_setting,
