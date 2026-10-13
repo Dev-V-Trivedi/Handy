@@ -477,6 +477,11 @@
         "selectToEdit": "Scegli un prompt qui sopra per visualizzare o modificare i dettagli.",
         "createFirst": "Clicca 'Crea un nuovo prompt' qui sopra per creare il tuo primo prompt di post-elaborazione."
       },
+      "always": {
+        "title": "Always Clean Up",
+        "label": "Clean up every dictation",
+        "description": "Runs your cleanup prompt on the main hotkey too: fixes punctuation, removes filler words, formats text. Needs a provider and model below. If it fails, raw text is pasted."
+      },
       "contextTone": {
         "title": "Context Tone",
         "label": "Match tone to the active app",

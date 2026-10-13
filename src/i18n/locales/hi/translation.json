@@ -477,6 +477,11 @@
         "selectToEdit": "जानकारी देखने और बदलाव करने के लिए, ऊपर कोई प्रॉम्प्ट चुनें.",
         "createFirst": "अपना पहला पोस्ट-प्रोसेसिंग प्रॉम्प्ट बनाने के लिए, ऊपर 'नया प्रॉम्प्ट बनाएं' पर क्लिक करें."
       },
+      "always": {
+        "title": "Always Clean Up",
+        "label": "Clean up every dictation",
+        "description": "Runs your cleanup prompt on the main hotkey too: fixes punctuation, removes filler words, formats text. Needs a provider and model below. If it fails, raw text is pasted."
+      },
       "contextTone": {
         "title": "Context Tone",
         "label": "Match tone to the active app",

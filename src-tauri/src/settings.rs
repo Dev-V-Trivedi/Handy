@@ -486,6 +486,10 @@ pub struct AppSettings {
     /// Adapt post-processing tone to the foreground app (chat, email, code).
     #[serde(default)]
     pub context_tone_enabled: bool,
+    /// Run the cleanup prompt on every dictation (main hotkey), not only the
+    /// post-process hotkey. Falls back to raw text if no provider is set up.
+    #[serde(default)]
+    pub always_cleanup_enabled: bool,
     #[serde(default = "crate::active_app::default_tone_rules")]
     pub app_tone_rules: Vec<crate::active_app::AppToneRule>,
     #[serde(default)]
@@ -1028,6 +1032,7 @@ pub fn get_default_settings() -> AppSettings {
         post_process_prompts: default_post_process_prompts(),
         post_process_selected_prompt_id: None,
         context_tone_enabled: false,
+        always_cleanup_enabled: false,
         app_tone_rules: crate::active_app::default_tone_rules(),
         mute_while_recording: false,
         append_trailing_space: false,

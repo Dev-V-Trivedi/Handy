@@ -167,6 +167,8 @@ const settingUpdaters: {
     commands.setPostProcessSelectedPrompt(value as string),
   mute_while_recording: (value) =>
     commands.changeMuteWhileRecordingSetting(value as boolean),
+  always_cleanup_enabled: (value) =>
+    commands.changeAlwaysCleanupEnabledSetting(value as boolean),
   context_tone_enabled: (value) =>
     commands.changeContextToneEnabledSetting(value as boolean),
   app_tone_rules: (value) =>

@@ -477,6 +477,11 @@
         "selectToEdit": "Chọn một prompt ở trên để xem và chỉnh sửa chi tiết.",
         "createFirst": "Nhấn 'Tạo Prompt mới' ở trên để tạo prompt xử lý sau đầu tiên của bạn."
       },
+      "always": {
+        "title": "Always Clean Up",
+        "label": "Clean up every dictation",
+        "description": "Runs your cleanup prompt on the main hotkey too: fixes punctuation, removes filler words, formats text. Needs a provider and model below. If it fails, raw text is pasted."
+      },
       "contextTone": {
         "title": "Context Tone",
         "label": "Match tone to the active app",

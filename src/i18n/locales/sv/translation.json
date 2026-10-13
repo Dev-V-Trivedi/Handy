@@ -477,6 +477,11 @@
         "selectToEdit": "Välj en prompt ovan för att visa och redigera dess detaljer.",
         "createFirst": "Klicka på 'Skapa ny prompt' ovan för att skapa din första prompt för efterbearbetning."
       },
+      "always": {
+        "title": "Always Clean Up",
+        "label": "Clean up every dictation",
+        "description": "Runs your cleanup prompt on the main hotkey too: fixes punctuation, removes filler words, formats text. Needs a provider and model below. If it fails, raw text is pasted."
+      },
       "contextTone": {
         "title": "Context Tone",
         "label": "Match tone to the active app",

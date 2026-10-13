@@ -477,6 +477,11 @@
         "selectToEdit": "세부 정보를 보고 편집하려면 위에서 프롬프트를 선택하세요.",
         "createFirst": "첫 번째 후처리 프롬프트를 만들려면 위의 '새 프롬프트 만들기'를 클릭하세요."
       },
+      "always": {
+        "title": "Always Clean Up",
+        "label": "Clean up every dictation",
+        "description": "Runs your cleanup prompt on the main hotkey too: fixes punctuation, removes filler words, formats text. Needs a provider and model below. If it fails, raw text is pasted."
+      },
       "contextTone": {
         "title": "Context Tone",
         "label": "Match tone to the active app",

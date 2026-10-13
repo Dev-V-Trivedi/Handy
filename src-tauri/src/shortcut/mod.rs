@@ -1343,6 +1343,15 @@ pub fn change_context_tone_enabled_setting(app: AppHandle, enabled: bool) -> Res
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_always_cleanup_enabled_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.always_cleanup_enabled = enabled;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn update_app_tone_rules(
     app: AppHandle,
     rules: Vec<crate::active_app::AppToneRule>,
