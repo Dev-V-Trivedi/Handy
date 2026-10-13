@@ -211,4 +211,5 @@ Oshabe is an independent fork of [Handy](https://github.com/cjpais/Handy) by CJ 
 - **Branding:** the product name is Oshabe. Internal identifiers (crate `handy`, `handy_keys`, `HANDY_*` env vars, `/usr/lib/Handy`) are intentionally unchanged. See `docs/REBRAND-NOTES.md`.
 - **Translations:** every new UI string goes into `en/translation.json` and all other locales (English text is fine as a placeholder). `bun run check:translations` must pass.
 - **Verification:** run `bunx tsc --noEmit`, `bun run lint`, `bunx prettier --check .`, `cargo fmt --check` and `cargo test` before committing.
+- **Versioning:** bump the version on every update that gets pushed: `bun run bump X.Y.Z` (updates package.json, tauri.conf.json, Cargo.toml, Cargo.lock). Patch for fixes and small features, minor for big features.
 - **Commits:** conventional prefixes (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`). Focus the message on why, not what.

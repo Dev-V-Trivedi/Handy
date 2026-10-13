@@ -84,6 +84,18 @@ impl HistoryManager {
             debug!("Created recordings directory: {:?}", recordings_dir);
         }
 
+        // The static asset scope only covers the standard data dirs; portable
+        // mode keeps data elsewhere, so allow exactly the recordings folder.
+        {
+            use tauri::Manager as _;
+            if let Err(e) = app_handle
+                .asset_protocol_scope()
+                .allow_directory(&recordings_dir, true)
+            {
+                log::warn!("Failed to allow recordings dir in asset scope: {}", e);
+            }
+        }
+
         let manager = Self {
             app_handle: app_handle.clone(),
             recordings_dir,
