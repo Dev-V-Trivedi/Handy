@@ -125,6 +125,44 @@
       "subtitle": "Pick your microphone and say a few words. You should see the bars move.",
       "continue": "Continue",
       "skip": "Skip for now"
+    },
+    "wizard": {
+      "next": "Next",
+      "skip": "Skip",
+      "done": "Start using Oshabe",
+      "purposeTitle": "What will you use Oshabe for?",
+      "purposeDictation": "Dictation",
+      "purposeDictationBody": "Talk instead of typing, in any app.",
+      "purposeMeetings": "Meeting notes",
+      "purposeMeetingsBody": "Record calls on Zoom, Meet or Teams and get a transcript and summary.",
+      "purposeBoth": "Both",
+      "purposeBothBody": "Dictation plus meeting notes.",
+      "qualityTitle": "How good should it be?",
+      "qualityBody": "Pick one. Oshabe downloads it once and then works offline.",
+      "lang": {
+        "english": "English",
+        "multi": "Other languages too"
+      },
+      "preset": {
+        "fast": "Fast",
+        "fastBody": "Quickest results. Small download ({{size}}).",
+        "balanced": "Balanced",
+        "balancedBody": "Good accuracy and speed. Recommended ({{size}}).",
+        "best": "Best",
+        "bestBody": "Most accurate, a bit slower ({{size}})."
+      },
+      "offlineNote": "Your voice never leaves this computer.",
+      "chooseMyself": "Choose a model myself",
+      "practiceTitle": "Try it",
+      "practiceBody": "Click the box, press {{hotkey}}, say something, and watch it appear.",
+      "practicePlaceholder": "Your words will show up here...",
+      "cleanupTitle": "Tidy up your text?",
+      "cleanupBody": "Cleanup removes ums, fixes punctuation and formats lists.",
+      "cleanupOff": "Not now",
+      "cleanupOffBody": "Paste exactly what was heard.",
+      "cleanupOn": "Yes, tidy it up",
+      "cleanupOnBody": "Turn it on. Pick a cleanup model in Post Process (one click for offline models).",
+      "meetingsHint": "Find Meetings in the sidebar when you are ready to record a call."
     }
   },
   "modelSelector": {
@@ -234,7 +272,14 @@
         "label": "Søg igen",
         "tooltip": "Søg igen efter modeller, der er tilføjet til modelmappen eller Hugging Face-cachen uden for Oshabe"
       },
-      "noModelsMatch": "Ingen modeller matcher dette filter."
+      "noModelsMatch": "Ingen modeller matcher dette filter.",
+      "quick": {
+        "all": "All",
+        "recommended": "Recommended",
+        "accuracy": "Top accuracy",
+        "speed": "Fastest",
+        "size": "Smallest"
+      }
     },
     "sound": {
       "title": "Lyd",
@@ -849,6 +894,10 @@
     "startFailed": "Could not start meeting notes.",
     "transcribeError": "Part of the audio could not be transcribed.",
     "warnSystemAudio": "Could not capture the other side's audio. Only your mic is recorded.",
-    "warnMic": "Could not open your mic. Only the other side's audio is recorded."
+    "warnMic": "Could not open your mic. Only the other side's audio is recorded.",
+    "saveDocument": "Save as document",
+    "saved": "Saved in Documents/Oshabe Meetings",
+    "saveFailed": "Could not save the document.",
+    "storageNote": "Everything is stored on this computer only. Open any meeting and press Save as document to get a file in Documents/Oshabe Meetings."
   }
 }

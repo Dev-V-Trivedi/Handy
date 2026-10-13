@@ -30,10 +30,20 @@ const modelSupportsLanguage = (model: ModelInfo, langCode: string): boolean => {
 const isLegacyModel = (model: ModelInfo): boolean =>
   typeof model.source === "object" && "Url" in model.source;
 
+type QuickFilter = "all" | "recommended" | "accuracy" | "speed" | "size";
+const QUICK_FILTERS: QuickFilter[] = [
+  "all",
+  "recommended",
+  "accuracy",
+  "speed",
+  "size",
+];
+
 export const ModelsSettings: React.FC = () => {
   const { t } = useTranslation();
   const [switchingModelId, setSwitchingModelId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [quick, setQuick] = useState<QuickFilter>("all");
   const [filterStreaming, setFilterStreaming] = useState(false);
   const [filterTranslation, setFilterTranslation] = useState(false);
   const [languageFilter, setLanguageFilter] = useState("all");
@@ -184,6 +194,7 @@ export const ModelsSettings: React.FC = () => {
       if (languageFilter !== "all") {
         if (!modelSupportsLanguage(model, languageFilter)) return false;
       }
+      if (quick === "recommended" && !model.is_recommended) return false;
       if (filterStreaming && !model.supports_streaming) return false;
       if (filterTranslation && !model.supports_translation) return false;
 
@@ -193,7 +204,14 @@ export const ModelsSettings: React.FC = () => {
       }
       return true;
     });
-  }, [models, languageFilter, filterStreaming, filterTranslation, searchQuery]);
+  }, [
+    models,
+    languageFilter,
+    quick,
+    filterStreaming,
+    filterTranslation,
+    searchQuery,
+  ]);
 
   // Split filtered models into downloaded (including custom) and available sections
   const { downloadedModels, availableModels } = useMemo(() => {
@@ -213,19 +231,33 @@ export const ModelsSettings: React.FC = () => {
       }
     }
 
+    const byQuick = (a: ModelInfo, b: ModelInfo) => {
+      if (quick === "accuracy") return b.accuracy_score - a.accuracy_score;
+      if (quick === "speed") return b.speed_score - a.speed_score;
+      if (quick === "size") return a.size_mb - b.size_mb;
+      return 0;
+    };
+    available.sort(byQuick);
+
     // Sort: active model first, then non-custom, then custom at the bottom
     downloaded.sort((a, b) => {
       if (a.id === currentModel) return -1;
       if (b.id === currentModel) return 1;
       if (a.is_custom !== b.is_custom) return a.is_custom ? 1 : -1;
-      return 0;
+      return byQuick(a, b);
     });
 
     return {
       downloadedModels: downloaded,
       availableModels: available,
     };
-  }, [filteredModels, downloadingModels, extractingModels, currentModel]);
+  }, [
+    filteredModels,
+    downloadingModels,
+    extractingModels,
+    currentModel,
+    quick,
+  ]);
 
   if (loading) {
     return (
@@ -246,6 +278,25 @@ export const ModelsSettings: React.FC = () => {
         <p className="text-sm text-text/60">
           {t("settings.models.description")}
         </p>
+      </div>
+
+      {/* Quick filters: one tap to rank by what matters */}
+      <div className="flex flex-wrap gap-2">
+        {QUICK_FILTERS.map((q) => (
+          <button
+            key={q}
+            type="button"
+            aria-pressed={quick === q}
+            onClick={() => setQuick(q)}
+            className={`px-3 py-1 rounded-full border text-sm cursor-pointer transition-colors ${
+              quick === q
+                ? "border-logo-primary bg-logo-primary/10"
+                : "border-mid-gray/30 hover:border-logo-primary/60"
+            }`}
+          >
+            {t(`settings.models.quick.${q}`)}
+          </button>
+        ))}
       </div>
 
       {/* Search bar — filter the catalog by name or description */}

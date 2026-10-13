@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 import { toast } from "sonner";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import {
   ArrowLeft,
   Copy,
@@ -209,6 +210,26 @@ const MeetingDetailView: React.FC<{
     await commands.meetingSummarize(id);
   };
 
+  const saveDocument = async () => {
+    if (!detail) return;
+    const date = new Date(detail.started_at * 1000).toISOString().slice(0, 10);
+    const res = await commands.meetingSaveDocument(
+      detail.title,
+      date,
+      buildMarkdown(detail, summary, labels),
+    );
+    if (res.status === "ok") {
+      toast.success(t("meetings.saved"));
+      try {
+        await revealItemInDir(res.data);
+      } catch {
+        // Saving worked; only showing the folder failed.
+      }
+    } else {
+      toast.error(t("meetings.saveFailed"));
+    }
+  };
+
   const copy = async (text: string) => {
     if (await copyToClipboard(text)) toast.success(t("meetings.copied"));
   };
@@ -252,6 +273,16 @@ const MeetingDetailView: React.FC<{
           <span className="flex items-center gap-1.5">
             <FileText className="h-3.5 w-3.5" />
             {t("meetings.copyNotes")}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => void saveDocument()}
+        >
+          <span className="flex items-center gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t("meetings.saveDocument")}
           </span>
         </Button>
         <Button
@@ -539,6 +570,7 @@ export const MeetingsSettings: React.FC = () => {
         </div>
       </SettingsGroup>
 
+      <p className="px-1 text-xs text-text/60">{t("meetings.storageNote")}</p>
       <SettingsGroup title={t("meetings.pastTitle")}>
         {rows.length === 0 ? (
           <p className="px-4 py-3 text-sm text-text/60">{t("meetings.none")}</p>

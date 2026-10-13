@@ -77,3 +77,64 @@ pub fn meeting_summarize(app: AppHandle, id: i64) -> Result<(), String> {
     manager(&app)?.summarize_in_background(id);
     Ok(())
 }
+
+/// Make a string safe to use as a file name on every platform.
+fn safe_file_stem(title: &str) -> String {
+    let cleaned: String = title
+        .chars()
+        .map(|c| {
+            if c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|') {
+                '-'
+            } else {
+                c
+            }
+        })
+        .collect();
+    let trimmed = cleaned.trim().trim_matches('.').trim();
+    let short: String = trimmed.chars().take(80).collect();
+    if short.is_empty() {
+        "Meeting".to_string()
+    } else {
+        short
+    }
+}
+
+/// Save meeting notes as a Markdown document in `Documents/Oshabe Meetings`
+/// and return the file path. Existing files are never overwritten.
+#[tauri::command]
+#[specta::specta]
+pub fn meeting_save_document(
+    app: AppHandle,
+    title: String,
+    date: String,
+    content: String,
+) -> Result<String, String> {
+    let base = app
+        .path()
+        .document_dir()
+        .or_else(|_| app.path().home_dir())
+        .map_err(|e| e.to_string())?;
+    let dir = base.join("Oshabe Meetings");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let stem = format!("{} {}", safe_file_stem(&title), safe_file_stem(&date));
+    let mut path = dir.join(format!("{stem}.md"));
+    let mut n = 2;
+    while path.exists() {
+        path = dir.join(format!("{stem} ({n}).md"));
+        n += 1;
+    }
+    std::fs::write(&path, content).map_err(|e| e.to_string())?;
+    Ok(path.to_string_lossy().to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::safe_file_stem;
+
+    #[test]
+    fn file_names_are_sanitised() {
+        assert_eq!(safe_file_stem("Q3 / plan: v2?"), "Q3 - plan- v2-");
+        assert_eq!(safe_file_stem("  ..  "), "Meeting");
+        assert_eq!(safe_file_stem(&"a".repeat(200)).len(), 80);
+    }
+}

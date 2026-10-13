@@ -13,7 +13,7 @@ interface OnboardingProps {
   preview?: boolean;
 }
 
-const Onboarding: React.FC<OnboardingProps> = ({
+const ModelPicker: React.FC<OnboardingProps> = ({
   onModelSelected,
   preview = false,
 }) => {
@@ -273,4 +273,4 @@ const Onboarding: React.FC<OnboardingProps> = ({
   );
 };
 
-export default Onboarding;
+export default ModelPicker;

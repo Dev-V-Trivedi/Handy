@@ -766,6 +766,7 @@ pub fn run(cli_args: CliArgs) {
             commands::meetings::meeting_get,
             commands::meetings::meeting_rename,
             commands::meetings::meeting_delete,
+            commands::meetings::meeting_save_document,
             commands::meetings::meeting_summarize,
             commands::ollama::ollama_status,
             commands::ollama::ollama_pull_model,
