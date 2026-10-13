@@ -1,0 +1,574 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { listen } from "@tauri-apps/api/event";
+import { toast } from "sonner";
+import {
+  ArrowLeft,
+  Copy,
+  FileText,
+  Loader2,
+  RefreshCw,
+  Square,
+  Trash2,
+  Mic,
+} from "lucide-react";
+import {
+  commands,
+  type ActiveMeeting,
+  type MeetingDetail,
+  type MeetingRow,
+  type MeetingSegment,
+} from "@/bindings";
+import { SettingsGroup } from "../../ui/SettingsGroup";
+import { Button } from "../../ui/Button";
+import { Alert } from "../../ui/Alert";
+import Badge from "../../ui/Badge";
+import { Input } from "../../ui/Input";
+import { copyToClipboard } from "../history/clipboard";
+import {
+  buildMarkdown,
+  buildTranscript,
+  formatClock,
+  parseSummary,
+  type SummaryData,
+} from "./meetingFormat";
+
+const formatDuration = (startedAt: number, endedAt: number | null) => {
+  if (!endedAt) return "";
+  return formatClock(Math.max(0, endedAt - startedAt) * 1000);
+};
+
+const speakerKey = (track: string) =>
+  track === "you" ? "meetings.you" : "meetings.others";
+
+const SegmentList: React.FC<{ segments: MeetingSegment[] }> = ({
+  segments,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col gap-2">
+      {segments.map((s, i) => (
+        <div key={`${s.start_ms}-${i}`} className="flex gap-3 text-sm">
+          <span className="w-12 shrink-0 pt-0.5 text-xs tabular-nums text-text/40">
+            {formatClock(s.start_ms)}
+          </span>
+          <div className="min-w-0">
+            <span
+              className={`me-2 text-xs font-semibold ${
+                s.track === "you" ? "text-logo-primary" : "text-text/60"
+              }`}
+            >
+              {t(speakerKey(s.track))}
+            </span>
+            <span className="text-text/90">{s.text}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const Section: React.FC<{ title: string; items?: string[] }> = ({
+  title,
+  items,
+}) =>
+  items && items.length > 0 ? (
+    <div className="space-y-1">
+      <h4 className="text-sm font-semibold text-text">{title}</h4>
+      <ul className="list-disc space-y-0.5 ps-5 text-sm text-text/80">
+        {items.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  ) : null;
+
+const SummaryView: React.FC<{ data: SummaryData }> = ({ data }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-4">
+      {data.summary && (
+        <p className="text-sm leading-relaxed text-text/90">{data.summary}</p>
+      )}
+      <Section title={t("meetings.keyPoints")} items={data.keyPoints} />
+      <Section title={t("meetings.decisions")} items={data.decisions} />
+      {data.actionItems && data.actionItems.length > 0 && (
+        <div className="space-y-1">
+          <h4 className="text-sm font-semibold text-text">
+            {t("meetings.actionItems")}
+          </h4>
+          <ul className="space-y-1 text-sm text-text/80">
+            {data.actionItems.map((a, i) => (
+              <li key={i} className="flex gap-2">
+                <span aria-hidden>{"\u2610"}</span>
+                <span>
+                  {a.task}
+                  {(a.owner || a.due) && (
+                    <span className="text-text/50">
+                      {" "}
+                      ({[a.owner, a.due].filter(Boolean).join(", ")})
+                    </span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <Section title={t("meetings.openQuestions")} items={data.openQuestions} />
+    </div>
+  );
+};
+
+const summaryProblemKey = (code: string): string => {
+  switch (code) {
+    case "no_provider":
+    case "no_model":
+      return "meetings.summaryNeedsModel";
+    case "apple_unsupported":
+      return "meetings.summaryAppleUnsupported";
+    case "no_transcript":
+      return "meetings.summaryNoTranscript";
+    default:
+      return "meetings.summaryFailed";
+  }
+};
+
+const MeetingDetailView: React.FC<{
+  id: number;
+  onBack: () => void;
+  onChanged: () => void;
+  summaryProblem: string | null;
+  clearProblem: () => void;
+}> = ({ id, onBack, onChanged, summaryProblem, clearProblem }) => {
+  const { t } = useTranslation();
+  const [detail, setDetail] = useState<MeetingDetail | null>(null);
+  const [title, setTitle] = useState("");
+  const [working, setWorking] = useState(false);
+
+  const load = useCallback(async () => {
+    const res = await commands.meetingGet(id);
+    if (res.status === "ok" && res.data) {
+      setDetail(res.data);
+      setTitle(res.data.title);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    const unlisten = listen<{ meeting_id: number; ok: boolean }>(
+      "meeting-summary",
+      (event) => {
+        if (event.payload.meeting_id === id) {
+          setWorking(false);
+          void load();
+          onChanged();
+        }
+      },
+    );
+    return () => {
+      void unlisten.then((fn) => fn());
+    };
+  }, [id, load, onChanged]);
+
+  if (!detail) {
+    return (
+      <div className="p-4 text-sm text-text/60">{t("common.loading")}</div>
+    );
+  }
+
+  const summary = parseSummary(detail.summary);
+  const labels = {
+    you: t("meetings.you"),
+    others: t("meetings.others"),
+    summary: t("meetings.summary"),
+    keyPoints: t("meetings.keyPoints"),
+    decisions: t("meetings.decisions"),
+    actionItems: t("meetings.actionItems"),
+    openQuestions: t("meetings.openQuestions"),
+    transcript: t("meetings.transcript"),
+  };
+
+  const rename = async () => {
+    const next = title.trim();
+    if (!next || next === detail.title) {
+      setTitle(detail.title);
+      return;
+    }
+    await commands.meetingRename(id, next);
+    void load();
+    onChanged();
+  };
+
+  const regenerate = async () => {
+    clearProblem();
+    setWorking(true);
+    await commands.meetingSummarize(id);
+  };
+
+  const copy = async (text: string) => {
+    if (await copyToClipboard(text)) toast.success(t("meetings.copied"));
+  };
+
+  const remove = async () => {
+    if (!window.confirm(t("meetings.confirmDelete"))) return;
+    const res = await commands.meetingDelete(id);
+    if (res.status === "ok") {
+      onChanged();
+      onBack();
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <span className="flex items-center gap-1.5">
+            <ArrowLeft className="h-4 w-4" />
+            {t("meetings.back")}
+          </span>
+        </Button>
+      </div>
+
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onBlur={() => void rename()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+        }}
+        className="text-lg font-semibold"
+      />
+
+      <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => void copy(buildMarkdown(detail, summary, labels))}
+        >
+          <span className="flex items-center gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t("meetings.copyNotes")}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => void copy(buildTranscript(detail, labels))}
+        >
+          <span className="flex items-center gap-1.5">
+            <Copy className="h-3.5 w-3.5" />
+            {t("meetings.copyTranscript")}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={working || detail.segments.length === 0}
+          onClick={() => void regenerate()}
+        >
+          <span className="flex items-center gap-1.5">
+            {working ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="h-3.5 w-3.5" />
+            )}
+            {summary ? t("meetings.regenerate") : t("meetings.makeSummary")}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="ms-auto text-logo-primary/85 hover:bg-logo-primary/10 hover:text-logo-primary"
+          onClick={() => void remove()}
+        >
+          <span className="flex items-center gap-1.5">
+            <Trash2 className="h-3.5 w-3.5" />
+            {t("common.delete")}
+          </span>
+        </Button>
+      </div>
+
+      <SettingsGroup title={t("meetings.summary")}>
+        <div className="space-y-3 px-4 py-3">
+          {summary ? (
+            <SummaryView data={summary} />
+          ) : working ? (
+            <div className="flex items-center gap-2 text-sm text-text/60">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t("meetings.summarising")}
+            </div>
+          ) : (
+            <Alert variant={summaryProblem ? "warning" : "info"} contained>
+              {summaryProblem
+                ? t(summaryProblemKey(summaryProblem))
+                : t("meetings.noSummaryYet")}
+            </Alert>
+          )}
+        </div>
+      </SettingsGroup>
+
+      <SettingsGroup title={t("meetings.transcript")}>
+        <div className="px-4 py-3">
+          {detail.segments.length === 0 ? (
+            <p className="text-sm text-text/60">
+              {t("meetings.emptyTranscript")}
+            </p>
+          ) : (
+            <SegmentList segments={detail.segments} />
+          )}
+        </div>
+      </SettingsGroup>
+    </div>
+  );
+};
+
+export const MeetingsSettings: React.FC = () => {
+  const { t } = useTranslation();
+  const [active, setActive] = useState<ActiveMeeting | null>(null);
+  const [rows, setRows] = useState<MeetingRow[]>([]);
+  const [live, setLive] = useState<MeetingSegment[]>([]);
+  const [title, setTitle] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [summaryProblem, setSummaryProblem] = useState<string | null>(null);
+  const liveEnd = useRef<HTMLDivElement | null>(null);
+
+  const loadRows = useCallback(async () => {
+    const res = await commands.meetingList();
+    if (res.status === "ok") setRows(res.data);
+  }, []);
+
+  const loadActive = useCallback(async () => {
+    const res = await commands.meetingActive();
+    if (res.status === "ok") setActive(res.data);
+  }, []);
+
+  useEffect(() => {
+    void loadRows();
+    void loadActive();
+  }, [loadRows, loadActive]);
+
+  useEffect(() => {
+    const subs = [
+      listen<{
+        meeting_id: number;
+        track: string;
+        start_ms: number;
+        text: string;
+      }>("meeting-segment", (event) => {
+        const p = event.payload;
+        setLive((prev) => [
+          ...prev,
+          { track: p.track, start_ms: p.start_ms, text: p.text },
+        ]);
+      }),
+      listen<{ meeting_id: number; message: string }>("meeting-error", (e) => {
+        toast.error(t("meetings.transcribeError"), {
+          description: e.payload.message,
+        });
+      }),
+      listen<{ meeting_id: number; ok: boolean; message: string }>(
+        "meeting-summary",
+        (e) => {
+          setSummaryProblem(e.payload.ok ? null : e.payload.message);
+          void loadRows();
+        },
+      ),
+    ];
+    return () => {
+      subs.forEach((s) => void s.then((fn) => fn()));
+    };
+  }, [t, loadRows]);
+
+  useEffect(() => {
+    if (!active) return;
+    const tick = () =>
+      setElapsed(
+        Math.max(0, Math.floor(Date.now() / 1000) - active.started_at),
+      );
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [active]);
+
+  useEffect(() => {
+    liveEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [live]);
+
+  const start = async () => {
+    setBusy(true);
+    setLive([]);
+    setSummaryProblem(null);
+    try {
+      const res = await commands.meetingStart(title.trim() || null);
+      if (res.status === "ok") {
+        setActive(res.data);
+        setTitle("");
+        void loadRows();
+      } else if (res.error === "no_model") {
+        toast.error(t("meetings.needModel"));
+      } else {
+        toast.error(t("meetings.startFailed"), { description: res.error });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const stop = async () => {
+    setBusy(true);
+    try {
+      const res = await commands.meetingStop();
+      setActive(null);
+      void loadRows();
+      if (res.status === "ok") setSelected(res.data);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const warningText = (() => {
+    const w = active?.warning;
+    if (!w) return null;
+    if (w.startsWith("system_audio_unavailable"))
+      return t("meetings.warnSystemAudio");
+    if (w.startsWith("microphone_unavailable")) return t("meetings.warnMic");
+    return w;
+  })();
+
+  if (selected !== null && !active) {
+    return (
+      <div className="mx-auto w-full max-w-3xl space-y-6">
+        <MeetingDetailView
+          key={selected}
+          id={selected}
+          onBack={() => {
+            setSelected(null);
+            void loadRows();
+          }}
+          onChanged={() => void loadRows()}
+          summaryProblem={summaryProblem}
+          clearProblem={() => setSummaryProblem(null)}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-3xl space-y-6">
+      <SettingsGroup title={t("meetings.title")}>
+        <div className="space-y-3 px-4 py-3">
+          <p className="text-sm text-text/70">{t("meetings.intro")}</p>
+
+          {active ? (
+            <>
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
+                </span>
+                <span className="text-sm font-semibold tabular-nums text-text">
+                  {formatClock(elapsed * 1000)}
+                </span>
+                <span className="text-sm text-text/60">
+                  {t("meetings.recording")}
+                </span>
+                <Button
+                  className="ms-auto"
+                  variant="danger"
+                  disabled={busy}
+                  onClick={() => void stop()}
+                >
+                  <span className="flex items-center gap-1.5">
+                    {busy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                    {busy ? t("meetings.finishing") : t("meetings.stop")}
+                  </span>
+                </Button>
+              </div>
+              {warningText && (
+                <Alert variant="warning" contained>
+                  {warningText}
+                </Alert>
+              )}
+              <div className="max-h-72 min-h-24 overflow-y-auto rounded-lg bg-mid-gray/10 p-3">
+                {live.length === 0 ? (
+                  <p className="text-sm text-text/50">
+                    {t("meetings.waitingForSpeech")}
+                  </p>
+                ) : (
+                  <SegmentList segments={live} />
+                )}
+                <div ref={liveEnd} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex gap-2">
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t("meetings.titlePlaceholder")}
+                  className="flex-1"
+                />
+                <Button disabled={busy} onClick={() => void start()}>
+                  <span className="flex items-center gap-1.5">
+                    {busy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Mic className="h-4 w-4" />
+                    )}
+                    {t("meetings.start")}
+                  </span>
+                </Button>
+              </div>
+              <p className="text-xs text-text/50">{t("meetings.consent")}</p>
+              <p className="text-xs text-text/50">
+                {t("meetings.tipHeadphones")}
+              </p>
+            </>
+          )}
+        </div>
+      </SettingsGroup>
+
+      <SettingsGroup title={t("meetings.pastTitle")}>
+        {rows.length === 0 ? (
+          <p className="px-4 py-3 text-sm text-text/60">{t("meetings.none")}</p>
+        ) : (
+          rows.map((row) => (
+            <button
+              key={row.id}
+              type="button"
+              disabled={active?.id === row.id}
+              onClick={() => setSelected(row.id)}
+              className="flex w-full items-center gap-3 px-4 py-3 text-start transition-colors hover:bg-mid-gray/10 disabled:cursor-default disabled:opacity-60"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium text-text">
+                  {row.title}
+                </div>
+                <div className="text-xs text-text/50">
+                  {new Date(row.started_at * 1000).toLocaleString()}
+                  {row.ended_at
+                    ? ` · ${formatDuration(row.started_at, row.ended_at)}`
+                    : ""}
+                </div>
+              </div>
+              {row.has_summary && (
+                <Badge variant="success">{t("meetings.summaryReady")}</Badge>
+              )}
+            </button>
+          ))
+        )}
+      </SettingsGroup>
+    </div>
+  );
+};

@@ -22,6 +22,7 @@ import { usePostProcessProviderState } from "../PostProcessingSettingsApi/usePos
 import { ShortcutInput } from "../ShortcutInput";
 import { ContextTone } from "../ContextTone";
 import { AlwaysCleanup } from "../AlwaysCleanup";
+import { OllamaModels } from "../OllamaModels";
 import { useSettings } from "../../../hooks/useSettings";
 
 const PostProcessingSettingsApiComponent: React.FC = () => {
@@ -470,6 +471,10 @@ export const PostProcessingSettings: React.FC = () => {
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-6">
+      <SettingsGroup title={t("settings.postProcessing.local.title")}>
+        <OllamaModels />
+      </SettingsGroup>
+
       <SettingsGroup title={t("settings.postProcessing.always.title")}>
         <AlwaysCleanup />
       </SettingsGroup>

@@ -15,6 +15,7 @@ mod helpers;
 mod input;
 mod llm_client;
 mod managers;
+mod meetings;
 mod memory;
 mod overlay;
 mod paste_tx;
@@ -216,6 +217,12 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(model_manager.clone());
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
+    match meetings::MeetingManager::new(app_handle) {
+        Ok(meeting_manager) => {
+            app_handle.manage(Arc::new(meeting_manager));
+        }
+        Err(e) => log::error!("Meeting notes unavailable: {}", e),
+    }
     app_handle.manage(tray::TrayState::new());
 
     // Note: Shortcuts are NOT initialized here.
@@ -752,6 +759,18 @@ pub fn run(cli_args: CliArgs) {
             commands::audio::get_available_microphones,
             commands::audio::set_selected_microphone,
             commands::audio::start_mic_test,
+            commands::meetings::meeting_start,
+            commands::meetings::meeting_stop,
+            commands::meetings::meeting_active,
+            commands::meetings::meeting_list,
+            commands::meetings::meeting_get,
+            commands::meetings::meeting_rename,
+            commands::meetings::meeting_delete,
+            commands::meetings::meeting_summarize,
+            commands::ollama::ollama_status,
+            commands::ollama::ollama_pull_model,
+            commands::ollama::ollama_cancel_pull,
+            commands::ollama::ollama_delete_model,
             commands::audio::stop_mic_test,
             commands::audio::get_selected_microphone,
             commands::audio::get_available_output_devices,

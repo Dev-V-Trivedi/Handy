@@ -1,6 +1,8 @@
 pub mod audio;
 pub mod history;
+pub mod meetings;
 pub mod models;
+pub mod ollama;
 pub mod transcription;
 
 use crate::settings::{

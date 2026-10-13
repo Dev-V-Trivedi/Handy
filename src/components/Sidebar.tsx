@@ -8,6 +8,7 @@ import {
   Sparkles,
   Cpu,
   Mic,
+  ClipboardList,
 } from "lucide-react";
 import OshabeTextLogo from "./icons/OshabeTextLogo";
 import { useSettings } from "../hooks/useSettings";
@@ -19,6 +20,7 @@ import {
   AboutSettings,
   PostProcessingSettings,
   ModelsSettings,
+  MeetingsSettings,
 } from "./settings";
 
 export type SidebarSection = keyof typeof SECTIONS_CONFIG;
@@ -45,6 +47,12 @@ export const SECTIONS_CONFIG = {
     component: GeneralSettings,
     enabled: () => true,
   },
+  meetings: {
+    labelKey: "sidebar.meetings",
+    icon: ClipboardList,
+    component: MeetingsSettings,
+    enabled: () => true,
+  },
   history: {
     labelKey: "sidebar.history",
     icon: History,
@@ -67,7 +75,7 @@ export const SECTIONS_CONFIG = {
     labelKey: "sidebar.postProcessing",
     icon: Sparkles,
     component: PostProcessingSettings,
-    enabled: (settings) => settings?.post_process_enabled ?? false,
+    enabled: () => true,
   },
   debug: {
     labelKey: "sidebar.debug",

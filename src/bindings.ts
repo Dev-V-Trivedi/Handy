@@ -351,6 +351,102 @@ async changeMuteWhileRecordingSetting(enabled: boolean) : Promise<Result<null, s
     else return { status: "error", error: e  as any };
 }
 },
+async meetingStart(title: string | null) : Promise<Result<ActiveMeeting, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_start", { title }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingStop() : Promise<Result<number, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_stop") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingActive() : Promise<Result<ActiveMeeting | null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_active") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingList() : Promise<Result<MeetingRow[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_list") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingGet(id: number) : Promise<Result<MeetingDetail | null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_get", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingRename(id: number, title: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_rename", { id, title }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingDelete(id: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_delete", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingSummarize(id: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_summarize", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async ollamaStatus() : Promise<Result<OllamaStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("ollama_status") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async ollamaPullModel(model: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("ollama_pull_model", { model }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async ollamaCancelPull(model: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("ollama_cancel_pull", { model }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async ollamaDeleteModel(model: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("ollama_delete_model", { model }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeAlwaysCleanupEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_always_cleanup_enabled_setting", { enabled }) };
@@ -1000,6 +1096,13 @@ streamTextEvent: "stream-text-event"
  * object, so a partial store can never fail the whole load (#1619).
  * Field-level defaults below take precedence where present.
  */
+/** Is Ollama reachable, and which models does it already have? */
+export type ActiveMeeting = { id: number; started_at: number; system_audio: boolean; warning: string | null }
+export type MeetingRow = { id: number; title: string; started_at: number; ended_at: number | null; has_summary: boolean; segment_count: number }
+export type MeetingSegment = { track: string; start_ms: number; text: string }
+export type MeetingDetail = { id: number; title: string; started_at: number; ended_at: number | null; summary: string | null; segments: MeetingSegment[] }
+export type OllamaStatus = { running: boolean; models: string[] }
+export type OllamaPullProgress = { model: string; status: string; completed: number; total: number }
 export type AppSettings = { 
 /**
  * Internal settings schema marker for one-time migrations. Fresh installs

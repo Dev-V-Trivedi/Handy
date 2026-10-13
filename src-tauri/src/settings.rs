@@ -1040,7 +1040,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_position: default_overlay_position(),
         debug_mode: false,
         log_level: default_log_level(),
-        custom_words: Vec::new(),
+        custom_words: vec!["Oshabe".to_string()],
         model_unload_timeout: ModelUnloadTimeout::default(),
         word_correction_threshold: default_word_correction_threshold(),
         history_limit: default_history_limit(),

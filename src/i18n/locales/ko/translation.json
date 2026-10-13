@@ -11,6 +11,7 @@
   },
   "sidebar": {
     "general": "일반",
+    "meetings": "Meetings",
     "models": "모델",
     "advanced": "고급",
     "postProcessing": "후처리",
@@ -477,6 +478,41 @@
         "selectToEdit": "세부 정보를 보고 편집하려면 위에서 프롬프트를 선택하세요.",
         "createFirst": "첫 번째 후처리 프롬프트를 만들려면 위의 '새 프롬프트 만들기'를 클릭하세요."
       },
+      "local": {
+        "title": "Free local cleanup models",
+        "intro": "Pick a model, press Install, then Use. It runs on your computer. Nothing is sent online and no API key is needed.",
+        "notRunning": "This needs the free Ollama app. Install it, open it once, then come back here. The list below turns on by itself.",
+        "getOllama": "Get Ollama",
+        "checkAgain": "Check again",
+        "recommended": "Recommended",
+        "inUse": "In use",
+        "size": "{{size}} GB",
+        "install": "Install",
+        "installing": "Installing... {{percent}}%",
+        "cancel": "Cancel",
+        "use": "Use this model",
+        "ready": "Local cleanup is on",
+        "installFailed": "Could not install the model",
+        "deleteFailed": "Could not delete the model",
+        "models": {
+          "qwen3b": {
+            "name": "Qwen 2.5 3B",
+            "description": "Best balance of quality and speed for cleaning up dictation. Good with mixed languages."
+          },
+          "qwen15b": {
+            "name": "Qwen 2.5 1.5B",
+            "description": "Smallest and fastest. Use this on older or low-memory computers."
+          },
+          "llama3b": {
+            "name": "Llama 3.2 3B",
+            "description": "Strong English writing. Slightly slower than Qwen."
+          },
+          "gemma2b": {
+            "name": "Gemma 2 2B",
+            "description": "Compact model from Google. A good second opinion if Qwen is not right."
+          }
+        }
+      },
       "always": {
         "title": "Always Clean Up",
         "label": "Clean up every dictation",
@@ -772,5 +808,47 @@
     "stop": "Stop test",
     "waveformLabel": "Live microphone level",
     "error": "Could not open the microphone: {{error}}"
+  },
+  "meetings": {
+    "title": "Meeting notes",
+    "intro": "Record a call on this computer and get a transcript and a summary. Works with Zoom, Meet, Teams and anything else that plays sound.",
+    "consent": "Tell everyone on the call that you are recording. Some places require consent.",
+    "tipHeadphones": "Tip: use headphones so the other side's voice is not picked up by your mic twice.",
+    "start": "Start meeting notes",
+    "stop": "Stop and summarise",
+    "finishing": "Finishing up...",
+    "recording": "Recording",
+    "waitingForSpeech": "Waiting for someone to speak...",
+    "titlePlaceholder": "Meeting title (optional)",
+    "pastTitle": "Past meetings",
+    "none": "No meetings yet.",
+    "summaryReady": "Summary ready",
+    "back": "Back",
+    "copyNotes": "Copy notes",
+    "copyTranscript": "Copy transcript",
+    "copied": "Copied",
+    "regenerate": "Regenerate summary",
+    "makeSummary": "Make summary",
+    "summarising": "Summarising...",
+    "summary": "Summary",
+    "keyPoints": "Key points",
+    "decisions": "Decisions",
+    "actionItems": "Action items",
+    "openQuestions": "Open questions",
+    "transcript": "Transcript",
+    "emptyTranscript": "Nothing was transcribed.",
+    "noSummaryYet": "No summary yet.",
+    "summaryNeedsModel": "Pick a cleanup model in Post Process (Ollama or another provider) to make summaries.",
+    "summaryAppleUnsupported": "Apple Intelligence cannot write meeting summaries. Choose another provider in Post Process.",
+    "summaryNoTranscript": "There is no transcript to summarise.",
+    "summaryFailed": "Could not make the summary. Your transcript is saved.",
+    "confirmDelete": "Delete this meeting?",
+    "you": "You",
+    "others": "Others",
+    "needModel": "Download a speech model first in Models.",
+    "startFailed": "Could not start meeting notes.",
+    "transcribeError": "Part of the audio could not be transcribed.",
+    "warnSystemAudio": "Could not capture the other side's audio. Only your mic is recorded.",
+    "warnMic": "Could not open your mic. Only the other side's audio is recorded."
   }
 }
