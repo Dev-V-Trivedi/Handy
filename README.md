@@ -74,6 +74,7 @@ Using AI cleanup with Ollama:
 - [docs/UPSTREAM-README.md](docs/UPSTREAM-README.md): Handy's original README, still useful for Linux notes, troubleshooting and manual model installation
 - [docs/REBRAND-NOTES.md](docs/REBRAND-NOTES.md): fork status and remaining to-dos
 - [docs/ROADMAP.md](docs/ROADMAP.md): what is done, what is untested, what is next
+- [docs/UPDATER.md](docs/UPDATER.md): one-time steps to turn on auto-update
 - [docs/CODE-SIGNING-POLICY.md](docs/CODE-SIGNING-POLICY.md): how Windows builds are signed
 
 ## License and credits
