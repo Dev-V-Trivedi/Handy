@@ -118,6 +118,12 @@
         "checkFailed": "अनुमतिहरू जाँच गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।",
         "requestFailed": "अनुमति अनुरोध गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।"
       }
+    },
+    "microphone": {
+      "title": "Check your microphone",
+      "subtitle": "Pick your microphone and say a few words. You should see the bars move.",
+      "continue": "Continue",
+      "skip": "Skip for now"
     }
   },
   "modelSelector": {
@@ -538,7 +544,8 @@
         "description": "अनुमति, मोडेल वा सम्पन्न स्थिति परिवर्तन नगरी प्रारम्भिक सेटअप स्क्रिनहरू पूर्वावलोकन गर्नुहोस्",
         "permissionsButton": "अनुमतिहरू",
         "modelsButton": "मोडेल चयन",
-        "exitButton": "पूर्वावलोकन बन्द गर्नुहोस्"
+        "exitButton": "पूर्वावलोकन बन्द गर्नुहोस्",
+        "microphoneButton": "Microphone Test"
       },
       "soundTheme": {
         "label": "साउन्ड थिम",
@@ -750,5 +757,15 @@
     "learnMore": "यसलाई कसरी ठिक गर्ने",
     "recorderBlocked": "अहिले सर्टकट रेकर्ड गर्न सकिँदैन — macOS Secure Input ले कुञ्जी इभेन्टहरू रोकिरहेको छ। पहिले Secure Input चेतावनी समाधान गर्नुहोस्।",
     "dismiss": "हटाउनुहोस्"
+  },
+  "micTest": {
+    "idle": "Press the button, then say something.",
+    "listening": "Listening... say something.",
+    "heard": "We can hear you. Your microphone works.",
+    "silent": "No sound yet. Check that the right microphone is selected and not muted.",
+    "start": "Test microphone",
+    "stop": "Stop test",
+    "waveformLabel": "Live microphone level",
+    "error": "Could not open the microphone: {{error}}"
   }
 }

@@ -118,6 +118,12 @@
         "checkFailed": "Không thể kiểm tra quyền. Vui lòng thử lại.",
         "requestFailed": "Không thể yêu cầu quyền. Vui lòng thử lại."
       }
+    },
+    "microphone": {
+      "title": "Check your microphone",
+      "subtitle": "Pick your microphone and say a few words. You should see the bars move.",
+      "continue": "Continue",
+      "skip": "Skip for now"
     }
   },
   "modelSelector": {
@@ -631,7 +637,8 @@
         "description": "Xem trước các màn hình thiết lập mà không thay đổi quyền, mô hình hoặc trạng thái hoàn tất",
         "permissionsButton": "Quyền",
         "modelsButton": "Chọn mô hình",
-        "exitButton": "Thoát xem trước"
+        "exitButton": "Thoát xem trước",
+        "microphoneButton": "Microphone Test"
       }
     },
     "about": {
@@ -750,5 +757,15 @@
     "learnMore": "Cách khắc phục",
     "recorderBlocked": "Hiện không thể ghi phím tắt — Secure Input của macOS đang chặn các sự kiện phím. Hãy xử lý cảnh báo Secure Input trước.",
     "dismiss": "Bỏ qua"
+  },
+  "micTest": {
+    "idle": "Press the button, then say something.",
+    "listening": "Listening... say something.",
+    "heard": "We can hear you. Your microphone works.",
+    "silent": "No sound yet. Check that the right microphone is selected and not muted.",
+    "start": "Test microphone",
+    "stop": "Stop test",
+    "waveformLabel": "Live microphone level",
+    "error": "Could not open the microphone: {{error}}"
   }
 }

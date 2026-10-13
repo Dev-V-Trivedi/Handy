@@ -118,6 +118,12 @@
         "checkFailed": "No s'han pogut comprovar els permisos. Torneu-ho a provar.",
         "requestFailed": "No s'ha pogut sol·licitar el permís. Torneu-ho a provar."
       }
+    },
+    "microphone": {
+      "title": "Check your microphone",
+      "subtitle": "Pick your microphone and say a few words. You should see the bars move.",
+      "continue": "Continue",
+      "skip": "Skip for now"
     }
   },
   "modelSelector": {
@@ -538,7 +544,8 @@
         "description": "Previsualitza les pantalles de configuració inicial sense canviar els permisos, os models ni l'estat de compleció",
         "permissionsButton": "Permisos",
         "modelsButton": "Selecció del model",
-        "exitButton": "Sortiu de la previsualització"
+        "exitButton": "Sortiu de la previsualització",
+        "microphoneButton": "Microphone Test"
       },
       "soundTheme": {
         "label": "Tema de so",
@@ -750,5 +757,15 @@
     "learnMore": "Com es resol",
     "recorderBlocked": "Ara no se'n poden enregistrar dreceres: l'entrada segura del macOS bloca els esdeveniments de tecla. Resol primer l'avís d'entrada segura.",
     "dismiss": "Descarta"
+  },
+  "micTest": {
+    "idle": "Press the button, then say something.",
+    "listening": "Listening... say something.",
+    "heard": "We can hear you. Your microphone works.",
+    "silent": "No sound yet. Check that the right microphone is selected and not muted.",
+    "start": "Test microphone",
+    "stop": "Stop test",
+    "waveformLabel": "Live microphone level",
+    "error": "Could not open the microphone: {{error}}"
   }
 }

@@ -118,6 +118,12 @@
         "checkFailed": "检查权限失败。请重试。",
         "requestFailed": "请求权限失败。请重试。"
       }
+    },
+    "microphone": {
+      "title": "Check your microphone",
+      "subtitle": "Pick your microphone and say a few words. You should see the bars move.",
+      "continue": "Continue",
+      "skip": "Skip for now"
     }
   },
   "modelSelector": {
@@ -631,7 +637,8 @@
         "description": "预览新手引导界面，而不更改权限、模型或完成状态",
         "permissionsButton": "权限",
         "modelsButton": "模型选择",
-        "exitButton": "退出预览"
+        "exitButton": "退出预览",
+        "microphoneButton": "Microphone Test"
       }
     },
     "about": {
@@ -750,5 +757,15 @@
     "learnMore": "如何解决",
     "recorderBlocked": "当前无法录制快捷键——macOS 的 Secure Input 正在阻止按键事件。请先解决 Secure Input 警告。",
     "dismiss": "关闭"
+  },
+  "micTest": {
+    "idle": "Press the button, then say something.",
+    "listening": "Listening... say something.",
+    "heard": "We can hear you. Your microphone works.",
+    "silent": "No sound yet. Check that the right microphone is selected and not muted.",
+    "start": "Test microphone",
+    "stop": "Stop test",
+    "waveformLabel": "Live microphone level",
+    "error": "Could not open the microphone: {{error}}"
   }
 }

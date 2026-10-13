@@ -118,6 +118,12 @@
         "checkFailed": "Error al verificar permisos. Por favor, inténtalo de nuevo.",
         "requestFailed": "Error al solicitar permiso. Por favor, inténtalo de nuevo."
       }
+    },
+    "microphone": {
+      "title": "Check your microphone",
+      "subtitle": "Pick your microphone and say a few words. You should see the bars move.",
+      "continue": "Continue",
+      "skip": "Skip for now"
     }
   },
   "modelSelector": {
@@ -631,7 +637,8 @@
         "description": "Previsualiza las pantallas de configuración inicial sin cambiar permisos, modelos ni el estado de finalización",
         "permissionsButton": "Permisos",
         "modelsButton": "Selección de modelo",
-        "exitButton": "Salir de la vista previa"
+        "exitButton": "Salir de la vista previa",
+        "microphoneButton": "Microphone Test"
       }
     },
     "about": {
@@ -750,5 +757,15 @@
     "learnMore": "Cómo solucionarlo",
     "recorderBlocked": "Ahora mismo no se pueden grabar atajos: Secure Input de macOS está bloqueando los eventos de teclado. Resuelve primero el aviso de Secure Input.",
     "dismiss": "Descartar"
+  },
+  "micTest": {
+    "idle": "Press the button, then say something.",
+    "listening": "Listening... say something.",
+    "heard": "We can hear you. Your microphone works.",
+    "silent": "No sound yet. Check that the right microphone is selected and not muted.",
+    "start": "Test microphone",
+    "stop": "Stop test",
+    "waveformLabel": "Live microphone level",
+    "error": "Could not open the microphone: {{error}}"
   }
 }

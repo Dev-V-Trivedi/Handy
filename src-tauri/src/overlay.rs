@@ -727,7 +727,33 @@ pub fn update_overlay_enabled_cache(enabled: bool) {
     OVERLAY_ENABLED.store(enabled, Ordering::Relaxed);
 }
 
+/// True while the setup "test your microphone" panel is running. Levels are
+/// then also sent to the main window, independent of the recording overlay.
+static MIC_TEST_ACTIVE: AtomicBool = AtomicBool::new(false);
+static LAST_MIC_TEST_EMIT: AtomicU64 = AtomicU64::new(0);
+
+/// Turns the mic-test level stream on or off. Returns the previous state.
+pub fn set_mic_test_active(active: bool) -> bool {
+    MIC_TEST_ACTIVE.swap(active, Ordering::AcqRel)
+}
+
+fn emit_mic_test_levels(app_handle: &AppHandle, levels: &[f32]) {
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64;
+    if now.saturating_sub(LAST_MIC_TEST_EMIT.load(Ordering::Relaxed)) < EMIT_THROTTLE_MS {
+        return;
+    }
+    LAST_MIC_TEST_EMIT.store(now, Ordering::Relaxed);
+    let _ = app_handle.emit_to("main", "mic-test-level", levels);
+}
+
 pub fn emit_levels(app_handle: &AppHandle, levels: &[f32]) {
+    if MIC_TEST_ACTIVE.load(Ordering::Relaxed) {
+        emit_mic_test_levels(app_handle, levels);
+    }
+
     // Skip emission when the overlay is disabled. The recording_overlay
     // window is created at boot regardless of overlay_style, so without this
     // guard a hidden overlay's WebKit subprocess still

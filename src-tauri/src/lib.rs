@@ -750,6 +750,8 @@ pub fn run(cli_args: CliArgs) {
             commands::audio::open_microphone_privacy_settings,
             commands::audio::get_available_microphones,
             commands::audio::set_selected_microphone,
+            commands::audio::start_mic_test,
+            commands::audio::stop_mic_test,
             commands::audio::get_selected_microphone,
             commands::audio::get_available_output_devices,
             commands::audio::set_selected_output_device,

@@ -1,5 +1,6 @@
 use crate::audio_feedback;
 use crate::audio_toolkit::audio::list_output_devices;
+use crate::audio_toolkit::VadPolicy;
 use crate::managers::audio::{AudioRecordingManager, MicrophoneMode};
 use crate::settings::{get_settings, write_settings};
 use log::warn;
@@ -376,4 +377,31 @@ pub async fn set_selected_channel(app: AppHandle, channel: Option<u16>) -> Resul
     settings.selected_channel = channel;
     write_settings(&app, settings);
     Ok(())
+}
+
+/// Opens the microphone and streams live levels to the setup screen as the
+/// `mic-test-level` event. Nothing is transcribed or saved. Fails if a real
+/// recording is in progress.
+#[tauri::command]
+#[specta::specta]
+pub fn start_mic_test(app: AppHandle) -> Result<(), String> {
+    let rm = app.state::<Arc<AudioRecordingManager>>().inner().clone();
+    if rm.is_recording() {
+        return Err("A recording is already in progress".to_string());
+    }
+    rm.try_start_recording("mic_test", VadPolicy::Disabled)
+        .map_err(|e| e.to_string())?;
+    crate::overlay::set_mic_test_active(true);
+    Ok(())
+}
+
+/// Stops the microphone test and discards the audio. A no-op if no test is
+/// running, so it can never cancel a real recording.
+#[tauri::command]
+#[specta::specta]
+pub fn stop_mic_test(app: AppHandle) {
+    if crate::overlay::set_mic_test_active(false) {
+        let rm = app.state::<Arc<AudioRecordingManager>>().inner().clone();
+        rm.cancel_recording();
+    }
 }

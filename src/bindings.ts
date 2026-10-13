@@ -791,6 +791,17 @@ async setSelectedMicrophone(deviceName: string) : Promise<Result<null, string>> 
     else return { status: "error", error: e  as any };
 }
 },
+async startMicTest() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("start_mic_test") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stopMicTest() : Promise<void> {
+    await TAURI_INVOKE("stop_mic_test");
+},
 async getSelectedMicrophone() : Promise<Result<string, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_selected_microphone") };

@@ -18,7 +18,10 @@ import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import SecureInputWarning from "./components/SecureInputWarning";
 import Footer from "./components/footer";
-import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
+import Onboarding, {
+  AccessibilityOnboarding,
+  MicrophoneOnboarding,
+} from "./components/onboarding";
 import {
   DebugSettings,
   type OnboardingPreviewStep,
@@ -31,7 +34,7 @@ import { useSettingsStore } from "./stores/settingsStore";
 import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
-type OnboardingStep = "accessibility" | "model" | "done";
+type OnboardingStep = "accessibility" | "microphone" | "model" | "done";
 
 // Stable identity so preview effects do not re-run due to callback changes.
 const NOOP = () => {};
@@ -74,6 +77,7 @@ function App() {
   const isShowingOnboarding =
     onboardingPreview !== null ||
     onboardingStep === "accessibility" ||
+    onboardingStep === "microphone" ||
     onboardingStep === "model";
 
   // Classic scrollbars consume layout space. Reserve a matching gutter on the
@@ -283,8 +287,12 @@ function App() {
 
   const handleAccessibilityComplete = () => {
     // Returning users already have models, skip to main app
-    // New users need to select a model
-    setOnboardingStep(isReturningUser ? "done" : "model");
+    // New users test their microphone, then select a model
+    setOnboardingStep(isReturningUser ? "done" : "microphone");
+  };
+
+  const handleMicrophoneComplete = () => {
+    setOnboardingStep("model");
   };
 
   const handleModelSelected = () => {
@@ -331,6 +339,8 @@ function App() {
       <>
         {onboardingPreview === "accessibility" ? (
           <AccessibilityOnboarding onComplete={NOOP} preview />
+        ) : onboardingPreview === "microphone" ? (
+          <MicrophoneOnboarding onComplete={NOOP} preview />
         ) : (
           <Onboarding onModelSelected={NOOP} preview />
         )}
@@ -347,6 +357,8 @@ function App() {
     content = (
       <AccessibilityOnboarding onComplete={handleAccessibilityComplete} />
     );
+  } else if (onboardingStep === "microphone") {
+    content = <MicrophoneOnboarding onComplete={handleMicrophoneComplete} />;
   } else if (onboardingStep === "model") {
     content = <Onboarding onModelSelected={handleModelSelected} />;
   } else {
