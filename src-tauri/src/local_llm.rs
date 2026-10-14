@@ -24,7 +24,7 @@ pub const PORT: u16 = 38519;
 const PROGRESS_EVENT: &str = "local-llm-progress";
 const IDLE_STOP: Duration = Duration::from_secs(10 * 60);
 const START_TIMEOUT: Duration = Duration::from_secs(120);
-const RELEASE_API: &str = "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest";
+const RELEASE_API: &str = "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=8";
 
 pub struct CatalogModel {
     pub id: &'static str,
@@ -157,31 +157,64 @@ pub fn status(app: &AppHandle) -> Result<LocalLlmStatus, String> {
 }
 
 /// Choose the right release archive for this computer, or `None`.
+///
+/// Prefers plain CPU builds. GPU-specific builds (CUDA, HIP, SYCL...) are never
+/// chosen because they need drivers the user may not have. Vulkan and KleidiAI
+/// builds are accepted only as a last resort.
 pub fn pick_asset<'a>(names: &'a [String], os: &str, arch: &str) -> Option<&'a String> {
     let arch_tokens: &[&str] = match arch {
-        "x86_64" => &["x64"],
-        "aarch64" => &["arm64"],
+        "x86_64" => &["x64", "x86_64", "amd64"],
+        "aarch64" => &["arm64", "aarch64"],
         _ => return None,
     };
-    let os_token = match os {
-        "windows" => "win",
-        "macos" => "macos",
-        "linux" => "ubuntu",
+    let os_tokens: &[&str] = match os {
+        "windows" => &["win"],
+        "macos" => &["macos"],
+        "linux" => &["ubuntu", "linux"],
         _ => return None,
     };
-    const BAD: [&str; 11] = [
-        "cuda", "vulkan", "hip", "sycl", "opencl", "openvino", "kleidiai", "rocm", "cudart",
-        "radeon", "musa",
+    const NEVER: [&str; 14] = [
+        "cuda",
+        "hip",
+        "sycl",
+        "opencl",
+        "openvino",
+        "rocm",
+        "cudart",
+        "radeon",
+        "musa",
+        "android",
+        "xcframework",
+        "cann",
+        "s390x",
+        "ppc64",
     ];
-    names.iter().find(|n| {
-        let l = n.to_lowercase();
-        (l.ends_with(".zip") || l.ends_with(".tar.gz"))
-            && l.contains("-bin-")
-            && l.contains(os_token)
-            && arch_tokens.iter().any(|a| l.contains(a))
-            && !BAD.iter().any(|b| l.contains(b))
-            && (os != "windows" || l.contains("cpu"))
-    })
+    names
+        .iter()
+        .filter_map(|n| {
+            let l = n.to_lowercase();
+            let ext_ok = l.ends_with(".zip") || l.ends_with(".tar.gz");
+            if !ext_ok
+                || !l.starts_with("llama")
+                || !os_tokens.iter().any(|o| l.contains(o))
+                || !arch_tokens.iter().any(|a| l.contains(a))
+                || NEVER.iter().any(|b| l.contains(b))
+            {
+                return None;
+            }
+            let score = if l.contains("vulkan") {
+                10
+            } else if l.contains("kleidiai") {
+                5
+            } else if os == "windows" && !l.contains("cpu") {
+                1
+            } else {
+                0
+            };
+            Some((score, n))
+        })
+        .min_by_key(|(score, _)| *score)
+        .map(|(_, n)| n)
 }
 
 fn sha256_file(path: &Path) -> Result<String, String> {
@@ -300,7 +333,7 @@ pub async fn install_runner(app: &AppHandle) -> Result<(), String> {
         .timeout(Duration::from_secs(30))
         .build()
         .map_err(|e| e.to_string())?;
-    let release: Release = client
+    let releases: Vec<Release> = client
         .get(RELEASE_API)
         .send()
         .await
@@ -310,13 +343,27 @@ pub async fn install_runner(app: &AppHandle) -> Result<(), String> {
         .json()
         .await
         .map_err(|e| e.to_string())?;
-    let names: Vec<String> = release.assets.iter().map(|a| a.name.clone()).collect();
-    let name = pick_asset(&names, std::env::consts::OS, std::env::consts::ARCH)
+    // The newest release can still be uploading its files, so look through the
+    // last few and take the first that has a build for this computer.
+    let (release, name) = releases
+        .into_iter()
+        .find_map(|r| {
+            let names: Vec<String> = r.assets.iter().map(|a| a.name.clone()).collect();
+            let n = pick_asset(&names, std::env::consts::OS, std::env::consts::ARCH)?.clone();
+            Some((r, n))
+        })
         .ok_or_else(|| {
-            "No built-in model runner is available for this computer. You can use Ollama instead."
-                .to_string()
-        })?
-        .clone();
+            log::warn!(
+                "no llama.cpp runner for {}/{}",
+                std::env::consts::OS,
+                std::env::consts::ARCH
+            );
+            format!(
+                "No built-in model runner is available for this computer ({} {}). You can use Ollama instead.",
+                std::env::consts::OS,
+                std::env::consts::ARCH
+            )
+        })?;
     let asset = release
         .assets
         .iter()
@@ -599,6 +646,35 @@ mod tests {
         );
         assert_eq!(pick_asset(&all, "linux", "aarch64"), None);
         assert_eq!(pick_asset(&all, "freebsd", "x86_64"), None);
+    }
+
+    #[test]
+    fn falls_back_when_plain_build_is_missing() {
+        let win = names(&[
+            "llama-b2-bin-win-cuda-12.4-x64.zip",
+            "llama-b2-bin-win-vulkan-x64.zip",
+        ]);
+        assert_eq!(
+            pick_asset(&win, "windows", "x86_64").map(String::as_str),
+            Some("llama-b2-bin-win-vulkan-x64.zip")
+        );
+        let mac = names(&["llama-b2-bin-macos-arm64-kleidiai.tar.gz"]);
+        assert!(pick_asset(&mac, "macos", "aarch64").is_some());
+        let plain_win = names(&[
+            "llama-b2-bin-win-x64.zip",
+            "llama-b2-bin-win-vulkan-x64.zip",
+        ]);
+        assert_eq!(
+            pick_asset(&plain_win, "windows", "x86_64").map(String::as_str),
+            Some("llama-b2-bin-win-x64.zip")
+        );
+        let linux = names(&["llama-b2-bin-linux-amd64.tar.gz"]);
+        assert!(pick_asset(&linux, "linux", "x86_64").is_some());
+        let junk = names(&[
+            "llama-b2-xcframework.zip",
+            "llama-b2-bin-macos-arm64.tar.zst",
+        ]);
+        assert_eq!(pick_asset(&junk, "macos", "aarch64"), None);
     }
 
     #[test]
