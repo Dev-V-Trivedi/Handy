@@ -120,6 +120,14 @@
       "errors": {
         "checkFailed": "Erro ao verificar permissões. Por favor, tente novamente.",
         "requestFailed": "Erro ao solicitar permissão. Por favor, tente novamente."
+      },
+      "stuck": {
+        "title": "Still waiting? macOS may be holding an old tick from a previous version.",
+        "step1": "Open System Settings, Privacy and Security, Accessibility.",
+        "step2": "Select Oshabe and press the minus button to remove it.",
+        "step3": "Press the plus button, add Oshabe again, then restart Oshabe. Or run this in Terminal and press Grant again:",
+        "open": "Open Accessibility settings",
+        "skip": "Skip for now (shortcuts and typing will not work yet)"
       }
     },
     "microphone": {

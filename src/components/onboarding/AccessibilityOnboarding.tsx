@@ -8,6 +8,7 @@ import {
   requestMicrophonePermission,
 } from "tauri-plugin-macos-permissions-api";
 import { toast } from "sonner";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { commands } from "@/bindings";
 import { useSettingsStore } from "@/stores/settingsStore";
 import OshabeTextLogo from "../icons/OshabeTextLogo";
@@ -17,6 +18,9 @@ interface AccessibilityOnboardingProps {
   onComplete: () => void;
   preview?: boolean;
 }
+
+const TCC_RESET_COMMAND =
+  "tccutil reset Accessibility com.hikariwebworks.oshabe";
 
 type PermissionStatus = "checking" | "needed" | "waiting" | "granted";
 type PermissionPlatform = "macos" | "windows" | "other";
@@ -290,6 +294,28 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
     }
   };
 
+  // macOS keeps a stale tick for an app after it is replaced by a new build, so
+  // the switch looks on but the permission check keeps failing. After a few
+  // seconds of waiting, show how to fix it and let the person carry on.
+  const isWaiting =
+    permissions.accessibility === "waiting" ||
+    permissions.microphone === "waiting";
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    if (!isWaiting) {
+      setStuck(false);
+      return;
+    }
+    const timer = setTimeout(() => setStuck(true), 8000);
+    return () => clearTimeout(timer);
+  }, [isWaiting]);
+
+  const openAccessibilitySettings = () => {
+    void openUrl(
+      "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
+    ).catch(() => {});
+  };
+
   const isChecking =
     permissionPlatform === null ||
     (isMacOS &&
@@ -409,6 +435,42 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {stuck && isMacOS && (
+          <div className="w-full rounded-lg border border-mid-gray/30 p-4 text-sm text-text/80 flex flex-col gap-3">
+            <p className="font-medium text-text">
+              {t("onboarding.permissions.stuck.title")}
+            </p>
+            <ol className="list-decimal ps-5 space-y-1">
+              <li>{t("onboarding.permissions.stuck.step1")}</li>
+              <li>{t("onboarding.permissions.stuck.step2")}</li>
+              <li>{t("onboarding.permissions.stuck.step3")}</li>
+            </ol>
+            <code className="rounded bg-mid-gray/15 px-2 py-1 text-xs select-all">
+              {TCC_RESET_COMMAND}
+            </code>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={openAccessibilitySettings}
+                className="px-3 py-1.5 rounded-lg bg-logo-primary hover:bg-logo-primary/90 text-white text-sm font-medium"
+              >
+                {t("onboarding.permissions.stuck.open")}
+              </button>
+              <button
+                onClick={() => {
+                  if (pollingRef.current) {
+                    clearInterval(pollingRef.current);
+                    pollingRef.current = null;
+                  }
+                  onComplete();
+                }}
+                className="px-3 py-1.5 rounded-lg border border-mid-gray/40 text-sm"
+              >
+                {t("onboarding.permissions.stuck.skip")}
+              </button>
             </div>
           </div>
         )}
