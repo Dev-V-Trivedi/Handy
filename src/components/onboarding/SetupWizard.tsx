@@ -98,6 +98,10 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
 
   const finish = async () => {
     if (!preview) {
+      // Auto-detect guesses wrong for accented English (it can pick Hindi), so
+      // lock to English when that is what the person said they speak.
+      if (language === "english")
+        await updateSetting("selected_language", "en");
       if (cleanup) {
         await updateSetting("post_process_enabled", true);
         await updateSetting("always_cleanup_enabled", true);

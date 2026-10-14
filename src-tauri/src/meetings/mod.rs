@@ -15,7 +15,7 @@ use capture::{CaptureHandle, Track, TARGET_RATE};
 use log::{debug, error, info, warn};
 use serde::Serialize;
 use specta::Type;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
@@ -24,7 +24,7 @@ use store::MeetingStore;
 use tauri::{AppHandle, Emitter, Manager};
 
 /// Shortest and longest piece of audio sent to the speech model at once.
-const MIN_FLUSH_SECS: f32 = 10.0;
+const MIN_FLUSH_SECS: f32 = 6.0;
 const MAX_FLUSH_SECS: f32 = 28.0;
 /// Pieces shorter than this are not worth transcribing.
 const MIN_SPEECH_SECS: f32 = 0.4;
@@ -33,7 +33,7 @@ const GAP_FLUSH: Duration = Duration::from_millis(1_500);
 /// Length of trailing quiet that marks a natural break.
 const QUIET_TAIL_SECS: f32 = 0.6;
 /// Below this RMS level a piece is treated as silence.
-const SILENCE_RMS: f32 = 0.004;
+const SILENCE_RMS: f32 = 0.0015;
 /// How far back to look for the other side's words when removing echo.
 const ECHO_WINDOW_MS: i64 = 40_000;
 
@@ -46,6 +46,16 @@ pub struct ActiveMeeting {
     /// Machine-readable note for the UI (`system_audio_unavailable: ...`,
     /// `microphone_unavailable: ...`), if something is degraded.
     pub warning: Option<String>,
+    /// True while recording is paused.
+    pub paused: bool,
+}
+
+/// Live input levels (0 to 1) sent to the UI so people can see the app hears them.
+#[derive(Debug, Clone, Serialize)]
+struct LevelEvent {
+    you: f32,
+    others: f32,
+    paused: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -73,7 +83,11 @@ struct Running {
     info: ActiveMeeting,
     stop: Arc<AtomicBool>,
     captures: Vec<CaptureHandle>,
-    worker: JoinHandle<()>,
+    worker: JoinHandle<usize>,
+    paused: Arc<AtomicBool>,
+    /// Total time spent paused, in milliseconds.
+    paused_ms: Arc<AtomicI64>,
+    pause_started: Option<Instant>,
 }
 
 pub struct MeetingManager {
@@ -118,10 +132,51 @@ impl MeetingManager {
     }
 
     pub fn active(&self) -> Option<ActiveMeeting> {
-        self.active
+        self.active.lock().ok().and_then(|a| {
+            a.as_ref().map(|r| {
+                let mut info = r.info.clone();
+                info.paused = r.paused.load(Ordering::SeqCst);
+                info
+            })
+        })
+    }
+
+    /// Stop listening for a while without ending the meeting.
+    pub fn pause(&self) -> Result<(), String> {
+        let mut active = self
+            .active
             .lock()
-            .ok()
-            .and_then(|a| a.as_ref().map(|r| r.info.clone()))
+            .map_err(|_| "lock poisoned".to_string())?;
+        let r = active
+            .as_mut()
+            .ok_or_else(|| "No meeting is being recorded".to_string())?;
+        if !r.paused.swap(true, Ordering::SeqCst) {
+            r.pause_started = Some(Instant::now());
+        }
+        drop(active);
+        let _ = self.app.emit("meeting-paused", true);
+        crate::tray::sync_tray(&self.app);
+        Ok(())
+    }
+
+    pub fn resume(&self) -> Result<(), String> {
+        let mut active = self
+            .active
+            .lock()
+            .map_err(|_| "lock poisoned".to_string())?;
+        let r = active
+            .as_mut()
+            .ok_or_else(|| "No meeting is being recorded".to_string())?;
+        if r.paused.swap(false, Ordering::SeqCst) {
+            if let Some(t) = r.pause_started.take() {
+                r.paused_ms
+                    .fetch_add(t.elapsed().as_millis() as i64, Ordering::SeqCst);
+            }
+        }
+        drop(active);
+        let _ = self.app.emit("meeting-paused", false);
+        crate::tray::sync_tray(&self.app);
+        Ok(())
     }
 
     pub fn start(&self, title: Option<String>) -> Result<ActiveMeeting, String> {
@@ -183,13 +238,19 @@ impl MeetingManager {
         }
 
         let stop = Arc::new(AtomicBool::new(false));
+        let paused = Arc::new(AtomicBool::new(false));
+        let paused_ms = Arc::new(AtomicI64::new(0));
         let worker = {
+            let paused = Arc::clone(&paused);
+            let paused_ms = Arc::clone(&paused_ms);
             let app = self.app.clone();
             let store = Arc::clone(&self.store);
             let stop = Arc::clone(&stop);
             std::thread::Builder::new()
                 .name("meeting-worker".to_string())
-                .spawn(move || run_worker(app, store, id, rx, stop, Instant::now()))
+                .spawn(move || {
+                    run_worker(app, store, id, rx, stop, paused, paused_ms, Instant::now())
+                })
                 .map_err(|e| e.to_string())?
         };
 
@@ -198,6 +259,7 @@ impl MeetingManager {
             started_at,
             system_audio,
             warning,
+            paused: false,
         };
         info!(
             "Meeting {} started (system audio: {}, warning: {:?})",
@@ -208,6 +270,9 @@ impl MeetingManager {
             stop,
             captures,
             worker,
+            paused,
+            paused_ms,
+            pause_started: None,
         });
         let _ = self.app.emit("meeting-status", true);
         crate::tray::sync_tray(&self.app);
@@ -229,8 +294,21 @@ impl MeetingManager {
         for capture in running.captures {
             capture.stop();
         }
-        if running.worker.join().is_err() {
-            error!("Meeting worker panicked");
+        let segments = match running.worker.join() {
+            Ok(n) => n,
+            Err(_) => {
+                error!("Meeting worker panicked");
+                0
+            }
+        };
+        if segments == 0 {
+            let _ = self.app.emit(
+                "meeting-error",
+                ErrorEvent {
+                    meeting_id: id,
+                    message: "no_speech".to_string(),
+                },
+            );
         }
         if let Err(e) = self.store.finish(id, chrono::Utc::now().timestamp()) {
             error!("Failed to close meeting {}: {}", id, e);
@@ -359,6 +437,7 @@ struct Worker {
     meeting_id: i64,
     recent_others: Vec<(i64, String)>,
     error_reported: bool,
+    saved: usize,
 }
 
 impl Worker {
@@ -421,6 +500,8 @@ impl Worker {
                 .add_segment(self.meeting_id, buf.track.as_str(), buf.start_ms, &text)
         {
             error!("Failed to save meeting segment: {}", e);
+        } else {
+            self.saved += 1;
         }
         let _ = self.app.emit(
             "meeting-segment",
@@ -448,28 +529,49 @@ impl Worker {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_worker(
     app: AppHandle,
     store: Arc<MeetingStore>,
     meeting_id: i64,
     rx: Receiver<(Track, Vec<f32>)>,
     _stop: Arc<AtomicBool>,
+    paused: Arc<AtomicBool>,
+    paused_ms: Arc<AtomicI64>,
     started: Instant,
-) {
+) -> usize {
     let mut worker = Worker {
         app,
         store,
         meeting_id,
         recent_others: Vec::new(),
         error_reported: false,
+        saved: 0,
     };
     let mut bufs = [TrackBuf::new(Track::You), TrackBuf::new(Track::Others)];
+    let mut level = [0.0f32; 2];
+    let mut last_level_emit = Instant::now();
+    let mut was_paused = false;
 
     loop {
-        match rx.recv_timeout(Duration::from_millis(500)) {
+        let is_paused = paused.load(Ordering::SeqCst);
+        if is_paused && !was_paused {
+            // Transcribe what was said before the pause.
+            for buf in bufs.iter_mut() {
+                worker.flush(buf);
+            }
+        }
+        was_paused = is_paused;
+
+        match rx.recv_timeout(Duration::from_millis(250)) {
             Ok((track, chunk)) => {
                 let idx = if track == Track::You { 0 } else { 1 };
-                bufs[idx].push(chunk, started.elapsed().as_millis() as i64);
+                level[idx] = level[idx].max(rms(&chunk));
+                if !is_paused {
+                    let elapsed =
+                        started.elapsed().as_millis() as i64 - paused_ms.load(Ordering::SeqCst);
+                    bufs[idx].push(chunk, elapsed);
+                }
             }
             Err(RecvTimeoutError::Timeout) => {}
             // Every capture has stopped and the queue is drained.
@@ -477,9 +579,25 @@ fn run_worker(
         }
 
         let now = Instant::now();
-        for buf in bufs.iter_mut() {
-            if buf.should_flush(now) {
-                worker.flush(buf);
+        if now.duration_since(last_level_emit) >= Duration::from_millis(300) {
+            last_level_emit = now;
+            // Speech sits around 0.01 to 0.2 RMS; scale so normal talking fills the bar.
+            let scale = |v: f32| (v * 8.0).min(1.0);
+            let _ = worker.app.emit(
+                "meeting-levels",
+                LevelEvent {
+                    you: scale(level[0]),
+                    others: scale(level[1]),
+                    paused: is_paused,
+                },
+            );
+            level = [0.0; 2];
+        }
+        if !is_paused {
+            for buf in bufs.iter_mut() {
+                if buf.should_flush(now) {
+                    worker.flush(buf);
+                }
             }
         }
     }
@@ -488,6 +606,7 @@ fn run_worker(
         worker.flush(buf);
     }
     debug!("Meeting {} worker finished", meeting_id);
+    worker.saved
 }
 
 /// Start meeting notes if idle, otherwise stop and summarise. Used by the

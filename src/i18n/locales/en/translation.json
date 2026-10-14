@@ -884,7 +884,7 @@
     "stop": "Stop and summarise",
     "finishing": "Finishing up...",
     "recording": "Recording",
-    "waitingForSpeech": "Waiting for someone to speak...",
+    "waitingForSpeech": "Listening. Your words appear here a few seconds after you speak.",
     "titlePlaceholder": "Meeting title (optional)",
     "pastTitle": "Past meetings",
     "none": "No meetings yet.",
@@ -932,6 +932,12 @@
     "shortcutTitle": "Quick start",
     "promptLabel": "Ask when a call starts",
     "promptDescription": "When Zoom, Meet, Teams, Webex or a Slack huddle comes to the front, ask if you want notes. Only the app name and window title are checked.",
-    "search": "Search meetings"
+    "search": "Search meetings",
+    "paused": "Paused",
+    "pause": "Pause",
+    "resume": "Resume",
+    "levelYou": "You (microphone)",
+    "levelOthers": "Others (computer audio)",
+    "noSpeech": "Nothing was heard, so there is nothing to summarise. Check the level bars while recording: your bar should move when you talk. If it stays flat, pick the right microphone in Settings. Text appears every few seconds after you speak."
   }
 }

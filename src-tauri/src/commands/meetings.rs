@@ -32,6 +32,18 @@ pub async fn meeting_stop(app: AppHandle) -> Result<i64, String> {
 
 #[tauri::command]
 #[specta::specta]
+pub fn meeting_pause(app: AppHandle) -> Result<(), String> {
+    manager(&app)?.pause()
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn meeting_resume(app: AppHandle) -> Result<(), String> {
+    manager(&app)?.resume()
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn meeting_active(app: AppHandle) -> Result<Option<ActiveMeeting>, String> {
     Ok(manager(&app)?.active())
 }

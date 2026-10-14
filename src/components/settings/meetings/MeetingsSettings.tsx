@@ -14,6 +14,8 @@ import {
   Copy,
   FileText,
   Loader2,
+  Pause,
+  Play,
   RefreshCw,
   Square,
   Trash2,
@@ -391,6 +393,22 @@ const MeetingDetailView: React.FC<{
   );
 };
 
+const LevelBar: React.FC<{ label: string; value: number; dim?: boolean }> = ({
+  label,
+  value,
+  dim,
+}) => (
+  <div className={`space-y-1 ${dim ? "opacity-40" : ""}`}>
+    <div className="text-xs text-text/60">{label}</div>
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-mid-gray/20">
+      <div
+        className="h-full rounded-full bg-logo-primary transition-[width] duration-200"
+        style={{ width: `${Math.round(value * 100)}%` }}
+      />
+    </div>
+  </div>
+);
+
 export const MeetingsSettings: React.FC = () => {
   const { t } = useTranslation();
   const { settings, updateSetting, isUpdating } = useSettings();
@@ -401,6 +419,7 @@ export const MeetingsSettings: React.FC = () => {
   const [query, setQuery] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [levels, setLevels] = useState({ you: 0, others: 0 });
   const [selected, setSelected] = useState<number | null>(null);
   const [summaryProblem, setSummaryProblem] = useState<string | null>(null);
   const liveEnd = useRef<HTMLDivElement | null>(null);
@@ -435,10 +454,21 @@ export const MeetingsSettings: React.FC = () => {
         ]);
       }),
       listen<{ meeting_id: number; message: string }>("meeting-error", (e) => {
+        if (e.payload.message === "no_speech") {
+          toast.warning(t("meetings.noSpeech"));
+          return;
+        }
         toast.error(t("meetings.transcribeError"), {
           description: e.payload.message,
         });
       }),
+      listen<{ you: number; others: number; paused: boolean }>(
+        "meeting-levels",
+        (e) => setLevels({ you: e.payload.you, others: e.payload.others }),
+      ),
+      listen<boolean>("meeting-paused", (e) =>
+        setActive((prev) => (prev ? { ...prev, paused: e.payload } : prev)),
+      ),
       listen<{ meeting_id: number; ok: boolean; message: string }>(
         "meeting-summary",
         (e) => {
@@ -452,16 +482,17 @@ export const MeetingsSettings: React.FC = () => {
     };
   }, [t, loadRows]);
 
+  const pausedNow = active?.paused ?? false;
+  const hasActive = active !== null;
+  const startedAt = active?.started_at ?? 0;
   useEffect(() => {
-    if (!active) return;
-    const tick = () =>
-      setElapsed(
-        Math.max(0, Math.floor(Date.now() / 1000) - active.started_at),
-      );
-    tick();
-    const timer = setInterval(tick, 1000);
+    if (!hasActive) return;
+    setElapsed(Math.max(0, Math.floor(Date.now() / 1000) - startedAt));
+    const timer = setInterval(() => {
+      if (!pausedNow) setElapsed((e) => e + 1);
+    }, 1000);
     return () => clearInterval(timer);
-  }, [active]);
+  }, [hasActive, startedAt, pausedNow]);
 
   // Started or stopped elsewhere (keyboard shortcut, tray menu).
   useEffect(() => {
@@ -525,6 +556,14 @@ export const MeetingsSettings: React.FC = () => {
     }
   };
 
+  const togglePause = async () => {
+    if (!active) return;
+    const res = active.paused
+      ? await commands.meetingResume()
+      : await commands.meetingPause();
+    if (res.status === "error") toast.error(res.error);
+  };
+
   const warningText = (() => {
     const w = active?.warning;
     if (!w) return null;
@@ -586,30 +625,61 @@ export const MeetingsSettings: React.FC = () => {
             <>
               <div className="flex items-center gap-3">
                 <span className="relative flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
+                  {!active.paused && (
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
+                  )}
+                  <span
+                    className={`relative inline-flex h-3 w-3 rounded-full ${active.paused ? "bg-amber-500" : "bg-red-500"}`}
+                  />
                 </span>
                 <span className="text-sm font-semibold tabular-nums text-text">
                   {formatClock(elapsed * 1000)}
                 </span>
                 <span className="text-sm text-text/60">
-                  {t("meetings.recording")}
+                  {active.paused
+                    ? t("meetings.paused")
+                    : t("meetings.recording")}
                 </span>
-                <Button
-                  className="ms-auto"
-                  variant="danger"
-                  disabled={busy}
-                  onClick={() => void stop()}
-                >
-                  <span className="flex items-center gap-1.5">
-                    {busy ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Square className="h-4 w-4" />
-                    )}
-                    {busy ? t("meetings.finishing") : t("meetings.stop")}
-                  </span>
-                </Button>
+                <div className="ms-auto flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={() => void togglePause()}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      {active.paused ? (
+                        <Play className="h-4 w-4" />
+                      ) : (
+                        <Pause className="h-4 w-4" />
+                      )}
+                      {active.paused
+                        ? t("meetings.resume")
+                        : t("meetings.pause")}
+                    </span>
+                  </Button>
+                  <Button
+                    variant="danger"
+                    disabled={busy}
+                    onClick={() => void stop()}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      {busy ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                      {busy ? t("meetings.finishing") : t("meetings.stop")}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <LevelBar label={t("meetings.levelYou")} value={levels.you} />
+                <LevelBar
+                  label={t("meetings.levelOthers")}
+                  value={levels.others}
+                  dim={!active.system_audio}
+                />
               </div>
               {warningText && (
                 <Alert variant="warning" contained>

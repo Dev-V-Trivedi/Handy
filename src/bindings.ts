@@ -367,6 +367,22 @@ async meetingStop() : Promise<Result<number, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async meetingPause() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_pause") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async meetingResume() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_resume") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async meetingActive() : Promise<Result<ActiveMeeting | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("meeting_active") };
@@ -1161,7 +1177,7 @@ streamTextEvent: "stream-text-event"
  * Field-level defaults below take precedence where present.
  */
 /** Is Ollama reachable, and which models does it already have? */
-export type ActiveMeeting = { id: number; started_at: number; system_audio: boolean; warning: string | null }
+export type ActiveMeeting = { id: number; started_at: number; system_audio: boolean; warning: string | null; paused: boolean }
 export type LocalLlmStatus = { runner_installed: boolean; models: LocalModelStatus[]; running: string | null }
 export type LocalModelStatus = { id: string; name: string; size_mb: number; installed: boolean }
 export type MeetingRow = { id: number; title: string; started_at: number; ended_at: number | null; has_summary: boolean; segment_count: number }
