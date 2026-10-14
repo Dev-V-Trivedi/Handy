@@ -962,6 +962,7 @@
             <a class="opt" href="#features">Features</a>
             <a class="opt" href="#how">How it works</a>
             <a class="opt" href="#faq">FAQ</a>
+            <a class="opt" href="/docs/">Docs</a>
             <a href="#download">Download</a>
           </nav>
         </header>
@@ -1251,11 +1252,7 @@
               <div class="d">Most PCs. 64-bit Intel or AMD.</div>
             </div>
             <div class="d fmt">Installer (.exe)</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=win-x64">Download</a>
           </div>
           <div class="row" data-k="win-arm">
             <div>
@@ -1263,11 +1260,7 @@
               <div class="d">Snapdragon laptops such as Surface Pro X.</div>
             </div>
             <div class="d fmt">Installer (.exe)</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=win-arm">Download</a>
           </div>
           <div class="row" data-k="mac-arm">
             <div>
@@ -1275,11 +1268,7 @@
               <div class="d">M1, M2, M3, M4 and newer.</div>
             </div>
             <div class="d fmt">Disk image (.dmg)</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=mac-arm">Download</a>
           </div>
           <div class="row" data-k="mac-x64">
             <div>
@@ -1287,11 +1276,7 @@
               <div class="d">Macs from 2020 and earlier.</div>
             </div>
             <div class="d fmt">Disk image (.dmg)</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=mac-x64">Download</a>
           </div>
           <div class="row" data-k="linux-appimage">
             <div>
@@ -1299,11 +1284,7 @@
               <div class="d">Make it executable, then run it.</div>
             </div>
             <div class="d fmt">AppImage</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=linux-appimage">Download</a>
           </div>
           <div class="row" data-k="linux-deb">
             <div>
@@ -1311,11 +1292,7 @@
               <div class="d">Install with your package manager.</div>
             </div>
             <div class="d fmt">.deb</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=linux-deb">Download</a>
           </div>
           <div class="row" data-k="linux-rpm">
             <div>
@@ -1323,11 +1300,7 @@
               <div class="d">Install with dnf or zypper.</div>
             </div>
             <div class="d fmt">.rpm</div>
-            <a
-              class="get off"
-              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-              >Get</a
-            >
+            <a class="get" href="/download/?p=linux-rpm">Download</a>
           </div>
         </div>
         <p class="small">
@@ -1483,8 +1456,7 @@
           }
         }
 
-        /* ---- download rows: fill from the latest GitHub release ---- */
-        var REPO = "Dev-V-Trivedi/oshabe";
+        /* ---- download rows: highlight the visitor's system, send them to our own download page ---- */
         var ua = navigator.userAgent || "";
         var os = /Windows/i.test(ua)
           ? "win"
@@ -1494,79 +1466,47 @@
               ? "linux"
               : "";
         var arm = false;
-        var RULES = [
-          ["win-arm", /(arm64|aarch64).*(-setup\.exe|\.msi)$/],
-          ["win-x64", /(x64|x86_64|amd64).*(-setup\.exe|\.msi)$/],
-          ["mac-arm", /(aarch64|arm64).*\.dmg$/],
-          ["mac-x64", /(x64|x86_64|amd64).*\.dmg$/],
-          ["linux-appimage", /\.appimage$/],
-          ["linux-deb", /\.deb$/],
-          ["linux-rpm", /\.rpm$/],
-        ];
-        var found = {};
         function guess() {
           if (os === "win") return arm ? "win-arm" : "win-x64";
           if (os === "mac") return "mac-arm";
           if (os === "linux") return "linux-appimage";
           return "";
         }
-        function label(k) {
-          var el = document.querySelector('#dl [data-k="' + k + '"] .n');
-          return el ? el.textContent : "";
-        }
         function paint() {
           var key = guess();
-          var rows = document.querySelectorAll("#dl .row");
-          for (var i = 0; i < rows.length; i++) {
-            var r = rows[i],
-              k = r.getAttribute("data-k"),
-              a = r.querySelector("a.get");
-            if (found[k]) {
-              a.href = found[k];
-              a.className = "get";
-              a.textContent = "Download";
-            }
-            if (k === key) r.className = "row hit";
-          }
-          var p = document.getElementById("primary"),
-            sub = document.getElementById("primary-sub");
-          if (key && found[key]) {
-            p.href = found[key];
-            p.textContent = "Download for " + label(key);
+          if (!key) return;
+          var row = document.querySelector('#dl [data-k="' + key + '"]');
+          if (row) {
+            row.className = "row hit";
+            var p = document.getElementById("primary"),
+              sub = document.getElementById("primary-sub");
+            p.href = "/download/?p=" + key;
+            p.textContent =
+              "Download for " + row.querySelector(".n").textContent;
             sub.textContent = "Not your system? Every build is listed below.";
-          } else if (key) {
-            sub.textContent =
-              "Detected " + label(key) + ". All builds are listed below.";
           }
-        }
-        function load() {
           try {
-            fetch("https://api.github.com/repos/" + REPO + "/releases/latest", {
-              headers: { Accept: "application/vnd.github+json" },
-            })
+            fetch(
+              "https://api.github.com/repos/Dev-V-Trivedi/oshabe/releases/latest",
+              {
+                headers: { Accept: "application/vnd.github+json" },
+              },
+            )
               .then(function (r) {
-                if (!r.ok) throw new Error(r.status);
-                return r.json();
+                if (r.status === 404) {
+                  document.getElementById("ver").textContent =
+                    "Download, first release coming soon";
+                  return null;
+                }
+                return r.ok ? r.json() : null;
               })
               .then(function (rel) {
-                (rel.assets || []).forEach(function (a) {
-                  var n = a.name.toLowerCase();
-                  for (var i = 0; i < RULES.length; i++) {
-                    if (RULES[i][1].test(n) && !found[RULES[i][0]]) {
-                      found[RULES[i][0]] = a.browser_download_url;
-                      break;
-                    }
-                  }
-                });
-                if (rel.tag_name)
+                if (rel && rel.tag_name)
                   document.getElementById("ver").textContent =
                     "Download " + rel.tag_name;
-                paint();
               })
-              .catch(paint);
-          } catch (e) {
-            paint();
-          }
+              .catch(function () {});
+          } catch (e) {}
         }
         try {
           if (
@@ -1577,11 +1517,11 @@
               .getHighEntropyValues(["architecture"])
               .then(function (h) {
                 arm = /arm/i.test(h.architecture || "");
-                load();
-              }, load);
-          } else load();
+                paint();
+              }, paint);
+          } else paint();
         } catch (e) {
-          load();
+          paint();
         }
       })();
     </script>

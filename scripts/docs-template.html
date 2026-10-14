@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Oshabe documentation | Install, dictation, meeting notes, troubleshooting
+    </title>
+    <meta
+      name="description"
+      content="How to install and use Oshabe: dictation shortcuts, meeting notes without a bot, offline cleanup models, Word and PDF export, troubleshooting, data locations and command-line flags."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1"
+    />
+    <link rel="canonical" href="{{SITE}}/docs/" />
+    <meta name="theme-color" content="#1B1830" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Oshabe" />
+    <meta property="og:title" content="Oshabe documentation" />
+    <meta
+      property="og:description"
+      content="Install, dictate, take meeting notes and fix common problems."
+    />
+    <meta property="og:url" content="{{SITE}}/docs/" />
+    <meta property="og:image" content="{{SITE}}/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="text/markdown"
+      href="/docs.md"
+      title="Documentation as Markdown"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+    />
+    <script type="application/ld+json">
+      {{LD}}
+    </script>
+    <style>
+      :root {
+        --paper: #f6f2ea;
+        --card: #fffdf8;
+        --ink: #17141f;
+        --muted: #605a70;
+        --line: #e4ddd0;
+        --indigo: #4338ca;
+        --amber: #ffb224;
+        --night: #14111f;
+        --night-ink: #f2eefb;
+        --night-muted: #a9a3c2;
+        --code: #1d1a31;
+        --code-ink: #eae6f7;
+        --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+        --body: "Geist", "Segoe UI", system-ui, sans-serif;
+        --mono: "Geist Mono", ui-monospace, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --paper: #100e1a;
+          --card: #1a1729;
+          --ink: #f2eefb;
+          --muted: #aaa4c0;
+          --line: #2c2843;
+          --indigo: #9a93ff;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --paper: #100e1a;
+        --card: #1a1729;
+        --ink: #f2eefb;
+        --muted: #aaa4c0;
+        --line: #2c2843;
+        --indigo: #9a93ff;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 96px;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 17px/1.7 var(--body);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--indigo);
+        text-underline-offset: 3px;
+      }
+      :focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding-left: max(20px, env(safe-area-inset-left, 0px));
+        padding-right: max(20px, env(safe-area-inset-right, 0px));
+      }
+      header.bar {
+        background: var(--night);
+        color: var(--night-ink);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      header.bar .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font: 800 21px var(--display);
+        letter-spacing: -0.04em;
+        text-decoration: none;
+        color: var(--night-ink);
+      }
+      .seal {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--amber);
+        position: relative;
+      }
+      .seal:after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        background: var(--night);
+      }
+      header.bar nav {
+        display: flex;
+        gap: 24px;
+        font-size: 15px;
+      }
+      header.bar nav a {
+        color: var(--night-muted);
+        text-decoration: none;
+      }
+      header.bar nav a:hover,
+      header.bar nav a[aria-current] {
+        color: var(--night-ink);
+      }
+      .top {
+        padding-block: 56px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+      .kicker {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h1 {
+        font: 800 clamp(38px, 6vw, 64px) / 1 var(--display);
+        letter-spacing: -0.045em;
+        margin: 14px 0 18px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 19px;
+        max-width: 38em;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+      }
+      .btn {
+        font: 600 15px var(--body);
+        padding: 12px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn:hover {
+        border-color: var(--indigo);
+      }
+      .btn.primary {
+        background: var(--amber);
+        border-color: var(--amber);
+        color: #1b1830;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 56px;
+        padding-block: 40px 96px;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 8px;
+        }
+      }
+      aside nav {
+        position: sticky;
+        top: 88px;
+        display: grid;
+        gap: 2px;
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
+        font-size: 15px;
+      }
+      aside nav a {
+        color: var(--muted);
+        text-decoration: none;
+        padding: 6px 12px;
+        border-left: 2px solid var(--line);
+      }
+      aside nav a.l3 {
+        padding-left: 26px;
+        font-size: 14px;
+      }
+      aside nav a:hover,
+      aside nav a.on {
+        color: var(--ink);
+        border-left-color: var(--amber);
+      }
+      @media (max-width: 900px) {
+        aside nav {
+          position: static;
+          max-height: none;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          margin-bottom: 20px;
+        }
+        aside nav a.l3 {
+          display: none;
+        }
+        aside nav a {
+          border: 1px solid var(--line);
+          border-radius: 10px;
+        }
+      }
+      article {
+        min-width: 0;
+        max-width: 760px;
+      }
+      article h2 {
+        font: 800 clamp(28px, 4vw, 38px) / 1.1 var(--display);
+        letter-spacing: -0.035em;
+        margin: 64px 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      article h2:first-child {
+        margin-top: 0;
+      }
+      article h3 {
+        font: 600 22px/1.2 var(--display);
+        letter-spacing: -0.02em;
+        margin: 36px 0 10px;
+      }
+      article p,
+      article ul,
+      article ol {
+        margin: 0 0 16px;
+      }
+      article li {
+        margin-bottom: 6px;
+      }
+      article code {
+        font: 500 0.9em var(--mono);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 2px 6px;
+        overflow-wrap: anywhere;
+      }
+      article pre {
+        background: var(--code);
+        color: var(--code-ink);
+        border-radius: 14px;
+        padding: 18px 20px;
+        overflow-x: auto;
+        margin: 0 0 20px;
+      }
+      article pre code {
+        background: none;
+        border: 0;
+        padding: 0;
+        font-size: 14px;
+        color: inherit;
+      }
+      .tw {
+        overflow-x: auto;
+        margin: 0 0 22px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--card);
+      }
+      article table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 480px;
+        font-size: 15px;
+      }
+      article th,
+      article td {
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      article th {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      article tr:last-child td {
+        border-bottom: 0;
+      }
+      .cp {
+        font: 600 12px var(--body);
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--muted);
+        cursor: pointer;
+        flex: none;
+      }
+      .cp:hover {
+        color: var(--ink);
+        border-color: var(--indigo);
+      }
+      .cp.done,
+      .btn.done {
+        border-color: #1f8a5b;
+        color: #1f8a5b;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: max(24px, env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        background: var(--night);
+        color: var(--night-ink);
+        padding: 12px 20px;
+        border-radius: 999px;
+        font: 500 14px var(--body);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .toast.on {
+        opacity: 1;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        padding-block: 30px 56px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .toast {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="Oshabe home"
+          ><span class="seal"></span>Oshabe</a
+        >
+        <nav aria-label="Primary">
+          <a href="/#features">Features</a><a href="/#download">Download</a
+          ><a href="/docs/" aria-current="page">Docs</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="top">
+        <p class="kicker">Documentation</p>
+        <h1>Oshabe docs</h1>
+        <p class="lead">
+          Install Oshabe, dictate into any app, take meeting notes without a
+          bot, and fix common problems. Copy the whole page as Markdown to give
+          it to an AI assistant.
+        </p>
+        <div class="actions">
+          <button class="btn primary" type="button" id="copy-all">
+            Copy for LLM
+          </button>
+          <a class="btn" href="/docs.md">View as Markdown</a>
+          <a class="btn" id="ask-claude" href="#" target="_blank" rel="noopener"
+            >Ask Claude</a
+          >
+          <a class="btn" id="ask-gpt" href="#" target="_blank" rel="noopener"
+            >Ask ChatGPT</a
+          >
+          <a class="btn" href="/llms-full.txt">llms-full.txt</a>
+        </div>
+      </div>
+
+      <div class="layout">
+        <aside>
+          <nav aria-label="On this page">{{NAV}}</nav>
+        </aside>
+        <article>
+          <div id="intro">{{INTRO}}</div>
+          {{BODY}}
+        </article>
+      </div>
+
+      <footer>
+        Oshabe by
+        <a href="https://hikariwebworks.studio">Hikari Webworks</a> &middot;
+        <a href="https://github.com/Dev-V-Trivedi/oshabe">Source on GitHub</a>
+        &middot; MIT licence &middot;
+        <a href="/">Back to oshabe home</a>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="text/markdown" id="md">
+{{MD}}
+</script>
+    <script>
+      (function () {
+        var md = document.getElementById("md").textContent.trim();
+        var toast = document.getElementById("toast"),
+          tt;
+        function say(t) {
+          toast.textContent = t;
+          toast.className = "toast on";
+          clearTimeout(tt);
+          tt = setTimeout(function () {
+            toast.className = "toast";
+          }, 1800);
+        }
+        function copy(text, done) {
+          function fallback() {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = false;
+            try {
+              ok = document.execCommand("copy");
+            } catch (e) {}
+            document.body.removeChild(ta);
+            done(ok);
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+              done(true);
+            }, fallback);
+          } else fallback();
+        }
+
+        // Split the Markdown into sections once, so each section can be copied on its own.
+        var parts = md.split(/\n(?=## )/);
+        var sections = {};
+        parts.forEach(function (p) {
+          var m = p.match(/^## (.+)/);
+          if (m) {
+            var id = m[1]
+              .toLowerCase()
+              .replace(/[^\w\s-]/g, "")
+              .trim()
+              .replace(/[\s_-]+/g, "-");
+            sections[id] = p;
+          }
+        });
+
+        var all = document.getElementById("copy-all");
+        all.addEventListener("click", function () {
+          copy(md, function (ok) {
+            say(
+              ok
+                ? "Copied the full docs as Markdown"
+                : "Copy failed. Use View as Markdown instead.",
+            );
+            if (ok) {
+              all.className = "btn primary done";
+              all.textContent = "Copied";
+              setTimeout(function () {
+                all.className = "btn primary";
+                all.textContent = "Copy for LLM";
+              }, 1800);
+            }
+          });
+        });
+        var btns = document.querySelectorAll("button.cp");
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].addEventListener("click", function (e) {
+            var b = e.currentTarget,
+              text = sections[b.getAttribute("data-sec")] || md;
+            copy(text, function (ok) {
+              say(ok ? "Section copied" : "Copy failed");
+              if (ok) {
+                b.className = "cp done";
+                b.textContent = "Copied";
+                setTimeout(function () {
+                  b.className = "cp";
+                  b.textContent = "Copy";
+                }, 1600);
+              }
+            });
+          });
+        }
+
+        var q = encodeURIComponent(
+          "Read the Oshabe documentation at https://oshabe.hikariwebworks.studio/docs.md and answer my question about it: ",
+        );
+        document.getElementById("ask-claude").href =
+          "https://claude.ai/new?q=" + q;
+        document.getElementById("ask-gpt").href = "https://chatgpt.com/?q=" + q;
+
+        // Wrap tables so they scroll sideways on small screens.
+        var tbls = document.querySelectorAll("article table");
+        for (var j = 0; j < tbls.length; j++) {
+          var w = document.createElement("div");
+          w.className = "tw";
+          tbls[j].parentNode.insertBefore(w, tbls[j]);
+          w.appendChild(tbls[j]);
+        }
+
+        // Highlight the section in view.
+        var links = document.querySelectorAll("aside nav a");
+        var map = {};
+        for (var k = 0; k < links.length; k++)
+          map[links[k].getAttribute("href").slice(1)] = links[k];
+        if ("IntersectionObserver" in window) {
+          var io = new IntersectionObserver(
+            function (es) {
+              es.forEach(function (e) {
+                if (e.isIntersecting && map[e.target.id]) {
+                  for (var id in map)
+                    map[id].className = map[id].className.replace(" on", "");
+                  map[e.target.id].className += " on";
+                }
+              });
+            },
+            { rootMargin: "-20% 0px -70% 0px" },
+          );
+          document
+            .querySelectorAll("article h2[id], article h3[id]")
+            .forEach(function (h) {
+              io.observe(h);
+            });
+        }
+      })();
+    </script>
+  </body>
+</html>

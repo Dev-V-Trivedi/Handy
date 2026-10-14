@@ -1,0 +1,206 @@
+# Oshabe documentation
+
+Oshabe is a free, open-source desktop app for Windows, macOS and Linux. It does two jobs: it writes meeting notes without a bot joining your call, and it types what you say into any app. Speech recognition runs on your computer and works offline. It is made by Hikari Webworks and released under the MIT licence.
+
+## Quick start
+
+1. Download Oshabe for your system from the [download section](/#download) and install it.
+2. Open it. The setup wizard asks what you will use it for, then lets you pick Fast, Balanced or Best. Oshabe downloads the matching speech model once.
+3. To dictate, hold your dictation shortcut, talk, and let go. The text appears where your cursor is.
+4. To take meeting notes, press your meeting shortcut or click Start on the Meetings page.
+
+Default shortcuts:
+
+| Action                       | Windows and Linux    | macOS                  |
+| ---------------------------- | -------------------- | ---------------------- |
+| Dictate                      | Ctrl + Space         | Option + Space         |
+| Dictate with AI cleanup      | Ctrl + Shift + Space | Option + Shift + Space |
+| Start or stop meeting notes  | Ctrl + Alt + M       | Option + Shift + M     |
+| Cancel the current recording | Esc                  | Esc                    |
+
+You can change every shortcut in Settings.
+
+## Install
+
+### Windows
+
+Download the installer (.exe) that matches your PC. Most PCs need the 64-bit build. Choose the ARM build only on Snapdragon laptops such as Surface Pro X. You can check under Settings, System, About, System type.
+
+Oshabe is not code-signed yet, so Windows SmartScreen may show "Windows protected your PC". Choose More info, then Run anyway.
+
+### macOS
+
+Download the .dmg for your chip. Apple menu, About This Mac shows "Apple M1" (or newer) for Apple Silicon, or "Intel". Drag Oshabe to Applications.
+
+Oshabe is not code-signed yet. The first time, right-click the app and choose Open, then confirm.
+
+Oshabe asks for three permissions on macOS:
+
+- **Microphone**, to hear you.
+- **Accessibility**, so shortcuts work in every app and text can be typed for you.
+- **System audio recording**, so meeting notes can hear the other people on a call.
+
+### Linux
+
+Download the AppImage and run `chmod +x Oshabe*.AppImage`, then start it. Debian and Ubuntu users can install the .deb file with `sudo apt install ./Oshabe*.deb`. Fedora and openSUSE users can install the .rpm with `sudo dnf install ./Oshabe*.rpm`.
+
+Meeting notes on Linux need PulseAudio or PipeWire so the computer's audio can be captured.
+
+### Updates
+
+Oshabe checks for new versions and installs them after a signature check. If an update is ever blocked, download the newest installer and install it over the old one.
+
+## Dictation
+
+Hold your dictation shortcut, speak, and release. Oshabe types the text into the app you are using.
+
+### How the shortcut behaves
+
+In Settings you can choose how the shortcut works:
+
+- **Auto (default):** hold to talk and release to stop, or tap once for hands-free and tap again to finish.
+- **Hold:** records only while you hold the key.
+- **Toggle:** tap to start, tap to stop.
+
+### Language
+
+Set your language in Settings, General, Language. Choose English if you speak English. Automatic detection can guess wrong on accented speech and may type English words in another language.
+
+### Custom words
+
+Add names, products and jargon in Settings so they are spelled correctly every time.
+
+### Cleanup
+
+Cleanup removes filler words, fixes punctuation and handles self-corrections. See [Cleanup and summary models](#cleanup-and-summary-models).
+
+## Meeting notes
+
+Meeting notes record two sources at the same time: your microphone (labelled You) and the audio your computer plays (labelled Others). This is why it works with Zoom, Google Meet, Microsoft Teams, Slack huddles and any call in a browser. Nothing joins the call, so other people see no extra attendee.
+
+Only the transcript text is saved. The audio recording is never stored.
+
+### Start, pause and stop
+
+- Press the meeting shortcut, use the tray menu, or click Start on the Meetings page.
+- Two level bars show that Oshabe hears you and the other side. Your bar should move when you talk.
+- Click Pause to stop listening for a while and Resume to continue. The timer stops while paused.
+- Click Stop to finish. Oshabe then writes the summary.
+
+Text appears about six seconds after someone speaks.
+
+### Transcript and summary
+
+The transcript is labelled You and Others, with punctuation and capital letters. The summary lists the key points, decisions and action items. Summaries use the built-in offline model, Ollama, or your own provider.
+
+### Export and share
+
+Open a meeting and export it as Word (.docx) or PDF. Files are saved in `Documents/Oshabe Meetings`. You can also copy the text.
+
+### Delete old notes automatically
+
+In the Meetings page choose how long to keep notes: forever, 30 days, 90 days or 365 days. Older notes are removed automatically.
+
+### Where notes are stored
+
+Notes live in a local database inside the Oshabe data folder on your computer. See [Your data](#your-data).
+
+### Recording consent
+
+Laws about recording differ by country and some places require everyone's consent. Tell people when you take notes.
+
+### Call detection
+
+On Windows, Oshabe can notice when a call app opens and ask whether to start notes. You can turn this off on the Meetings page. Detection does not work reliably on macOS and Linux yet, so use the shortcut there.
+
+## Cleanup and summary models
+
+Cleanup and summaries need a small language model. You have three choices:
+
+- **Built-in offline model (recommended).** In Settings, Post Process, download a built-in model. Oshabe fetches a small runner and the model into its own folder once. After that no internet, account or key is needed.
+- **Ollama.** Install Ollama, pull a model such as `qwen2.5:3b`, and pick it in Settings.
+- **Your own provider.** Add an API key for a cloud provider. Only the transcript text is sent, never audio.
+
+## Speech models
+
+Choose Fast, Balanced or Best in the setup wizard, or open Settings, Models to pick a specific model. You can filter by accuracy or speed. Larger models are more accurate and slower. Models are downloaded once and run offline.
+
+If a streaming model such as Nemotron fails with "Transcription failed" on Windows, switch to a non-streaming model such as Parakeet.
+
+## Troubleshooting
+
+### Meeting notes recorded nothing
+
+- Watch the level bars while recording. If your bar stays flat, pick the right microphone in Settings.
+- If the Others bar stays flat, play some audio and check that your system output is the one you are listening on. On macOS, allow System audio recording for Oshabe. On Linux, make sure PulseAudio or PipeWire is running.
+- Wait a few seconds. Text appears about six seconds after speech.
+- Without headphones the microphone also hears the speakers. Headphones give the cleanest transcript.
+
+### The first word is cut off
+
+Wait for the start sound or the ready animation before you speak. From version 0.5.1 Oshabe keeps the microphone open for 30 seconds after each use so the next dictation starts instantly.
+
+### English comes out in another language
+
+Set Language to English in Settings, General.
+
+### macOS says permission is needed but never finishes
+
+Quit Oshabe. Remove Oshabe from System Settings, Privacy and Security, Accessibility and add it again. If it still hangs, run these in Terminal, then reopen the app and allow the prompts again:
+
+```
+tccutil reset Accessibility com.hikariwebworks.oshabe
+tccutil reset Microphone com.hikariwebworks.oshabe
+```
+
+Unsigned apps can look like a new app after each update, which leaves an old permission entry behind.
+
+### "Could not set up the offline model"
+
+The built-in model needs internet once to download. The message now names your operating system and chip. If it still fails, use an Ollama model instead.
+
+### Windows warns that the app is unrecognised
+
+Choose More info, then Run anyway. This happens because Oshabe is not code-signed yet.
+
+## Your data
+
+Oshabe keeps everything in its data folder:
+
+- Windows: `%APPDATA%\com.hikariwebworks.oshabe`
+- macOS: `~/Library/Application Support/com.hikariwebworks.oshabe`
+- Linux: `~/.local/share/com.hikariwebworks.oshabe`
+
+This holds settings, downloaded models, history, meeting notes and logs. Exported documents go to `Documents/Oshabe Meetings`.
+
+Speech recognition runs on your computer. Oshabe uses the network only to download models, check for updates, and for cleanup if you choose a cloud provider. There is no telemetry.
+
+## Command line
+
+Oshabe accepts these flags, for scripts, window managers and autostart:
+
+| Flag                     | What it does                                       |
+| ------------------------ | -------------------------------------------------- |
+| `--toggle-transcription` | Start or stop dictation on the running app         |
+| `--toggle-post-process`  | Start or stop dictation with AI cleanup            |
+| `--cancel`               | Cancel the current recording                       |
+| `--start-hidden`         | Start without opening the window (tray icon stays) |
+| `--no-tray`              | Start without a tray icon                          |
+| `--debug`                | Verbose logging                                    |
+
+Flags change only the current run and do not change saved settings.
+
+## Build from source
+
+You need Rust and Bun. Clone the repository, then:
+
+```
+bun install
+bun run tauri dev
+```
+
+The full guide is in the repository: https://github.com/Dev-V-Trivedi/oshabe
+
+## About
+
+Oshabe is made by [Hikari Webworks](https://hikariwebworks.studio) in Hyderabad, India. It is an independent fork of the open-source [Handy](https://github.com/cjpais/Handy) project by CJ Pais, released under the MIT licence.

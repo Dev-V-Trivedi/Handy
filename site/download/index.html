@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Downloading Oshabe</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://oshabe.hikariwebworks.studio/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+    />
+    <style>
+      :root {
+        --night: #14111f;
+        --card: #1d1a31;
+        --ink: #f2eefb;
+        --muted: #a9a3c2;
+        --line: #2e2a47;
+        --amber: #ffb224;
+        --ok: #5bd6a0;
+        --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+        --body: "Geist", "Segoe UI", system-ui, sans-serif;
+        --mono: "Geist Mono", ui-monospace, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--night);
+        color: var(--ink);
+        font: 17px/1.6 var(--body);
+        padding-left: max(20px, env(safe-area-inset-left, 0px));
+        padding-right: max(20px, env(safe-area-inset-right, 0px));
+      }
+      a {
+        color: var(--amber);
+        text-underline-offset: 3px;
+      }
+      :focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+      .w {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font: 800 21px var(--display);
+        letter-spacing: -0.04em;
+        text-decoration: none;
+        color: var(--ink);
+        padding-block: 22px;
+      }
+      .seal {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--amber);
+        position: relative;
+      }
+      .seal:after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        background: var(--night);
+      }
+      h1 {
+        font: 800 clamp(36px, 6vw, 56px) / 1 var(--display);
+        letter-spacing: -0.045em;
+        margin: 36px 0 14px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 19px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 24px 26px;
+        margin-top: 28px;
+      }
+      .card h2 {
+        font: 600 20px var(--display);
+        margin: 0 0 8px;
+      }
+      .card p {
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .card ol {
+        margin: 8px 0 0;
+        padding-left: 22px;
+        color: var(--ink);
+      }
+      .card li {
+        margin-bottom: 6px;
+      }
+      .btn {
+        display: inline-block;
+        font: 600 16px var(--body);
+        padding: 14px 24px;
+        border-radius: 999px;
+        background: var(--amber);
+        color: #1b1830;
+        text-decoration: none;
+        margin-top: 12px;
+      }
+      .tag {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .state-ok .tag {
+        color: var(--ok);
+      }
+      .alts {
+        margin-top: 28px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        font-size: 15px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="w">
+      <a class="brand" href="/"><span class="seal"></span>Oshabe</a>
+      <p class="tag" id="tag">Preparing your download</p>
+      <h1 id="title">Getting Oshabe ready.</h1>
+      <p class="lead" id="lead">Checking the latest version for your system.</p>
+
+      <div class="card" id="ok" hidden>
+        <h2 id="ok-h">Your download is starting</h2>
+        <p>
+          If nothing happens in a few seconds,
+          <a id="retry" href="#">click here to download</a>. The file is
+          <span
+            id="fname"
+            style="font-family: var(--mono); font-size: 14px"
+          ></span
+          >.
+        </p>
+      </div>
+
+      <div class="card" id="none" hidden>
+        <h2>The first public release is not published yet</h2>
+        <p>
+          The installers are built and being checked. Check back soon, or watch
+          the project on GitHub to be told the moment it is out.
+        </p>
+        <a class="btn" href="https://github.com/Dev-V-Trivedi/oshabe"
+          >Watch on GitHub</a
+        >
+      </div>
+
+      <div class="card" id="net" hidden>
+        <h2>Could not reach the release server</h2>
+        <p>
+          Check your connection and reload. You can also get the files from the
+          GitHub releases page.
+        </p>
+        <a
+          class="btn"
+          href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+          >Open releases</a
+        >
+      </div>
+
+      <div class="card" id="steps" hidden>
+        <h2 id="steps-h">After it downloads</h2>
+        <ol id="steps-l"></ol>
+      </div>
+
+      <p class="alts">
+        <a href="/#download">Choose a different system</a
+        ><a href="/docs/#install">Install help</a>
+      </p>
+    </div>
+
+    <script>
+      (function () {
+        var REPO = "Dev-V-Trivedi/oshabe";
+        var KEYS = {
+          "win-x64": [
+            "Windows 10 and 11",
+            /(x64|x86_64|amd64).*(-setup\.exe|\.msi)$/,
+          ],
+          "win-arm": [
+            "Windows on ARM",
+            /(arm64|aarch64).*(-setup\.exe|\.msi)$/,
+          ],
+          "mac-arm": ["macOS, Apple Silicon", /(aarch64|arm64).*\.dmg$/],
+          "mac-x64": ["macOS, Intel", /(x64|x86_64|amd64).*\.dmg$/],
+          "linux-appimage": ["Linux, AppImage", /\.appimage$/],
+          "linux-deb": ["Debian and Ubuntu", /\.deb$/],
+          "linux-rpm": ["Fedora and openSUSE", /\.rpm$/],
+        };
+        var STEPS = {
+          win: [
+            "Open the downloaded installer.",
+            "If Windows says it protected your PC, choose More info, then Run anyway. Oshabe is not code-signed yet.",
+            "Finish the setup, then open Oshabe from the Start menu.",
+          ],
+          mac: [
+            "Open the .dmg and drag Oshabe into Applications.",
+            "The first time, right-click Oshabe and choose Open, then confirm. Oshabe is not code-signed yet.",
+            "Allow Microphone, Accessibility and System audio recording when macOS asks.",
+          ],
+          linux: [
+            "AppImage: run chmod +x on the file, then start it.",
+            "Debian and Ubuntu: sudo apt install ./the-file.deb",
+            "Fedora and openSUSE: sudo dnf install ./the-file.rpm",
+          ],
+        };
+        function $(id) {
+          return document.getElementById(id);
+        }
+        var p = new URLSearchParams(location.search).get("p") || "";
+        var ua = navigator.userAgent || "";
+        function guess() {
+          if (/Windows/i.test(ua)) return "win-x64";
+          if (/Mac/i.test(ua)) return "mac-arm";
+          if (/Linux|X11/i.test(ua) && !/Android/i.test(ua))
+            return "linux-appimage";
+          return "win-x64";
+        }
+        function run(key) {
+          var meta = KEYS[key];
+          if (!meta) key = "win-x64";
+          meta = KEYS[key];
+          $("title").textContent = "Oshabe for " + meta[0] + ".";
+          fetch("https://api.github.com/repos/" + REPO + "/releases/latest", {
+            headers: { Accept: "application/vnd.github+json" },
+          })
+            .then(function (r) {
+              if (r.status === 404) return null;
+              if (!r.ok) throw new Error(r.status);
+              return r.json();
+            })
+            .then(function (rel) {
+              if (!rel) {
+                $("tag").textContent = "Not released yet";
+                $("lead").textContent =
+                  "There is nothing to download for this system yet.";
+                $("none").hidden = false;
+                return;
+              }
+              var asset = null;
+              (rel.assets || []).forEach(function (a) {
+                if (!asset && meta[1].test(a.name.toLowerCase())) asset = a;
+              });
+              if (!asset) {
+                $("tag").textContent = "Build not available";
+                $("lead").textContent =
+                  "This release has no file for " + meta[0] + ".";
+                $("none").hidden = false;
+                return;
+              }
+              document.body.className = "state-ok";
+              $("tag").textContent = "Version " + (rel.tag_name || "");
+              $("lead").textContent =
+                "Thanks for trying Oshabe. It is free and runs on your computer.";
+              $("ok").hidden = false;
+              $("fname").textContent = asset.name;
+              $("retry").href = asset.browser_download_url;
+              var os = key.split("-")[0];
+              var list = STEPS[os] || STEPS.linux;
+              $("steps-l").innerHTML = list
+                .map(function (s) {
+                  return (
+                    "<li>" +
+                    s.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
+                    "</li>"
+                  );
+                })
+                .join("");
+              $("steps").hidden = false;
+              setTimeout(function () {
+                location.href = asset.browser_download_url;
+              }, 900);
+            })
+            .catch(function () {
+              $("tag").textContent = "Connection problem";
+              $("lead").textContent = "The release server did not answer.";
+              $("net").hidden = false;
+            });
+        }
+        run(KEYS[p] ? p : guess());
+      })();
+    </script>
+  </body>
+</html>

@@ -13,6 +13,9 @@
 - Not code-signed yet: Windows SmartScreen or macOS Gatekeeper may warn on first run.
 
 ## Links
+- Documentation (Markdown): https://oshabe.hikariwebworks.studio/docs.md
+- Full documentation for LLMs: https://oshabe.hikariwebworks.studio/llms-full.txt
+- Documentation page: https://oshabe.hikariwebworks.studio/docs/
 - Home and downloads: https://oshabe.hikariwebworks.studio/
 - Source code and releases: https://github.com/Dev-V-Trivedi/oshabe
 - Maker: https://hikariwebworks.studio
