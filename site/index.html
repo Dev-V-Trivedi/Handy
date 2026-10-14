@@ -3,93 +3,224 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>
-      Oshabe | Meeting notes and voice dictation that run on your computer
-    </title>
+    <title>Oshabe | Free AI meeting notes and voice dictation, offline</title>
     <meta
       name="description"
-      content="Oshabe records your calls on your own computer and writes the transcript and summary, no bot joins. Also types what you say in any app. Free, open source, works offline."
+      content="Oshabe is a free, open-source desktop app that writes meeting notes without a bot joining your call, and types what you say into any app. It runs on your computer and works offline on Windows, macOS and Linux."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1"
     />
     <link rel="canonical" href="https://oshabe.hikariwebworks.studio/" />
+    <meta name="author" content="Hikari Webworks" />
+    <meta name="theme-color" content="#1B1830" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Oshabe" />
     <meta
       property="og:title"
-      content="Oshabe | Meeting notes and voice dictation on your computer"
+      content="Oshabe | Meeting notes without a bot. Dictation without the cloud."
     />
     <meta
       property="og:description"
-      content="Take notes on every call without a bot in the room. Free, open source, offline."
+      content="Free, open-source meeting notes and voice dictation that run on your own computer."
     />
     <meta property="og:url" content="https://oshabe.hikariwebworks.studio/" />
-    <meta name="theme-color" content="#4338CA" />
+    <meta
+      property="og:image"
+      content="https://oshabe.hikariwebworks.studio/og-image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Oshabe app window showing a live meeting transcript"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Oshabe | Meeting notes without a bot" />
+    <meta
+      name="twitter:description"
+      content="Free, open-source meeting notes and voice dictation that run on your own computer."
+    />
+    <meta
+      name="twitter:image"
+      content="https://oshabe.hikariwebworks.studio/og-image.png"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234338CA'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23FFB224'/%3E%3C/svg%3E"
+      rel="alternate"
+      type="text/plain"
+      href="/llms.txt"
+      title="LLM-readable summary"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
     />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Oshabe",
-        "applicationCategory": "ProductivityApplication",
-        "operatingSystem": "Windows, macOS, Linux",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "Meeting notes and voice dictation that run on your computer.",
-        "url": "https://oshabe.hikariwebworks.studio/",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Hikari Webworks",
-          "url": "https://hikariwebworks.studio"
-        }
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://hikariwebworks.studio/#org",
+            "name": "Hikari Webworks",
+            "url": "https://hikariwebworks.studio",
+            "sameAs": ["https://github.com/Dev-V-Trivedi"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://oshabe.hikariwebworks.studio/#website",
+            "url": "https://oshabe.hikariwebworks.studio/",
+            "name": "Oshabe",
+            "publisher": { "@id": "https://hikariwebworks.studio/#org" },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://oshabe.hikariwebworks.studio/#app",
+            "name": "Oshabe",
+            "alternateName": "Oshabe AI meeting notes and dictation",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "Meeting notes and voice dictation",
+            "operatingSystem": "Windows 10, Windows 11, macOS, Linux",
+            "description": "Free open-source desktop app that records meetings on your computer without a bot, writes a transcript and summary, and types what you say into any app. Speech recognition runs offline.",
+            "url": "https://oshabe.hikariwebworks.studio/",
+            "downloadUrl": "https://github.com/Dev-V-Trivedi/oshabe/releases/latest",
+            "installUrl": "https://github.com/Dev-V-Trivedi/oshabe/releases/latest",
+            "license": "https://opensource.org/license/mit",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            },
+            "featureList": [
+              "Meeting notes without a bot joining the call",
+              "Live transcript with You and Others labelled",
+              "Summary with decisions and action items",
+              "Export to Word or PDF",
+              "Voice dictation into any app",
+              "Offline speech recognition",
+              "Automatic deletion of old notes",
+              "Custom vocabulary"
+            ],
+            "author": { "@id": "https://hikariwebworks.studio/#org" },
+            "publisher": { "@id": "https://hikariwebworks.studio/#org" }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is Oshabe really free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Oshabe is free with no account, no subscription and no usage limits. It is open source under the MIT licence."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does a bot join my Zoom, Google Meet or Teams call?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Oshabe records the audio playing on your own computer next to your microphone, so nothing joins the call and other participants see no extra attendee. Laws about recording differ by country, so tell people when you take notes."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does my audio get uploaded?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Speech recognition runs on your computer. For meetings, Oshabe saves only the transcript text and never keeps the recording."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Do I need an API key, an account or Ollama?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. A built-in offline model handles cleanup and summaries. You can switch to Ollama or your own provider in Settings if you prefer."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which operating systems does Oshabe support?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Windows 10 and 11 (64-bit and ARM), macOS on Apple Silicon and Intel, and Linux as AppImage, deb and rpm packages."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I export meeting notes to Word or PDF?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Each meeting exports to a Word (.docx) or PDF file. You can also set old notes to delete themselves after a number of days you choose."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Why does my English sometimes come out in another language?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Automatic language detection can guess wrong on accented speech. Set the language to English in Settings and Oshabe will stay in English."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Who makes Oshabe?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Oshabe is made by Hikari Webworks in Hyderabad, India. It is a fork of the open-source Handy project by CJ Pais, released under the MIT licence."
+                }
+              }
+            ]
+          }
+        ]
       }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-    />
     <style>
-      /* Layout: left-weighted hero beside a live product mock, then alternating full-width bands. */
+      /* Concept: a dark "recording room" hero with one amber light source, then warm paper sections. */
       :root {
-        --bg: #fbf8f3;
-        --surface: #ffffff;
+        --paper: #f6f2ea;
+        --card: #fffdf8;
         --ink: #17141f;
-        --muted: #5b566b;
-        --line: #e7e1d6;
+        --muted: #605a70;
+        --line: #e4ddd0;
         --indigo: #4338ca;
-        --indigo-ink: #ffffff;
         --amber: #ffb224;
-        --night: #1b1830;
+        --night: #14111f;
+        --night2: #1d1a31;
         --night-ink: #f2eefb;
-        --night-muted: #b9b3cf;
-        --ok: #1f8a5b;
-        --rec: #e5484d;
+        --night-muted: #a9a3c2;
+        --night-line: #2e2a47;
+        --rec: #ff5a5f;
         --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-        --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
-        --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+        --body: "Geist", "Segoe UI", system-ui, sans-serif;
+        --mono: "Geist Mono", ui-monospace, Consolas, monospace;
       }
       @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
-          --bg: #14111f;
-          --surface: #1e1a30;
+          --paper: #100e1a;
+          --card: #1a1729;
           --ink: #f2eefb;
-          --muted: #b0aac6;
-          --line: #322d4a;
-          --indigo: #8b83f5;
-          --indigo-ink: #14111f;
-          --night: #0e0b18;
+          --muted: #aaa4c0;
+          --line: #2c2843;
+          --indigo: #9a93ff;
           color-scheme: dark;
         }
       }
       :root[data-theme="dark"] {
-        --bg: #14111f;
-        --surface: #1e1a30;
+        --paper: #100e1a;
+        --card: #1a1729;
         --ink: #f2eefb;
-        --muted: #b0aac6;
-        --line: #322d4a;
-        --indigo: #8b83f5;
-        --indigo-ink: #14111f;
-        --night: #0e0b18;
+        --muted: #aaa4c0;
+        --line: #2c2843;
+        --indigo: #9a93ff;
         color-scheme: dark;
       }
       * {
@@ -97,243 +228,415 @@
       }
       html {
         scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
       }
       body {
-        background: var(--bg);
+        margin: 0;
+        background: var(--paper);
         color: var(--ink);
         font: 17px/1.6 var(--body);
-        padding-block: 0;
-        padding-left: max(16px, env(safe-area-inset-left, 0px));
-        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        -webkit-font-smoothing: antialiased;
       }
       a {
         color: inherit;
       }
-      .w {
-        max-width: 1080px;
+      .wrap {
+        max-width: 1160px;
         margin: 0 auto;
+        padding-left: max(20px, env(safe-area-inset-left, 0px));
+        padding-right: max(20px, env(safe-area-inset-right, 0px));
       }
       h1,
       h2,
       h3 {
         font-family: var(--display);
-        letter-spacing: -0.025em;
-        text-wrap: balance;
         margin: 0;
-      }
-      h1 {
-        font-size: clamp(38px, 6.4vw, 68px);
-        line-height: 1.02;
-        font-weight: 800;
+        text-wrap: balance;
       }
       h2 {
-        font-size: clamp(28px, 4vw, 42px);
-        line-height: 1.1;
-        font-weight: 700;
+        font-size: clamp(32px, 5vw, 56px);
+        line-height: 1.02;
+        letter-spacing: -0.035em;
+        font-weight: 800;
       }
       h3 {
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: -0.01em;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+        font-weight: 600;
+        line-height: 1.2;
       }
       p {
         margin: 0;
       }
-      .mono {
-        font-family: var(--mono);
-        font-size: 13px;
-        letter-spacing: 0.02em;
-      }
-      .eyebrow {
-        font-family: var(--mono);
-        font-size: 12px;
+      .kicker {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        letter-spacing: 0.12em;
         color: var(--muted);
       }
-      /* header */
-      .top {
+      :focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+
+      /* ---------- hero ---------- */
+      .hero {
+        background: var(--night);
+        color: var(--night-ink);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero:before {
+        content: "";
+        position: absolute;
+        width: 780px;
+        height: 780px;
+        right: -180px;
+        top: -260px;
+        background: radial-gradient(
+          closest-side,
+          rgba(255, 178, 36, 0.22),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      header.bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        padding-block: 18px;
+        padding-block: 20px;
+        position: relative;
+        z-index: 2;
       }
       .brand {
         display: flex;
         align-items: center;
         gap: 10px;
         font: 800 22px var(--display);
-        letter-spacing: -0.03em;
+        letter-spacing: -0.04em;
         text-decoration: none;
       }
-      .mark {
-        width: 28px;
-        height: 28px;
-        border-radius: 9px;
-        background: var(--indigo);
+      .seal {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--amber);
         position: relative;
         flex: none;
       }
-      .mark:after {
+      .seal:after {
         content: "";
         position: absolute;
         inset: 9px;
         border-radius: 50%;
-        background: var(--amber);
+        background: var(--night);
       }
-      .top nav {
+      header.bar nav {
         display: flex;
-        gap: 22px;
+        gap: 28px;
         font-size: 15px;
-        color: var(--muted);
+        color: var(--night-muted);
       }
-      .top nav a {
+      header.bar nav a {
         text-decoration: none;
       }
-      .top nav a:hover {
-        color: var(--ink);
+      header.bar nav a:hover {
+        color: var(--night-ink);
       }
-      @media (max-width: 640px) {
-        .top nav a.opt {
+      @media (max-width: 700px) {
+        header.bar nav a.opt {
           display: none;
         }
       }
-      /* hero */
-      .hero {
+      .hero-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-        gap: 44px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+        gap: 56px;
         align-items: center;
-        padding-block: 44px 64px;
+        padding-block: 40px 88px;
+        position: relative;
+        z-index: 2;
       }
-      @media (max-width: 900px) {
-        .hero {
+      @media (max-width: 960px) {
+        .hero-grid {
           grid-template-columns: minmax(0, 1fr);
-          padding-block: 24px 48px;
+          gap: 44px;
+          padding-block: 20px 64px;
         }
       }
-      .lead {
-        font-size: 19px;
-        color: var(--muted);
-        max-width: 30em;
-        margin-top: 20px;
+      h1 {
+        font-size: clamp(48px, 8.4vw, 112px);
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+        font-weight: 800;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--amber);
+      }
+      .sub {
+        margin-top: 26px;
+        font-size: 20px;
+        line-height: 1.5;
+        color: var(--night-muted);
+        max-width: 25em;
       }
       .cta {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
+        margin-top: 34px;
         align-items: center;
-        margin-top: 30px;
       }
       .btn {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        background: var(--indigo);
-        color: var(--indigo-ink);
         font: 600 17px var(--body);
-        padding: 15px 24px;
-        border-radius: 12px;
+        padding: 16px 26px;
+        border-radius: 999px;
         text-decoration: none;
-        border: 0;
-        cursor: pointer;
+        background: var(--amber);
+        color: #1b1830;
+        transition: transform 0.15s ease;
       }
       .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn:focus-visible,
-      a:focus-visible,
-      summary:focus-visible {
-        outline: 3px solid var(--amber);
-        outline-offset: 3px;
+        transform: translateY(-2px);
       }
       .btn.ghost {
         background: transparent;
-        color: var(--ink);
-        border: 1.5px solid var(--line);
-      }
-      .sub {
-        margin-top: 14px;
-        color: var(--muted);
-        font-size: 14px;
-      }
-      /* product mock */
-      .mock {
-        background: var(--night);
         color: var(--night-ink);
-        border-radius: 18px;
-        padding: 18px;
-        box-shadow: 0 24px 60px -24px rgba(27, 24, 48, 0.55);
-        min-width: 0;
+        border: 1px solid var(--night-line);
       }
-      .mock-h {
+      .fine {
+        margin-top: 16px;
+        font-size: 14px;
+        color: var(--night-muted);
+      }
+      .ticks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 22px;
+        margin-top: 30px;
+        font: 500 12px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--night-muted);
+      }
+      .ticks span:before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--amber);
+        margin-right: 8px;
+        vertical-align: 1px;
+      }
+
+      /* app window */
+      .win {
+        background: var(--night2);
+        border: 1px solid var(--night-line);
+        border-radius: 18px;
+        box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.7);
+        min-width: 0;
+        overflow: hidden;
+      }
+      .win-top {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 14px;
+        gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--night-line);
       }
-      .dot {
+      .rec {
         width: 10px;
         height: 10px;
         border-radius: 50%;
         background: var(--rec);
-        animation: pulse 1.6s ease-in-out infinite;
+        animation: blink 1.4s ease-in-out infinite;
       }
-      @keyframes pulse {
+      @keyframes blink {
         50% {
-          opacity: 0.35;
+          opacity: 0.25;
         }
       }
+      .clock {
+        font: 500 14px var(--mono);
+      }
+      .win-top .tag {
+        font: 500 12px var(--mono);
+        color: var(--night-muted);
+      }
+      .win-top .btns {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+      }
+      .chip {
+        font: 600 12px var(--body);
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--night-line);
+      }
+      .chip.stop {
+        background: var(--rec);
+        color: #fff;
+      }
+      .wave {
+        display: block;
+        width: 100%;
+        height: 96px;
+      }
+      .tx {
+        padding: 6px 18px 20px;
+        display: grid;
+        gap: 14px;
+      }
+      .ln {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 12px;
+        font-size: 15.5px;
+        line-height: 1.5;
+      }
+      .ln b {
+        font: 500 11px var(--mono);
+        letter-spacing: 0.1em;
+        padding-top: 5px;
+        color: var(--amber);
+      }
+      .ln.o b {
+        color: #9ea8ff;
+      }
+      .caret:after {
+        content: "";
+        display: inline-block;
+        width: 2px;
+        height: 1.05em;
+        background: var(--amber);
+        margin-left: 3px;
+        vertical-align: -2px;
+        animation: blink 1s steps(2) infinite;
+      }
       @media (prefers-reduced-motion: reduce) {
-        .dot {
+        .rec,
+        .caret:after {
           animation: none;
         }
         html {
           scroll-behavior: auto;
         }
       }
-      .mock-h .t {
-        font-family: var(--mono);
-        font-size: 14px;
+
+      /* ---------- works-with strip ---------- */
+      .strip {
+        border-block: 1px solid var(--line);
+        padding-block: 22px;
+        overflow: hidden;
       }
-      .mock-h .b {
-        margin-left: auto;
+      .strip p {
         display: flex;
-        gap: 8px;
+        flex-wrap: wrap;
+        gap: 10px 36px;
+        justify-content: center;
+        font: 500 13px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
       }
-      .pill {
-        font: 600 12px var(--body);
-        padding: 6px 11px;
-        border-radius: 8px;
-        background: #2b2650;
+
+      section.s {
+        padding-block: 104px 0;
+      }
+      .head {
+        max-width: 760px;
+        margin-bottom: 52px;
+      }
+      .head p.lede {
+        margin-top: 20px;
+        font-size: 19px;
+        color: var(--muted);
+        max-width: 34em;
+      }
+
+      /* ---------- bento ---------- */
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .tile {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 30px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .tile p {
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .t-meet {
+        grid-column: span 4;
+        grid-row: span 2;
+        background: var(--night);
         color: var(--night-ink);
+        border-color: var(--night-line);
       }
-      .pill.stop {
-        background: var(--rec);
-        color: #fff;
+      .t-meet p {
+        color: var(--night-muted);
       }
-      .bars {
+      .t-key {
+        grid-column: span 2;
+      }
+      .t-priv {
+        grid-column: span 2;
+      }
+      .t-export {
+        grid-column: span 3;
+      }
+      .t-model {
+        grid-column: span 3;
+      }
+      @media (max-width: 900px) {
+        .bento {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .tile,
+        .t-meet,
+        .t-key,
+        .t-priv,
+        .t-export,
+        .t-model {
+          grid-column: auto;
+          grid-row: auto;
+        }
+      }
+      .lvls {
+        margin-top: auto;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 14px;
-      }
-      .lv {
-        font-size: 11px;
+        gap: 16px;
+        font: 500 11px var(--mono);
+        letter-spacing: 0.06em;
         color: var(--night-muted);
-        margin-bottom: 5px;
       }
-      .lv i {
+      .lvls i {
         display: block;
-        margin-top: 5px;
+        margin-top: 8px;
         height: 6px;
         border-radius: 9px;
-        background: #2b2650;
+        background: var(--night-line);
         position: relative;
         overflow: hidden;
       }
-      .lv i:after {
+      .lvls i:after {
         content: "";
         position: absolute;
         inset: 0;
@@ -341,563 +644,846 @@
         background: var(--amber);
         border-radius: 9px;
       }
-      .tx {
-        background: #241f42;
-        border-radius: 12px;
-        padding: 14px;
+      .flow {
         display: grid;
-        gap: 12px;
-        font-size: 14.5px;
-        line-height: 1.5;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 14px;
+        align-items: stretch;
       }
-      .ln {
-        display: grid;
-        grid-template-columns: 62px minmax(0, 1fr);
-        gap: 10px;
-      }
-      .ln b {
-        font: 500 11px var(--mono);
-        color: var(--amber);
-        padding-top: 3px;
-      }
-      .ln.o b {
-        color: #9aa6ff;
-      }
-      /* bands */
-      .band {
-        padding-block: 72px;
-      }
-      .night {
-        background: var(--night);
-        color: var(--night-ink);
-        margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
-        padding-inline: max(16px, env(safe-area-inset-left, 0px));
-        border-radius: 0;
-      }
-      .night .muted,
-      .night .eyebrow {
-        color: var(--night-muted);
-      }
-      .head {
-        max-width: 36em;
-        margin-bottom: 36px;
-      }
-      .head p {
-        margin-top: 12px;
-        color: var(--muted);
-      }
-      .night .head p {
-        color: var(--night-muted);
-      }
-      .steps {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-        gap: 0;
-        border-top: 1px solid #3a3560;
-      }
-      .step {
-        padding: 26px 24px 8px 0;
-      }
-      .step .eyebrow {
-        display: block;
-        margin-bottom: 10px;
-      }
-      .step p {
-        color: var(--night-muted);
-        margin-top: 8px;
-        font-size: 16px;
-      }
-      .feat {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 18px;
-      }
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 22px;
-        min-width: 0;
-      }
-      .card p {
-        color: var(--muted);
-        margin-top: 8px;
-        font-size: 16px;
-      }
-      .two {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 48px;
-        align-items: start;
-      }
-      @media (max-width: 820px) {
-        .two {
+      @media (max-width: 640px) {
+        .flow {
           grid-template-columns: minmax(0, 1fr);
-          gap: 28px;
+        }
+        .flow .arrow {
+          display: none;
         }
       }
-      .facts {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 14px;
+      .flow .pane {
+        background: var(--night2);
+        border: 1px solid var(--night-line);
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 14px;
+        line-height: 1.55;
+        min-width: 0;
       }
-      .facts li {
+      .flow .pane h4 {
+        margin: 0 0 8px;
+        font: 500 11px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--amber);
+      }
+      .flow .arrow {
+        align-self: center;
+        font: 500 22px var(--mono);
+        color: var(--amber);
+      }
+      .flow ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--night-ink);
+      }
+      .keys {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: auto;
+        flex-wrap: wrap;
+      }
+      .key {
+        font: 500 15px var(--mono);
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-bottom-width: 4px;
+      }
+      .typed {
+        font: 500 15px/1.5 var(--mono);
+        margin-top: 6px;
+        color: var(--ink);
+      }
+      .zero {
+        font: 800 76px/1 var(--display);
+        letter-spacing: -0.05em;
+        margin-top: auto;
+        color: var(--indigo);
+      }
+      .zero small {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: block;
+        margin-top: 6px;
+      }
+      .files {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+        flex-wrap: wrap;
+      }
+      .file {
+        font: 500 13px var(--mono);
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--paper);
+      }
+      .presets {
         display: grid;
-        grid-template-columns: minmax(0, 9.5em) minmax(0, 1fr);
-        gap: 16px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--line);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: auto;
+      }
+      .preset {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--paper);
+        font-size: 14px;
+      }
+      .preset b {
+        display: block;
+        font-family: var(--display);
+        font-size: 17px;
+      }
+      .preset span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* ---------- steps ---------- */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0;
+        border-top: 1px solid var(--line);
+      }
+      @media (max-width: 800px) {
+        .steps {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .step {
+        padding: 30px 32px 10px 0;
+      }
+      .step .n {
+        font: 800 64px/1 var(--display);
+        letter-spacing: -0.05em;
+        color: var(--amber);
+      }
+      .step h3 {
+        margin: 14px 0 8px;
+      }
+      .step p {
+        color: var(--muted);
+      }
+
+      /* ---------- compare ---------- */
+      .tbl {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: var(--card);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 620px;
         font-size: 16px;
       }
-      .facts span:first-child {
-        font-family: var(--mono);
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--muted);
-        padding-top: 3px;
+      th,
+      td {
+        text-align: left;
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
       }
-      /* downloads */
+      th {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      td.us {
+        font-weight: 600;
+        color: var(--indigo);
+      }
+      td:first-child {
+        font-weight: 500;
+      }
+
+      /* ---------- downloads ---------- */
       .dl {
         display: grid;
         gap: 10px;
       }
       .row {
         display: grid;
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
-        gap: 14px;
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+        gap: 18px;
         align-items: center;
-        background: var(--surface);
+        background: var(--card);
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 14px 18px;
+        border-radius: 16px;
+        padding: 18px 22px;
       }
       .row.hit {
         border-color: var(--indigo);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--indigo) 22%, transparent);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--indigo) 18%, transparent);
       }
       .row .n {
-        font-weight: 600;
+        font: 600 18px var(--display);
+        letter-spacing: -0.01em;
       }
       .row .d {
         color: var(--muted);
         font-size: 14px;
       }
-      .row a.get {
+      .get {
         font: 600 15px var(--body);
-        background: var(--indigo);
-        color: var(--indigo-ink);
         text-decoration: none;
-        padding: 9px 16px;
-        border-radius: 9px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
         white-space: nowrap;
       }
-      .row a.get.off {
+      .get.off {
         background: transparent;
-        color: var(--muted);
+        color: var(--ink);
         border: 1px solid var(--line);
       }
-      @media (max-width: 640px) {
+      @media (max-width: 680px) {
         .row {
           grid-template-columns: minmax(0, 1fr) auto;
         }
-        .row .d {
-          grid-column: 1/-1;
+        .row .fmt {
+          grid-column: 1 / -1;
           order: 3;
         }
       }
-      .note {
-        color: var(--muted);
+      .small {
+        margin-top: 16px;
         font-size: 14px;
-        margin-top: 14px;
+        color: var(--muted);
+        max-width: 46em;
+      }
+
+      /* ---------- faq ---------- */
+      .faq {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: 56px;
+      }
+      @media (max-width: 860px) {
+        .faq {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 28px;
+        }
       }
       details {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-top: 10px;
+        border-top: 1px solid var(--line);
+        padding: 20px 0;
+      }
+      details:last-child {
+        border-bottom: 1px solid var(--line);
       }
       summary {
         cursor: pointer;
-        font-weight: 600;
+        font: 600 19px var(--display);
+        letter-spacing: -0.01em;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary:after {
+        content: "+";
+        font: 500 22px var(--mono);
+        color: var(--indigo);
+      }
+      details[open] summary:after {
+        content: "\2212";
       }
       details p {
+        margin-top: 12px;
         color: var(--muted);
-        margin-top: 10px;
-        font-size: 16px;
+        max-width: 38em;
+      }
+
+      /* ---------- closing ---------- */
+      .close {
+        margin-top: 120px;
+        background: var(--night);
+        color: var(--night-ink);
+        padding-block: 96px;
+        text-align: left;
+      }
+      .close h2 {
+        max-width: 12em;
+      }
+      .close p {
+        margin-top: 18px;
+        color: var(--night-muted);
+        max-width: 30em;
+        font-size: 19px;
       }
       footer {
-        border-top: 1px solid var(--line);
-        padding-block: 30px 48px;
-        color: var(--muted);
-        font-size: 14px;
+        padding-block: 36px 56px;
         display: flex;
         flex-wrap: wrap;
-        gap: 8px 24px;
+        gap: 10px 28px;
         justify-content: space-between;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      footer a {
+        text-underline-offset: 3px;
       }
     </style>
   </head>
   <body>
-    <div class="w">
-      <div class="top">
-        <a class="brand" href="#top"><span class="mark"></span>Oshabe</a>
-        <nav>
-          <a class="opt" href="#meetings">Meeting notes</a
-          ><a class="opt" href="#dictation">Dictation</a
-          ><a href="#download">Download</a
-          ><a class="opt" href="https://github.com/Dev-V-Trivedi/oshabe"
-            >GitHub</a
+    <div class="hero">
+      <div class="wrap">
+        <header class="bar">
+          <a class="brand" href="/" aria-label="Oshabe home"
+            ><span class="seal"></span>Oshabe</a
           >
-        </nav>
-      </div>
+          <nav aria-label="Primary">
+            <a class="opt" href="#features">Features</a>
+            <a class="opt" href="#how">How it works</a>
+            <a class="opt" href="#faq">FAQ</a>
+            <a href="#download">Download</a>
+          </nav>
+        </header>
 
-      <main id="top">
-        <section class="hero">
-          <div>
-            <p class="eyebrow">Free · Open source · Runs on your computer</p>
-            <h1 style="margin-top: 14px">
-              Take notes on every call without a bot in the room.
-            </h1>
-            <p class="lead">
-              Oshabe records the call audio on your own machine, writes the
-              transcript with proper punctuation, and gives you a summary with
-              action items. Outside calls, hold a key and talk to type in any
-              app.
-            </p>
-            <div class="cta">
-              <a class="btn" id="primary" href="#download">Download Oshabe</a>
-              <a class="btn ghost" href="#meetings">How meeting notes work</a>
-            </div>
-            <p class="sub" id="primary-sub">Windows, macOS and Linux.</p>
-          </div>
-
-          <div
-            class="mock"
-            role="img"
-            aria-label="Example of a meeting being recorded, with a live transcript"
-          >
-            <div class="mock-h">
-              <span class="dot"></span><span class="t">12:41</span
-              ><span class="mono" style="color: var(--night-muted)"
-                >Recording</span
-              >
-              <span class="b"
-                ><span class="pill">Pause</span
-                ><span class="pill stop">Stop</span></span
-              >
-            </div>
-            <div class="bars">
-              <div class="lv">You (microphone)<i style="--w: 62%"></i></div>
-              <div class="lv">
-                Others (computer audio)<i style="--w: 38%"></i>
-              </div>
-            </div>
-            <div class="tx">
-              <div class="ln o">
-                <b>OTHERS</b
-                ><span
-                  >Can we lock the launch for the 28th? Design is done, QA needs
-                  two more days.</span
-                >
-              </div>
-              <div class="ln">
-                <b>YOU</b
-                ><span
-                  >Yes. I will send the final build on the 26th and update the
-                  checklist today.</span
-                >
-              </div>
-              <div class="ln o">
-                <b>OTHERS</b
-                ><span>Great. Rahul will own the release notes.</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="band night" id="meetings">
-          <div class="w">
-            <div class="head">
-              <p class="eyebrow">Meeting notes</p>
-              <h2 style="margin-top: 10px">
-                Works with any call, because it listens to the computer, not the
-                app.
-              </h2>
-              <p>
-                Zoom, Google Meet, Teams, Slack huddles and browser calls all
-                play through your speakers or headphones. Oshabe records that
-                audio next to your microphone.
-              </p>
-            </div>
-            <div class="steps">
-              <div class="step">
-                <span class="eyebrow">Start</span>
-                <h3>One key or one click</h3>
-                <p>
-                  Use your shortcut, the tray menu or the Start button. Oshabe
-                  can also ask when it notices a call.
-                </p>
-              </div>
-              <div class="step">
-                <span class="eyebrow">During</span>
-                <h3>Live transcript, both sides</h3>
-                <p>
-                  Your voice and the other people are captured separately and
-                  labelled You and Others. Pause and resume any time.
-                </p>
-              </div>
-              <div class="step">
-                <span class="eyebrow">After</span>
-                <h3>Summary you can send</h3>
-                <p>
-                  Decisions and action items, ready to copy or export as Word or
-                  PDF. Old notes delete themselves after the days you choose.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="band" id="dictation">
-          <div class="head">
-            <p class="eyebrow">Dictation</p>
-            <h2 style="margin-top: 10px">
-              Talk, and clean text lands where your cursor is.
-            </h2>
-            <p>
-              Hold the shortcut to talk and release to stop. Tap it once to go
-              hands-free, tap again to finish.
-            </p>
-          </div>
-          <div class="feat">
-            <div class="card">
-              <h3>Fast or accurate, your pick</h3>
-              <p>
-                Choose a preset and Oshabe downloads the right speech model
-                once. It then works with no internet.
-              </p>
-            </div>
-            <div class="card">
-              <h3>Cleanup without keys</h3>
-              <p>
-                A built-in offline model removes filler words and fixes
-                punctuation. No account, no API key.
-              </p>
-            </div>
-            <div class="card">
-              <h3>Your words, spelled right</h3>
-              <p>
-                Add names, products and jargon so they come out correctly every
-                time.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section class="band" style="padding-top: 8px">
-          <div class="two">
+        <main>
+          <div class="hero-grid">
             <div>
-              <p class="eyebrow">Privacy</p>
-              <h2 style="margin-top: 10px">
-                Your audio stays on your computer.
-              </h2>
-              <p style="color: var(--muted); margin-top: 12px">
-                Speech recognition runs locally. For meetings, Oshabe keeps text
-                only and never saves the recording.
+              <h1>Say it.<br /><em>It&rsquo;s written.</em></h1>
+              <p class="sub">
+                Meeting notes with no bot in the call, and dictation into any
+                app. Everything runs on your computer and works offline.
               </p>
+              <div class="cta">
+                <a class="btn" id="primary" href="#download">Download free</a>
+                <a class="btn ghost" href="#features">See what it does</a>
+              </div>
+              <p class="fine" id="primary-sub">
+                Windows, macOS and Linux. No account.
+              </p>
+              <div class="ticks">
+                <span>Free</span><span>Open source</span><span>Offline</span>
+              </div>
             </div>
-            <ul class="facts">
-              <li>
-                <span>Recording</span
-                ><span>Never stored. Only the transcript text is saved.</span>
-              </li>
-              <li>
-                <span>Where notes live</span
-                ><span
-                  >A folder on your computer. Export to Word or PDF when you
-                  want a copy.</span
-                >
-              </li>
-              <li>
-                <span>Network use</span
-                ><span
-                  >Downloading models and checking for updates. Nothing else
-                  unless you pick a cloud provider.</span
-                >
-              </li>
-              <li>
-                <span>Licence</span><span>MIT. Read the code on GitHub.</span>
-              </li>
-            </ul>
-          </div>
-        </section>
 
-        <section class="band" id="download" style="padding-top: 8px">
-          <div class="head">
-            <p class="eyebrow" id="ver">Latest version</p>
-            <h2 style="margin-top: 10px">Download for your computer</h2>
-            <p>
-              Pick the line that matches your machine. Not sure about a Mac?
-              Apple menu, About This Mac. "Apple M" means Apple Silicon, "Intel"
-              means Intel.
-            </p>
-          </div>
-          <div class="dl" id="dl">
-            <div class="row" data-k="win-x64">
-              <div>
-                <div class="n">Windows 10 or 11</div>
-                <div class="d">Most PCs. 64-bit Intel or AMD.</div>
-              </div>
-              <div class="d">Installer (.exe)</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-            <div class="row" data-k="win-arm">
-              <div>
-                <div class="n">Windows on ARM</div>
-                <div class="d">Snapdragon laptops such as Surface Pro X.</div>
-              </div>
-              <div class="d">Installer (.exe)</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-            <div class="row" data-k="mac-arm">
-              <div>
-                <div class="n">macOS, Apple Silicon</div>
-                <div class="d">M1, M2, M3, M4 and newer.</div>
-              </div>
-              <div class="d">Disk image (.dmg)</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-            <div class="row" data-k="mac-x64">
-              <div>
-                <div class="n">macOS, Intel</div>
-                <div class="d">Macs from 2020 and earlier.</div>
-              </div>
-              <div class="d">Disk image (.dmg)</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-            <div class="row" data-k="linux-appimage">
-              <div>
-                <div class="n">Linux, any distro</div>
-                <div class="d">Make it executable, then run it.</div>
-              </div>
-              <div class="d">AppImage</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-            <div class="row" data-k="linux-deb">
-              <div>
-                <div class="n">Linux, Debian and Ubuntu</div>
-                <div class="d">Install with your package manager.</div>
-              </div>
-              <div class="d">.deb</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-            <div class="row" data-k="linux-rpm">
-              <div>
-                <div class="n">Linux, Fedora and openSUSE</div>
-                <div class="d">Install with dnf or zypper.</div>
-              </div>
-              <div class="d">.rpm</div>
-              <a
-                class="get off"
-                href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
-                >Get</a
-              >
-            </div>
-          </div>
-          <p class="note">
-            Oshabe is not code-signed yet. On Windows choose More info, then Run
-            anyway. On Mac, right-click the app and choose Open the first time.
-          </p>
-        </section>
-
-        <section class="band" id="faq" style="padding-top: 8px">
-          <h2>Questions</h2>
-          <details>
-            <summary>Is it really free?</summary>
-            <p>
-              Yes. No account, no subscription, no limits. It is open source
-              under the MIT licence.
-            </p>
-          </details>
-          <details>
-            <summary>Do I need an API key or Ollama?</summary>
-            <p>
-              No. A built-in offline model handles cleanup and summaries. You
-              can switch to Ollama or your own provider in Settings.
-            </p>
-          </details>
-          <details>
-            <summary>Will the other people on the call know?</summary>
-            <p>
-              Oshabe does not join the call, so no one sees a bot. Laws about
-              recording differ by country, so tell people when you are taking
-              notes.
-            </p>
-          </details>
-          <details>
-            <summary>
-              Why is English sometimes typed in another language?
-            </summary>
-            <p>
-              Automatic language detection can guess wrong on accented English.
-              Set Language to English in Settings and it stays put.
-            </p>
-          </details>
-          <details>
-            <summary>Who makes Oshabe?</summary>
-            <p>
-              <a href="https://hikariwebworks.studio">Hikari Webworks</a> in
-              Hyderabad. It is a fork of the open source Handy project.
-            </p>
-          </details>
-        </section>
-
-        <footer>
-          <span
-            >Oshabe by
-            <a href="https://hikariwebworks.studio">Hikari Webworks</a></span
-          >
-          <span
-            ><a href="https://github.com/Dev-V-Trivedi/oshabe"
-              >Source on GitHub</a
+            <div
+              class="win"
+              role="img"
+              aria-label="Oshabe recording a meeting, showing a live transcript"
             >
-            · MIT licence · Based on
-            <a href="https://github.com/cjpais/Handy">Handy</a></span
+              <div class="win-top">
+                <span class="rec"></span><span class="clock">12:41</span
+                ><span class="tag">Product sync</span>
+                <span class="btns"
+                  ><span class="chip">Pause</span
+                  ><span class="chip stop">Stop</span></span
+                >
+              </div>
+              <canvas class="wave" id="wave" width="900" height="192"></canvas>
+              <div class="tx">
+                <div class="ln o">
+                  <b>OTHERS</b
+                  ><span
+                    >Can we lock the launch for the 28th? Design is done and QA
+                    needs two more days.</span
+                  >
+                </div>
+                <div class="ln">
+                  <b>YOU</b
+                  ><span
+                    >Yes. I&rsquo;ll send the final build on the 26th and update
+                    the checklist today.</span
+                  >
+                </div>
+                <div class="ln o">
+                  <b>OTHERS</b
+                  ><span class="caret"
+                    >Great. Rahul will own the release notes</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="wrap">
+        <p aria-label="Works with any call or app">
+          <span>Zoom</span><span>Google Meet</span><span>Microsoft Teams</span
+          ><span>Slack huddles</span><span>Browser calls</span
+          ><span>Any app you type in</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="s" id="features" aria-labelledby="f-h">
+        <div class="head">
+          <p class="kicker">What it does</p>
+          <h2 id="f-h" style="margin-top: 14px">
+            Two jobs, done on your own machine.
+          </h2>
+          <p class="lede">
+            Oshabe is a free desktop app for meeting notes and voice dictation.
+            It listens locally, so your audio never has to leave your computer.
+          </p>
+        </div>
+
+        <div class="bento">
+          <article class="tile t-meet">
+            <p class="kicker" style="color: var(--amber)">Meeting notes</p>
+            <h3 style="font-size: 30px">
+              Your whole call, turned into notes you can send.
+            </h3>
+            <p>
+              Oshabe records what plays on your computer next to your
+              microphone, so it works with Zoom, Meet, Teams and browser calls.
+              Nobody sees a bot join, and the recording itself is never saved.
+            </p>
+            <div class="lvls" aria-hidden="true">
+              <div><span>You (microphone)</span><i style="--w: 64%"></i></div>
+              <div>
+                <span>Others (computer audio)</span><i style="--w: 41%"></i>
+              </div>
+            </div>
+            <div class="flow">
+              <div class="pane">
+                <h4>Transcript</h4>
+                <b style="color: var(--amber); font: 500 11px var(--mono)"
+                  >OTHERS</b
+                >
+                Launch on the 28th?<br />
+                <b style="color: var(--amber); font: 500 11px var(--mono)"
+                  >YOU</b
+                >
+                Yes. Final build on the 26th.
+              </div>
+              <div class="arrow" aria-hidden="true">&rarr;</div>
+              <div class="pane">
+                <h4>Summary</h4>
+                <ul>
+                  <li>Launch locked for the 28th</li>
+                  <li>You: send build on the 26th</li>
+                  <li>Rahul: release notes</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="tile t-key">
+            <p class="kicker">Dictation</p>
+            <h3>Hold a key and talk.</h3>
+            <p>
+              Release to stop. Tap once to go hands-free, tap again to finish.
+            </p>
+            <div class="keys" aria-hidden="true">
+              <span class="key">Hold</span
+              ><span class="key">Your shortcut</span>
+            </div>
+            <div class="typed caret">
+              &ldquo;Thanks Priya, sending it over now&rdquo;
+            </div>
+          </article>
+
+          <article class="tile t-priv">
+            <p class="kicker">Privacy</p>
+            <h3>Audio uploaded</h3>
+            <p>
+              Speech recognition runs on your computer. Meeting audio is never
+              stored.
+            </p>
+            <div class="zero">0<small>bytes of your voice sent out</small></div>
+          </article>
+
+          <article class="tile t-export">
+            <p class="kicker">Keep it</p>
+            <h3>Export to Word or PDF.</h3>
+            <p>
+              One click makes a clean document you can share. Set old notes to
+              delete themselves after the number of days you choose.
+            </p>
+            <div class="files">
+              <span class="file">Product sync.docx</span
+              ><span class="file">Product sync.pdf</span>
+            </div>
+          </article>
+
+          <article class="tile t-model">
+            <p class="kicker">Speed or accuracy</p>
+            <h3>You pick how it feels.</h3>
+            <p>
+              Choose a preset and Oshabe downloads the right speech model once.
+              Then it works with no internet.
+            </p>
+            <div class="presets">
+              <div class="preset">
+                <b>Fast</b><span>Instant on any laptop</span>
+              </div>
+              <div class="preset">
+                <b>Balanced</b><span>The everyday pick</span>
+              </div>
+              <div class="preset"><b>Best</b><span>Most accurate</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="s" id="how" aria-labelledby="h-h">
+        <div class="head">
+          <p class="kicker">How it works</p>
+          <h2 id="h-h" style="margin-top: 14px">
+            From call to notes in three moves.
+          </h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="n">1</div>
+            <h3>Start</h3>
+            <p>
+              Press your shortcut, use the tray menu, or click Start. Two level
+              bars show that it hears you.
+            </p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <h3>Talk</h3>
+            <p>
+              The transcript fills in as people speak, with You and Others
+              labelled. Pause and resume whenever you need.
+            </p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <h3>Stop</h3>
+            <p>
+              Oshabe writes the summary, decisions and action items. Copy them
+              or export Word or PDF.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="s" aria-labelledby="c-h">
+        <div class="head">
+          <p class="kicker">Compared with cloud note-takers</p>
+          <h2 id="c-h" style="margin-top: 14px">
+            Notes without the trade-offs.
+          </h2>
+        </div>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Oshabe</th>
+                <th scope="col">Typical cloud note-taker</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Joins your call as a participant</td>
+                <td class="us">No</td>
+                <td>Yes, a bot appears in the attendee list</td>
+              </tr>
+              <tr>
+                <td>Where your audio goes</td>
+                <td class="us">Stays on your computer</td>
+                <td>Uploaded to the vendor&rsquo;s servers</td>
+              </tr>
+              <tr>
+                <td>Works offline</td>
+                <td class="us">Yes</td>
+                <td>No</td>
+              </tr>
+              <tr>
+                <td>Price</td>
+                <td class="us">Free, open source</td>
+                <td>Monthly subscription</td>
+              </tr>
+              <tr>
+                <td>Also types for you in any app</td>
+                <td class="us">Yes</td>
+                <td>Usually a separate product</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="s" id="download" aria-labelledby="d-h">
+        <div class="head">
+          <p class="kicker" id="ver">Download</p>
+          <h2 id="d-h" style="margin-top: 14px">
+            Get Oshabe for your computer.
+          </h2>
+          <p class="lede">
+            Pick the line that matches your machine. On a Mac, Apple menu then
+            About This Mac shows &ldquo;Apple M&rdquo; for Apple Silicon or
+            &ldquo;Intel&rdquo;.
+          </p>
+        </div>
+        <div class="dl" id="dl">
+          <div class="row" data-k="win-x64">
+            <div>
+              <div class="n">Windows 10 and 11</div>
+              <div class="d">Most PCs. 64-bit Intel or AMD.</div>
+            </div>
+            <div class="d fmt">Installer (.exe)</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+          <div class="row" data-k="win-arm">
+            <div>
+              <div class="n">Windows on ARM</div>
+              <div class="d">Snapdragon laptops such as Surface Pro X.</div>
+            </div>
+            <div class="d fmt">Installer (.exe)</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+          <div class="row" data-k="mac-arm">
+            <div>
+              <div class="n">macOS, Apple Silicon</div>
+              <div class="d">M1, M2, M3, M4 and newer.</div>
+            </div>
+            <div class="d fmt">Disk image (.dmg)</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+          <div class="row" data-k="mac-x64">
+            <div>
+              <div class="n">macOS, Intel</div>
+              <div class="d">Macs from 2020 and earlier.</div>
+            </div>
+            <div class="d fmt">Disk image (.dmg)</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+          <div class="row" data-k="linux-appimage">
+            <div>
+              <div class="n">Linux, any distribution</div>
+              <div class="d">Make it executable, then run it.</div>
+            </div>
+            <div class="d fmt">AppImage</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+          <div class="row" data-k="linux-deb">
+            <div>
+              <div class="n">Debian and Ubuntu</div>
+              <div class="d">Install with your package manager.</div>
+            </div>
+            <div class="d fmt">.deb</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+          <div class="row" data-k="linux-rpm">
+            <div>
+              <div class="n">Fedora and openSUSE</div>
+              <div class="d">Install with dnf or zypper.</div>
+            </div>
+            <div class="d fmt">.rpm</div>
+            <a
+              class="get off"
+              href="https://github.com/Dev-V-Trivedi/oshabe/releases/latest"
+              >Get</a
+            >
+          </div>
+        </div>
+        <p class="small">
+          Oshabe is not code-signed yet, so your system may show a warning the
+          first time. On Windows choose More info, then Run anyway. On Mac,
+          right-click the app and choose Open.
+        </p>
+      </section>
+
+      <section class="s" id="faq" aria-labelledby="q-h">
+        <div class="faq">
+          <div>
+            <p class="kicker">FAQ</p>
+            <h2 id="q-h" style="margin-top: 14px">Quick answers.</h2>
+          </div>
+          <div>
+            <details>
+              <summary>Is Oshabe really free?</summary>
+              <p>
+                Yes. There is no account, no subscription and no usage limit.
+                Oshabe is open source under the MIT licence.
+              </p>
+            </details>
+            <details>
+              <summary>Does a bot join my Zoom, Meet or Teams call?</summary>
+              <p>
+                No. Oshabe records the audio playing on your own computer next
+                to your microphone, so no one sees an extra attendee. Recording
+                laws differ by country, so tell people when you take notes.
+              </p>
+            </details>
+            <details>
+              <summary>Does my audio get uploaded?</summary>
+              <p>
+                No. Speech recognition runs on your computer. For meetings
+                Oshabe saves only the transcript text and never keeps the
+                recording.
+              </p>
+            </details>
+            <details>
+              <summary>Do I need an API key, an account or Ollama?</summary>
+              <p>
+                No. A built-in offline model handles cleanup and summaries. You
+                can switch to Ollama or your own provider in Settings.
+              </p>
+            </details>
+            <details>
+              <summary>Which systems does it support?</summary>
+              <p>
+                Windows 10 and 11 (64-bit and ARM), macOS on Apple Silicon and
+                Intel, and Linux as AppImage, deb and rpm.
+              </p>
+            </details>
+            <details>
+              <summary>Can I export the notes to Word or PDF?</summary>
+              <p>
+                Yes. Each meeting exports to .docx or PDF. You can also set old
+                notes to delete themselves after a number of days you choose.
+              </p>
+            </details>
+            <details>
+              <summary>
+                Why does my English sometimes come out in another language?
+              </summary>
+              <p>
+                Automatic language detection can guess wrong on accented speech.
+                Set the language to English in Settings and Oshabe stays in
+                English.
+              </p>
+            </details>
+            <details>
+              <summary>Who makes Oshabe?</summary>
+              <p>
+                <a href="https://hikariwebworks.studio">Hikari Webworks</a> in
+                Hyderabad, India. It is a fork of the open-source
+                <a href="https://github.com/cjpais/Handy">Handy</a> project,
+                released under the MIT licence.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="close">
+      <div class="wrap">
+        <h2>Stop typing up your meetings.</h2>
+        <p>Download Oshabe, press a key, and get back to the conversation.</p>
+        <div class="cta"><a class="btn" href="#download">Download free</a></div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <footer>
+        <span
+          >Oshabe by
+          <a href="https://hikariwebworks.studio">Hikari Webworks</a>,
+          Hyderabad</span
+        >
+        <span
+          ><a href="https://github.com/Dev-V-Trivedi/oshabe"
+            >Source on GitHub</a
           >
-        </footer>
-      </main>
+          &middot; MIT licence &middot; Based on
+          <a href="https://github.com/cjpais/Handy">Handy</a></span
+        >
+      </footer>
     </div>
 
     <script>
       (function () {
+        /* ---- live waveform (decorative) ---- */
+        var cv = document.getElementById("wave");
+        if (cv && cv.getContext) {
+          var cx = cv.getContext("2d");
+          var still =
+            window.matchMedia &&
+            matchMedia("(prefers-reduced-motion: reduce)").matches;
+          var W = cv.width,
+            H = cv.height,
+            bars = 72,
+            t = 0;
+          var draw = function () {
+            cx.clearRect(0, 0, W, H);
+            var gap = W / bars;
+            for (var i = 0; i < bars; i++) {
+              var env = Math.sin((i / bars) * Math.PI);
+              var v =
+                0.25 +
+                0.75 *
+                  Math.abs(
+                    Math.sin(i * 0.55 + t) * Math.sin(i * 0.21 - t * 0.7),
+                  );
+              var h = Math.max(6, v * env * (H - 24));
+              cx.fillStyle = i % 9 === 0 ? "#9ea8ff" : "#ffb224";
+              cx.globalAlpha = 0.35 + 0.65 * env;
+              var x = i * gap + gap * 0.2,
+                w = gap * 0.6;
+              cx.beginPath();
+              if (cx.roundRect) cx.roundRect(x, (H - h) / 2, w, h, w / 2);
+              else cx.rect(x, (H - h) / 2, w, h);
+              cx.fill();
+            }
+            cx.globalAlpha = 1;
+          };
+          draw();
+          if (!still) {
+            (function loop() {
+              t += 0.045;
+              draw();
+              requestAnimationFrame(loop);
+            })();
+          }
+        }
+
+        /* ---- download rows: fill from the latest GitHub release ---- */
         var REPO = "Dev-V-Trivedi/oshabe";
         var ua = navigator.userAgent || "";
         var os = /Windows/i.test(ua)
@@ -908,9 +1494,6 @@
               ? "linux"
               : "";
         var arm = false;
-
-        // Map a release file name to one of the rows. Names are matched by their endings,
-        // so the product name and version in front can change.
         var RULES = [
           ["win-arm", /(arm64|aarch64).*(-setup\.exe|\.msi)$/],
           ["win-x64", /(x64|x86_64|amd64).*(-setup\.exe|\.msi)$/],
@@ -921,12 +1504,15 @@
           ["linux-rpm", /\.rpm$/],
         ];
         var found = {};
-
         function guess() {
           if (os === "win") return arm ? "win-arm" : "win-x64";
-          if (os === "mac") return arm ? "mac-arm" : "mac-arm";
+          if (os === "mac") return "mac-arm";
           if (os === "linux") return "linux-appimage";
           return "";
+        }
+        function label(k) {
+          var el = document.querySelector('#dl [data-k="' + k + '"] .n');
+          return el ? el.textContent : "";
         }
         function paint() {
           var key = guess();
@@ -945,22 +1531,12 @@
           var p = document.getElementById("primary"),
             sub = document.getElementById("primary-sub");
           if (key && found[key]) {
-            var label = document.querySelector(
-              '#dl [data-k="' + key + '"] .n',
-            ).textContent;
             p.href = found[key];
-            p.textContent = "Download for " + label;
-            sub.textContent = "Not your system? See all downloads below.";
-            p.addEventListener("click", function () {
-              sub.textContent =
-                "Thanks. Unsigned for now: see the note under the list if your system warns you.";
-            });
+            p.textContent = "Download for " + label(key);
+            sub.textContent = "Not your system? Every build is listed below.";
           } else if (key) {
             sub.textContent =
-              "Detected: " +
-              document.querySelector('#dl [data-k="' + key + '"] .n')
-                .textContent +
-              ". All downloads are below.";
+              "Detected " + label(key) + ". All builds are listed below.";
           }
         }
         function load() {
@@ -982,14 +1558,12 @@
                     }
                   }
                 });
-                var v = document.getElementById("ver");
                 if (rel.tag_name)
-                  v.textContent = "Latest version " + rel.tag_name;
+                  document.getElementById("ver").textContent =
+                    "Download " + rel.tag_name;
                 paint();
               })
-              .catch(function () {
-                paint();
-              });
+              .catch(paint);
           } catch (e) {
             paint();
           }

@@ -1,0 +1,18 @@
+# Oshabe
+
+> Oshabe is a free, open-source desktop app (Windows, macOS, Linux) that writes meeting notes without a bot joining the call, and types what you say into any app. Speech recognition runs on the user's computer and works offline. Made by Hikari Webworks, Hyderabad, India. MIT licence. Fork of the Handy project.
+
+## Key facts
+- Meeting notes: records the computer's audio plus the microphone, so it works with Zoom, Google Meet, Microsoft Teams, Slack huddles and browser calls. No bot or extra attendee. Only transcript text is saved, never the audio.
+- Output: live transcript with You and Others labelled, summary, decisions and action items. Export to Word (.docx) or PDF. Old notes can auto-delete after a chosen number of days.
+- Dictation: hold a shortcut and talk, or tap once for hands-free and tap again to stop. Text is typed into the active app.
+- Privacy: speech recognition is local. No account. Network is used for model downloads and update checks, and for cloud cleanup only if the user chooses a cloud provider.
+- Cleanup and summaries: built-in offline model, or Ollama or the user's own provider.
+- Price: free, no subscription.
+- Platforms: Windows 10/11 (x64 and ARM), macOS (Apple Silicon and Intel), Linux (AppImage, deb, rpm).
+- Not code-signed yet: Windows SmartScreen or macOS Gatekeeper may warn on first run.
+
+## Links
+- Home and downloads: https://oshabe.hikariwebworks.studio/
+- Source code and releases: https://github.com/Dev-V-Trivedi/oshabe
+- Maker: https://hikariwebworks.studio
