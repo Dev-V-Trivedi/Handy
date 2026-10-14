@@ -511,6 +511,9 @@ pub struct AppSettings {
     pub experimental_enabled: bool,
     #[serde(default)]
     pub lazy_stream_close: bool,
+    /// One-time marker: the "keep the microphone warm" default was applied.
+    #[serde(default)]
+    pub warm_mic_applied: bool,
     #[serde(default)]
     pub keyboard_implementation: KeyboardImplementation,
     #[serde(default = "default_show_tray_icon")]
@@ -1103,6 +1106,7 @@ pub fn get_default_settings() -> AppSettings {
         theme: default_theme(),
         experimental_enabled: false,
         lazy_stream_close: false,
+        warm_mic_applied: false,
         keyboard_implementation: KeyboardImplementation::default(),
         show_tray_icon: default_show_tray_icon(),
         paste_delay_ms: default_paste_delay_ms(),
@@ -1268,6 +1272,19 @@ fn apply_settings_migrations(
     // migration's explicit first-run-vs-upgrade decision.
     if settings_value.get("whats_new_last_seen_version").is_none() {
         settings.whats_new_last_seen_version = String::new();
+        updated = true;
+    }
+
+    // One-time Oshabe default: keep the microphone open for a while after each
+    // dictation. Reopening it on every key press loses the first fraction of a
+    // second, which clips the first word. Also keep the speech model loaded
+    // longer so the next dictation does not wait for a reload.
+    if !settings.warm_mic_applied && settings_value.get("warm_mic_applied").is_none() {
+        settings.lazy_stream_close = true;
+        if settings.model_unload_timeout == ModelUnloadTimeout::Min5 {
+            settings.model_unload_timeout = ModelUnloadTimeout::Min15;
+        }
+        settings.warm_mic_applied = true;
         updated = true;
     }
 
@@ -1877,6 +1894,7 @@ mod tests {
             "whats_new_last_seen_version": default_whats_new_last_seen_version(),
             "overlay_style": "live",
             "chinese_script": "as_transcribed",
+            "warm_mic_applied": true,
             "transcribe_accelerator": "gpu",
             "transcribe_gpu_device": settings.transcribe_gpu_device
         });
