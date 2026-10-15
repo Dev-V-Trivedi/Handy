@@ -211,9 +211,12 @@
           ],
           "mac-arm": ["macOS, Apple Silicon", /(aarch64|arm64).*\.dmg$/],
           "mac-x64": ["macOS, Intel", /(x64|x86_64|amd64).*\.dmg$/],
-          "linux-appimage": ["Linux, AppImage", /\.appimage$/],
-          "linux-deb": ["Debian and Ubuntu", /\.deb$/],
-          "linux-rpm": ["Fedora and openSUSE", /\.rpm$/],
+          "linux-appimage": [
+            "Linux, AppImage",
+            /(amd64|x86_64|x64).*\.appimage$/,
+          ],
+          "linux-deb": ["Debian and Ubuntu", /(amd64|x86_64|x64).*\.deb$/],
+          "linux-rpm": ["Fedora and openSUSE", /(amd64|x86_64|x64).*\.rpm$/],
         };
         var STEPS = {
           win: [
