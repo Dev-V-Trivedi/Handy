@@ -712,6 +712,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_append_trailing_space_setting,
             shortcut::change_context_tone_enabled_setting,
             shortcut::change_always_cleanup_enabled_setting,
+            shortcut::change_romanize_output_setting,
             shortcut::change_meeting_retention_days_setting,
             shortcut::change_meeting_prompt_enabled_setting,
             shortcut::update_app_tone_rules,

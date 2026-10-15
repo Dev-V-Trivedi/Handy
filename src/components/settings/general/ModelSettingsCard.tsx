@@ -3,12 +3,18 @@ import { useTranslation } from "react-i18next";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { LanguageSelector } from "../LanguageSelector";
 import { TranslateToEnglish } from "../TranslateToEnglish";
+import { RomanizeOutput } from "../RomanizeOutput";
+import { useSettings } from "../../../hooks/useSettings";
 import { useModelStore } from "../../../stores/modelStore";
 import type { ModelInfo } from "@/bindings";
 
 export const ModelSettingsCard: React.FC = () => {
   const { t } = useTranslation();
   const { currentModel, models } = useModelStore();
+
+  const { getSetting } = useSettings();
+  const language = getSetting("selected_language") || "auto";
+  const showRomanize = ["hi", "mr", "ne"].includes(language);
 
   const currentModelInfo = models.find((m: ModelInfo) => m.id === currentModel);
 
@@ -38,6 +44,7 @@ export const ModelSettingsCard: React.FC = () => {
           }
         />
       )}
+      {showLanguageSelector && showRomanize && <RomanizeOutput />}
       {supportsTranslation && (
         <TranslateToEnglish descriptionMode="tooltip" grouped={true} />
       )}

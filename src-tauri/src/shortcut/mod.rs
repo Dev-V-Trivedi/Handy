@@ -1352,6 +1352,15 @@ pub fn change_always_cleanup_enabled_setting(app: AppHandle, enabled: bool) -> R
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_romanize_output_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.romanize_output = enabled;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn change_meeting_retention_days_setting(app: AppHandle, days: u32) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
     settings.meeting_retention_days = days;

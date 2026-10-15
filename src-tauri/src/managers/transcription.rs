@@ -1816,7 +1816,12 @@ fn post_process_transcription_text(
             settings.filler_word_removal_enabled,
         );
 
-        normalize_transcription_output(&without_fillers)
+        let normalized = normalize_transcription_output(&without_fillers);
+        if settings.romanize_output {
+            crate::audio_toolkit::romanize::romanize_devanagari(&normalized)
+        } else {
+            normalized
+        }
     })
 }
 

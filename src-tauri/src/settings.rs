@@ -490,6 +490,10 @@ pub struct AppSettings {
     /// post-process hotkey. Falls back to raw text if no provider is set up.
     #[serde(default)]
     pub always_cleanup_enabled: bool,
+    /// Write Hindi, Marathi and Nepali in English letters (Hinglish) instead
+    /// of Devanagari. Applies to dictation and meeting notes.
+    #[serde(default)]
+    pub romanize_output: bool,
     /// Delete finished meeting notes older than this many days. 0 keeps them
     /// forever. Documents the user exported to their own folder are never touched.
     #[serde(default)]
@@ -1097,6 +1101,7 @@ pub fn get_default_settings() -> AppSettings {
         post_process_selected_prompt_id: None,
         context_tone_enabled: false,
         always_cleanup_enabled: false,
+        romanize_output: false,
         meeting_retention_days: 0,
         meeting_prompt_enabled: true,
         app_tone_rules: crate::active_app::default_tone_rules(),

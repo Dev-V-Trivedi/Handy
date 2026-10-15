@@ -66,6 +66,12 @@ In Settings you can choose how the shortcut works:
 
 Set your language in Settings, General, Language. Choose English if you speak English. Automatic detection can guess wrong on accented speech and may type English words in another language.
 
+### Hindi, Telugu and other Indian languages
+
+Pick a Whisper model in Settings, Models, then set Language to Hindi, Telugu, Tamil, Marathi, Bengali, Gujarati, Kannada, Malayalam, Punjabi or Urdu. The Parakeet models are English only.
+
+For Hinglish, set Language to Hindi and switch on **Write in English letters (Hinglish)**. Oshabe then writes "mera naam Dev hai" instead of Devanagari. It works for dictation and meeting notes. English words you mix in stay as they are. This option covers Hindi, Marathi and Nepali. Other scripts stay in their own letters for now.
+
 ### Custom words
 
 Add names, products and jargon in Settings so they are spelled correctly every time.

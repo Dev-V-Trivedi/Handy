@@ -211,7 +211,11 @@
   },
   "settings": {
     "modelSettings": {
-      "title": "Impostazioni di {{model}}"
+      "title": "Impostazioni di {{model}}",
+      "romanize": {
+        "label": "Write in English letters (Hinglish)",
+        "description": "Shows Hindi, Marathi and Nepali words in English letters instead of Devanagari, for example \"mera naam Dev hai\". Works for dictation and meeting notes."
+      }
     },
     "models": {
       "title": "Modelli di Trascrizione",

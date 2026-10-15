@@ -169,6 +169,8 @@ const settingUpdaters: {
     commands.changeMuteWhileRecordingSetting(value as boolean),
   always_cleanup_enabled: (value) =>
     commands.changeAlwaysCleanupEnabledSetting(value as boolean),
+  romanize_output: (value) =>
+    commands.changeRomanizeOutputSetting(value as boolean),
   meeting_prompt_enabled: (value) =>
     commands.changeMeetingPromptEnabledSetting(value as boolean),
   meeting_retention_days: (value) =>
