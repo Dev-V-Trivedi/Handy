@@ -8,6 +8,7 @@ const m = (o: Partial<ModelInfo>): ModelInfo =>
     is_custom: false,
     supports_streaming: false,
     supports_language_selection: true,
+    supported_languages: ["en", "hi"],
     accuracy_score: 0.5,
     speed_score: 0.5,
     size_mb: 100,
@@ -26,16 +27,27 @@ const models = [
   }),
 ];
 
-const p = pickPresets(models, "english");
+const p = pickPresets(models, []);
 assert.equal(p.fast?.id, "tiny");
 assert.equal(p.balanced?.id, "mid");
 assert.equal(p.best?.id, "big");
 
-const single = pickPresets([m({ id: "only" })], "english");
+const single = pickPresets([m({ id: "only" })], []);
 assert.deepEqual(
   Object.values(single).map((x) => x?.id),
   ["only"],
 );
 
-assert.deepEqual(pickPresets([], "multi"), {});
+assert.deepEqual(pickPresets([], ["hi"]), {});
+// A language the models do not list leaves nothing to recommend.
+assert.deepEqual(pickPresets(models, ["te"]), {});
+// Hindi keeps models that list it, and drops Whisper Small.
+const hindi = pickPresets(
+  [m({ id: "small" }), m({ id: "medium", accuracy_score: 0.7 })],
+  ["hi"],
+);
+assert.deepEqual(
+  Object.values(hindi).map((x) => x?.id),
+  ["medium"],
+);
 console.log("presets tests passed");

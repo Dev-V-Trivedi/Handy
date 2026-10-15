@@ -172,7 +172,13 @@
       "cleanupOffBody": "Paste exactly what was heard.",
       "cleanupOn": "Yes, tidy it up",
       "cleanupOnBody": "Turn it on. Pick a cleanup model in Post Process (one click for offline models).",
-      "meetingsHint": "Find Meetings in the sidebar when you are ready to record a call."
+      "meetingsHint": "Find Meetings in the sidebar when you are ready to record a call.",
+      "languagesTitle": "आप कौन-सी भाषाएँ बोलते हैं?",
+      "languagesBody": "जो लागू हों सब चुनें। Oshabe इससे सही स्पीच मॉडल सुझाएगा।",
+      "languagesHint": "हिंग्लिश यानी हिंदी और अंग्रेज़ी का मेल, अंग्रेज़ी अक्षरों में। सिर्फ़ अंग्रेज़ी चुनने पर नतीजे सबसे तेज़ मिलते हैं।",
+      "langHinglish": "हिंग्लिश",
+      "langOther": "कोई और भाषा",
+      "noModelForLanguages": "इन भाषाओं के मेल के लिए कोई बिल्ट-इन मॉडल नहीं है। नीचे से खुद मॉडल चुनें।"
     }
   },
   "modelSelector": {

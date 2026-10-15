@@ -1,10 +1,29 @@
 import type { ModelInfo } from "@/bindings";
+import { supportsLanguageCode } from "@/lib/constants/languages";
 
 export type PresetId = "fast" | "balanced" | "best";
-export type LanguageChoice = "english" | "multi";
+
+/** Languages where Whisper Small is too weak to recommend. */
+const NEEDS_BIGGER_MODEL = [
+  "hi",
+  "te",
+  "ta",
+  "mr",
+  "bn",
+  "gu",
+  "kn",
+  "ml",
+  "pa",
+  "ur",
+];
 
 /**
  * Pick one model per quality preset so people never have to read model names.
+ *
+ * `required` is the list of language codes the person speaks. An empty list
+ * means English only or no preference, so any model qualifies. Otherwise a
+ * model must list every code, and Whisper Small is dropped for Indian
+ * languages because it makes too many mistakes there.
  *
  * Streaming-only models are skipped: meeting notes transcribe in batches and
  * those models are not reliable there. Legacy and custom models are skipped too.
@@ -13,13 +32,20 @@ export type LanguageChoice = "english" | "multi";
  */
 export function pickPresets(
   models: ModelInfo[],
-  language: LanguageChoice,
+  required: string[],
 ): Partial<Record<PresetId, ModelInfo>> {
   const pool = models.filter(
     (m) =>
       !m.is_custom &&
       !m.supports_streaming &&
-      (language === "english" ? true : m.supports_language_selection) &&
+      (required.length === 0 ||
+        (m.supports_language_selection &&
+          required.every((code) =>
+            supportsLanguageCode(m.supported_languages ?? [], code),
+          ))) &&
+      !(
+        m.id === "small" && required.some((c) => NEEDS_BIGGER_MODEL.includes(c))
+      ) &&
       m.accuracy_score > 0 &&
       m.speed_score > 0,
   );

@@ -172,7 +172,13 @@
       "cleanupOffBody": "Paste exactly what was heard.",
       "cleanupOn": "Yes, tidy it up",
       "cleanupOnBody": "Turn it on. Pick a cleanup model in Post Process (one click for offline models).",
-      "meetingsHint": "Find Meetings in the sidebar when you are ready to record a call."
+      "meetingsHint": "Find Meetings in the sidebar when you are ready to record a call.",
+      "languagesTitle": "Which languages do you speak?",
+      "languagesBody": "Pick all that apply. Oshabe uses this to recommend the right speech model.",
+      "languagesHint": "Hinglish means Hindi mixed with English, written in English letters. English only gives the fastest results.",
+      "langHinglish": "Hinglish",
+      "langOther": "Another language",
+      "noModelForLanguages": "No built-in model covers that mix of languages. Choose a model yourself below."
     }
   },
   "modelSelector": {

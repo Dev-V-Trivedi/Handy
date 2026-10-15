@@ -9,17 +9,57 @@ import { useSettings } from "../../hooks/useSettings";
 import { useOsType } from "../../hooks/useOsType";
 import { formatKeyCombination } from "../../lib/utils/keyboard";
 import ModelPicker from "./ModelPicker";
-import { pickPresets, type LanguageChoice, type PresetId } from "./presets";
+import { pickPresets, type PresetId } from "./presets";
+import { getLanguageLabel } from "../../lib/constants/languages";
 
 interface SetupWizardProps {
   onModelSelected: () => void;
   preview?: boolean;
 }
 
-type Step = "purpose" | "quality" | "practice" | "cleanup" | "advanced";
+type Step =
+  | "purpose"
+  | "languages"
+  | "quality"
+  | "practice"
+  | "cleanup"
+  | "advanced";
 type Purpose = "dictation" | "meetings" | "both";
 
 const PRESET_ORDER: PresetId[] = ["fast", "balanced", "best"];
+
+// "hinglish" is Hindi mixed with English, shown in English letters.
+const LANGUAGE_CHOICES = [
+  "en",
+  "hinglish",
+  "hi",
+  "te",
+  "ta",
+  "mr",
+  "bn",
+  "gu",
+  "kn",
+  "ml",
+  "pa",
+  "ur",
+  "other",
+] as const;
+
+/** Language codes a speech model has to support for these answers. */
+const requiredCodes = (picked: string[]): string[] => {
+  const codes = new Set<string>();
+  for (const p of picked) {
+    if (p === "other") return [];
+    if (p === "hinglish") {
+      codes.add("hi");
+      codes.add("en");
+    } else {
+      codes.add(p);
+    }
+  }
+  // English alone needs no filtering: every model can do it.
+  return codes.size === 1 && codes.has("en") ? [] : [...codes];
+};
 
 const SetupWizard: React.FC<SetupWizardProps> = ({
   onModelSelected,
@@ -40,15 +80,15 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
 
   const [step, setStep] = useState<Step>("purpose");
   const [purpose, setPurpose] = useState<Purpose>("both");
-  const [language, setLanguage] = useState<LanguageChoice>("english");
+  const [picked, setPicked] = useState<string[]>(["en"]);
   const [choice, setChoice] = useState<string | null>(null);
   const [cleanup, setCleanup] = useState<boolean>(false);
   const [practice, setPractice] = useState("");
   const started = useRef(false);
 
   const presets = useMemo(
-    () => pickPresets(models, language),
-    [models, language],
+    () => pickPresets(models, requiredCodes(picked)),
+    [models, picked],
   );
 
   const hotkey = formatKeyCombination(
@@ -99,9 +139,23 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
   const finish = async () => {
     if (!preview) {
       // Auto-detect guesses wrong for accented English (it can pick Hindi), so
-      // lock to English when that is what the person said they speak.
-      if (language === "english")
+      // lock the language to what the person said they speak.
+      const others = picked.filter((p) => p !== "en" && p !== "other");
+      if (picked.includes("other")) {
+        await updateSetting("selected_language", "auto");
+      } else if (picked.includes("hinglish")) {
+        await updateSetting("selected_language", "hi");
+        await updateSetting("romanize_output", true);
+      } else if (others.length === 0) {
         await updateSetting("selected_language", "en");
+      } else {
+        // One other language: use it (the model still handles English words).
+        // Several: let the model detect.
+        await updateSetting(
+          "selected_language",
+          others.length === 1 ? others[0] : "auto",
+        );
+      }
       if (cleanup) {
         await updateSetting("post_process_enabled", true);
         await updateSetting("always_cleanup_enabled", true);
@@ -184,6 +238,63 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
             <Sparkles className="w-5 h-5 mt-1 shrink-0" />,
           )}
         </div>
+        <Button className="mt-2" onClick={() => setStep("languages")}>
+          {t("onboarding.wizard.next")}
+        </Button>
+      </>,
+    );
+  }
+
+  if (step === "languages") {
+    const toggle = (code: string) =>
+      setPicked((prev) => {
+        if (prev.includes(code)) {
+          const next = prev.filter((p) => p !== code);
+          return next.length ? next : prev;
+        }
+        // Hindi, Hinglish and "other" are alternatives to each other.
+        const next = prev.filter(
+          (p) =>
+            !(
+              (code === "hinglish" && p === "hi") ||
+              (code === "hi" && p === "hinglish") ||
+              code === "other" ||
+              p === "other"
+            ),
+        );
+        return [...next, code];
+      });
+    return shell(
+      <>
+        <h1 className="text-xl font-semibold text-center">
+          {t("onboarding.wizard.languagesTitle")}
+        </h1>
+        <p className="text-center text-sm text-text/70">
+          {t("onboarding.wizard.languagesBody")}
+        </p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {LANGUAGE_CHOICES.map((code) => (
+            <button
+              key={code}
+              type="button"
+              onClick={() => toggle(code)}
+              className={`px-3 py-1.5 rounded-full border text-sm cursor-pointer ${
+                picked.includes(code)
+                  ? "border-logo-primary bg-logo-primary/10"
+                  : "border-mid-gray/30 hover:border-logo-primary/60"
+              }`}
+            >
+              {code === "hinglish"
+                ? t("onboarding.wizard.langHinglish")
+                : code === "other"
+                  ? t("onboarding.wizard.langOther")
+                  : (getLanguageLabel(code) ?? code)}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-text/60 text-center">
+          {t("onboarding.wizard.languagesHint")}
+        </p>
         <Button className="mt-2" onClick={() => setStep("quality")}>
           {t("onboarding.wizard.next")}
         </Button>
@@ -202,23 +313,11 @@ const SetupWizard: React.FC<SetupWizardProps> = ({
         <p className="text-center text-sm text-text/70">
           {t("onboarding.wizard.qualityBody")}
         </p>
-        <div className="flex gap-2 justify-center">
-          {(["english", "multi"] as LanguageChoice[]).map((l) => (
-            <button
-              key={l}
-              type="button"
-              disabled={downloading}
-              onClick={() => setLanguage(l)}
-              className={`px-3 py-1 rounded-full border text-sm cursor-pointer disabled:opacity-50 ${
-                language === l
-                  ? "border-logo-primary bg-logo-primary/10"
-                  : "border-mid-gray/30"
-              }`}
-            >
-              {t(`onboarding.wizard.lang.${l}`)}
-            </button>
-          ))}
-        </div>
+        {Object.keys(presets).length === 0 && (
+          <p className="text-center text-sm text-text/70">
+            {t("onboarding.wizard.noModelForLanguages")}
+          </p>
+        )}
         <div className="flex flex-col gap-3">
           {PRESET_ORDER.map((id) => {
             const model = presets[id];
