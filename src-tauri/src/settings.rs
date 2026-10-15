@@ -501,6 +501,9 @@ pub struct AppSettings {
     /// Ask "Take notes?" when a Zoom, Teams, Meet or Webex call is detected.
     #[serde(default = "default_meeting_prompt_enabled")]
     pub meeting_prompt_enabled: bool,
+    /// Standing instructions fed to every AI step ("use bullet points").
+    #[serde(default)]
+    pub user_rules: Vec<crate::user_rules::UserRule>,
     #[serde(default = "crate::active_app::default_tone_rules")]
     pub app_tone_rules: Vec<crate::active_app::AppToneRule>,
     #[serde(default)]
@@ -1104,6 +1107,7 @@ pub fn get_default_settings() -> AppSettings {
         romanize_output: false,
         meeting_retention_days: 0,
         meeting_prompt_enabled: true,
+        user_rules: Vec::new(),
         app_tone_rules: crate::active_app::default_tone_rules(),
         mute_while_recording: false,
         append_trailing_space: false,

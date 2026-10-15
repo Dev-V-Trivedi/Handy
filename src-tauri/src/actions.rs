@@ -201,6 +201,10 @@ async fn post_process_transcription(settings: &AppSettings, transcription: &str)
     } else {
         prompt
     };
+    let prompt = format!(
+        "{prompt}{}",
+        crate::user_rules::instructions(&settings.user_rules, crate::user_rules::SCOPE_DICTATION)
+    );
 
     debug!(
         "Starting LLM post-processing with provider '{}' (model: {})",

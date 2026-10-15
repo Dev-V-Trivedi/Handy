@@ -107,6 +107,11 @@ async fn ask(
     want_json: bool,
 ) -> Result<String, String> {
     let settings = get_settings(app);
+    let system = format!(
+        "{system}{}",
+        crate::user_rules::instructions(&settings.user_rules, crate::user_rules::SCOPE_MEETINGS)
+    );
+    let system = system.as_str();
     let provider = settings
         .active_post_process_provider()
         .cloned()

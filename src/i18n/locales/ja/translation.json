@@ -605,6 +605,21 @@
         "stepRunner": "Step 1 of 2: getting the model runner ({{percent}}%)",
         "stepModel": "Step 2 of 2: downloading the model ({{percent}}%)",
         "failed": "Could not set up the offline model"
+      },
+      "userRules": {
+        "title": "My Rules",
+        "description": "Standing instructions the AI always follows when it writes for you, for example \"Use bullet points\" or \"Keep summaries under 5 lines\". Needs an AI model set up (the built-in one works).",
+        "placeholder": "e.g. Always use bullet points",
+        "ruleLabel": "Rule",
+        "scopeLabel": "Applies to",
+        "scope": {
+          "all": "Everything",
+          "meetings": "Meeting notes",
+          "dictation": "Dictation"
+        },
+        "enabled": "On",
+        "add": "Add rule",
+        "remove": "Remove"
       }
     },
     "history": {

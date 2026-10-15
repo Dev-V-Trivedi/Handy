@@ -5,6 +5,7 @@ import type {
   AppSettings as Settings,
   AudioDevice,
   AppToneRule,
+  UserRule,
   PostProcessApiFormat,
   ChineseScript,
   TranscribeAcceleratorSetting,
@@ -177,6 +178,7 @@ const settingUpdaters: {
     commands.changeMeetingRetentionDaysSetting(value as number),
   context_tone_enabled: (value) =>
     commands.changeContextToneEnabledSetting(value as boolean),
+  user_rules: (value) => commands.updateUserRules(value as UserRule[]),
   app_tone_rules: (value) =>
     commands.updateAppToneRules(value as AppToneRule[]),
   append_trailing_space: (value) =>

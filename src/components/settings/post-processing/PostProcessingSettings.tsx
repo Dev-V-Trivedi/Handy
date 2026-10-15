@@ -21,6 +21,7 @@ import { ModelSelect } from "../PostProcessingSettingsApi/ModelSelect";
 import { usePostProcessProviderState } from "../PostProcessingSettingsApi/usePostProcessProviderState";
 import { ShortcutInput } from "../ShortcutInput";
 import { ContextTone } from "../ContextTone";
+import { UserRules } from "../UserRules";
 import { AlwaysCleanup } from "../AlwaysCleanup";
 import { OllamaModels } from "../OllamaModels";
 import { BuiltInModels } from "../BuiltInModels";
@@ -498,6 +499,10 @@ export const PostProcessingSettings: React.FC = () => {
 
       <SettingsGroup title={t("settings.postProcessing.prompts.title")}>
         <PostProcessingSettingsPrompts />
+      </SettingsGroup>
+
+      <SettingsGroup title={t("settings.postProcessing.userRules.title")}>
+        <UserRules />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.postProcessing.contextTone.title")}>

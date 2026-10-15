@@ -1382,6 +1382,18 @@ pub fn change_meeting_prompt_enabled_setting(app: AppHandle, enabled: bool) -> R
 
 #[tauri::command]
 #[specta::specta]
+pub fn update_user_rules(
+    app: AppHandle,
+    rules: Vec<crate::user_rules::UserRule>,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.user_rules = rules;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn update_app_tone_rules(
     app: AppHandle,
     rules: Vec<crate::active_app::AppToneRule>,

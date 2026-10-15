@@ -28,6 +28,7 @@ mod signal_handle;
 mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
+mod user_rules;
 mod utils;
 
 pub use cli::CliArgs;
@@ -716,6 +717,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_meeting_retention_days_setting,
             shortcut::change_meeting_prompt_enabled_setting,
             shortcut::update_app_tone_rules,
+            shortcut::update_user_rules,
             shortcut::change_lazy_stream_close_setting,
             shortcut::change_vad_enabled_setting,
             shortcut::change_vad_backend_setting,
