@@ -14,7 +14,19 @@ export const ModelSettingsCard: React.FC = () => {
 
   const { getSetting } = useSettings();
   const language = getSetting("selected_language") || "auto";
-  const showRomanize = ["hi", "mr", "ne"].includes(language);
+  const showRomanize = [
+    "hi",
+    "mr",
+    "ne",
+    "te",
+    "kn",
+    "gu",
+    "ta",
+    "bn",
+    "ml",
+    "pa",
+    "ur",
+  ].includes(language);
 
   const currentModelInfo = models.find((m: ModelInfo) => m.id === currentModel);
 

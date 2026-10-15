@@ -1286,14 +1286,35 @@ impl TranscriptionManager {
         // one (whisper family). Attaching the whisper run extension to a
         // non-whisper arch is rejected with INVALID_ARG, so skip it there and
         // let the fuzzy post-correction handle custom words instead.
-        let family = if settings.custom_words.is_empty() || !model_is_whisper {
-            None
+        // Roman-letter mode: a Roman-script sample nudges Whisper to write the
+        // language in English letters and to keep English words in English.
+        // Without it, Hindi and friends come back with English words spelled
+        // in the native script ("वाट वी डिप्लॉय"), which no transliteration
+        // can turn back into real English.
+        let roman_prompt = if settings.romanize_output && model_is_whisper {
+            crate::audio_toolkit::romanize::roman_prompt(validated_language)
         } else {
-            Some(RunExtension::Whisper(WhisperRunOptions {
-                initial_prompt: Some(settings.custom_words.join(", ")),
-                ..Default::default()
-            }))
+            None
         };
+        let family =
+            if !model_is_whisper || (settings.custom_words.is_empty() && roman_prompt.is_none()) {
+                None
+            } else {
+                let mut prompt = String::new();
+                if let Some(sample) = roman_prompt {
+                    prompt.push_str(sample);
+                }
+                if !settings.custom_words.is_empty() {
+                    if !prompt.is_empty() {
+                        prompt.push(' ');
+                    }
+                    prompt.push_str(&settings.custom_words.join(", "));
+                }
+                Some(RunExtension::Whisper(WhisperRunOptions {
+                    initial_prompt: Some(prompt),
+                    ..Default::default()
+                }))
+            };
 
         let run_plan = transcribe_cpp_run_plan(
             settings.translate_to_english,
@@ -1818,7 +1839,7 @@ fn post_process_transcription_text(
 
         let normalized = normalize_transcription_output(&without_fillers);
         if settings.romanize_output {
-            crate::audio_toolkit::romanize::romanize_devanagari(&normalized)
+            crate::audio_toolkit::romanize::romanize_indic(&normalized)
         } else {
             normalized
         }

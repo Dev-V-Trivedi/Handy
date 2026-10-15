@@ -219,8 +219,8 @@
     "modelSettings": {
       "title": "{{model}} Settings",
       "romanize": {
-        "label": "Write in English letters (Hinglish)",
-        "description": "Shows Hindi, Marathi and Nepali words in English letters instead of Devanagari, for example \"mera naam Dev hai\". Works for dictation and meeting notes."
+        "label": "Write in English letters (Hinglish, Tenglish...)",
+        "description": "Shows Hindi, Telugu, Kannada, Gujarati, Tamil, Bengali and other Indian languages in English letters, for example \"mera naam Dev hai\". English words stay in English. Works for dictation and meeting notes."
       }
     },
     "general": {
