@@ -196,18 +196,9 @@
         color: var(--night-ink);
       }
       .seal {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: var(--amber);
-        position: relative;
-      }
-      .seal:after {
-        content: "";
-        position: absolute;
-        inset: 8px;
-        border-radius: 50%;
-        background: var(--night);
+        width: 36px;
+        height: 38px;
+        flex: none;
       }
       header.bar nav {
         display: flex;
@@ -457,7 +448,7 @@
     <header class="bar">
       <div class="wrap">
         <a class="brand" href="/" aria-label="Oshabe home"
-          ><span class="seal"></span>Oshabe</a
+          ><svg class="seal" viewBox="200 200 600 640" aria-hidden="true"><g fill="#FFB224"><circle cx="490" cy="505" r="255"/><path d="M312 660 L238 805 Q232 818 247 815 L408 740 Z"/><circle cx="742" cy="227" r="36"/></g><g fill="#1B1830"><rect x="324" y="449" width="60" height="120" rx="30"/><rect x="460" y="355" width="60" height="300" rx="30"/><rect x="596" y="429" width="60" height="160" rx="30"/></g></svg>Oshabe</a
         >
         <nav aria-label="Primary">
           <a href="/#features">Features</a><a href="/#download">Download</a

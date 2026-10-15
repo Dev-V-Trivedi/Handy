@@ -62,18 +62,9 @@
         padding-block: 22px;
       }
       .seal {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: var(--amber);
-        position: relative;
-      }
-      .seal:after {
-        content: "";
-        position: absolute;
-        inset: 8px;
-        border-radius: 50%;
-        background: var(--night);
+        width: 36px;
+        height: 38px;
+        flex: none;
       }
       h1 {
         font: 800 clamp(36px, 6vw, 56px) / 1 var(--display);
@@ -140,7 +131,20 @@
   </head>
   <body>
     <div class="w">
-      <a class="brand" href="/"><span class="seal"></span>Oshabe</a>
+      <a class="brand" href="/"
+        ><svg class="seal" viewBox="200 200 600 640" aria-hidden="true">
+          <g fill="#FFB224">
+            <circle cx="490" cy="505" r="255" />
+            <path d="M312 660 L238 805 Q232 818 247 815 L408 740 Z" />
+            <circle cx="742" cy="227" r="36" />
+          </g>
+          <g fill="#1B1830">
+            <rect x="324" y="449" width="60" height="120" rx="30" />
+            <rect x="460" y="355" width="60" height="300" rx="30" />
+            <rect x="596" y="429" width="60" height="160" rx="30" />
+          </g></svg
+        >Oshabe</a
+      >
       <p class="tag" id="tag">Preparing your download</p>
       <h1 id="title">Getting Oshabe ready.</h1>
       <p class="lead" id="lead">Checking the latest version for your system.</p>
