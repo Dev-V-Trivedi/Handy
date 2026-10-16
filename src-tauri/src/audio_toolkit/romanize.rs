@@ -40,7 +40,9 @@ pub const HINGLISH_PROMPT: &str = "Toh yeh abhi test ke liye hai. What we deploy
 /// `None` when the language has no Roman mode.
 pub fn roman_prompt(lang: &str) -> Option<&'static str> {
     Some(match lang.split(['-', '_']).next().unwrap_or("") {
-        "hi" | "ne" => HINGLISH_PROMPT,
+        // Auto-detect: the language is unknown up front, so use the Hindi sample.
+        // Anything still written in a native script is converted afterwards.
+        "hi" | "ne" | "auto" => HINGLISH_PROMPT,
         "mr" => "Mi aata meeting madhe aahe. Marathi madhe bolto, pan English words pan vaparto. Project update kasa aahe, next steps kay aahet, deploy zala ka?",
         "te" => "Nenu ippudu meeting lo unnanu. Telugu lo matladutunnanu, kani English words kuda vadutanu. Project update ela undi, next steps enti, deploy chesara?",
         "kn" => "Naanu ivattu meeting alli iddene. Kannada alli maatanaaduttiddene, aadre English words kooda ballutteve. Project update hege ide, next steps yenu, deploy maadidira?",
@@ -681,6 +683,7 @@ mod tests {
             assert!(roman_prompt(lang).expect(lang).is_ascii(), "{lang}");
         }
         assert!(roman_prompt("kn-IN").is_some());
+        assert!(roman_prompt("auto").is_some());
         assert!(roman_prompt("en").is_none());
     }
 

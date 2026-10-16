@@ -220,7 +220,7 @@
       "title": "{{model}} Settings",
       "romanize": {
         "label": "Write in English letters (Hinglish, Tenglish...)",
-        "description": "Shows Hindi, Telugu, Kannada, Gujarati, Tamil, Bengali and other Indian languages in English letters, for example \"mera naam Dev hai\". English words stay in English. Works for dictation and meeting notes."
+        "description": "Works with Auto-detect too. Shows Hindi, Telugu, Kannada, Gujarati, Tamil, Bengali and other Indian languages in English letters, for example \"mera naam Dev hai\". English words stay in English. Works for dictation and meeting notes."
       }
     },
     "general": {

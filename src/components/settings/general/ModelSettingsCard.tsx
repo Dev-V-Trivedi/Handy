@@ -15,6 +15,7 @@ export const ModelSettingsCard: React.FC = () => {
   const { getSetting } = useSettings();
   const language = getSetting("selected_language") || "auto";
   const showRomanize = [
+    "auto",
     "hi",
     "mr",
     "ne",
