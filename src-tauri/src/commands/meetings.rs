@@ -1,6 +1,6 @@
 //! Tauri commands for meeting notes.
 
-use crate::meetings::store::{MeetingDetail, MeetingRow};
+use crate::meetings::store::{MeetingDetail, MeetingRow, MeetingSearchHit};
 use crate::meetings::{ActiveMeeting, MeetingManager};
 use std::sync::Arc;
 use tauri::{AppHandle, Manager};
@@ -52,6 +52,16 @@ pub fn meeting_active(app: AppHandle) -> Result<Option<ActiveMeeting>, String> {
 #[specta::specta]
 pub fn meeting_list(app: AppHandle) -> Result<Vec<MeetingRow>, String> {
     manager(&app)?.store().list().map_err(|e| e.to_string())
+}
+
+/// Search titles, summaries and transcripts of all saved meetings.
+#[tauri::command]
+#[specta::specta]
+pub fn meeting_search(app: AppHandle, query: String) -> Result<Vec<MeetingSearchHit>, String> {
+    manager(&app)?
+        .store()
+        .search(&query)
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

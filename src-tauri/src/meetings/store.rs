@@ -38,6 +38,97 @@ pub struct MeetingDetail {
     pub segments: Vec<MeetingSegment>,
 }
 
+/// One meeting that matched a search, with the best place it matched.
+#[derive(Debug, Clone, Serialize, Type)]
+pub struct MeetingSearchHit {
+    pub id: i64,
+    pub title: String,
+    pub started_at: i64,
+    pub ended_at: Option<i64>,
+    /// Where the snippet comes from: `title`, `summary` or `transcript`.
+    pub field: String,
+    /// A short piece of text around the first match.
+    pub snippet: String,
+    /// For transcript matches, when in the meeting it was said.
+    pub start_ms: Option<i64>,
+}
+
+/// Most meetings one search returns.
+const MAX_SEARCH_HITS: usize = 50;
+/// Characters of context kept before and after a match in a snippet.
+const SNIPPET_BEFORE: usize = 50;
+const SNIPPET_AFTER: usize = 90;
+
+/// Lowercased words of a search query. Empty when there is nothing to search.
+fn search_terms(query: &str) -> Vec<String> {
+    query
+        .split_whitespace()
+        .map(|w| w.to_lowercase())
+        .filter(|w| !w.is_empty())
+        .collect()
+}
+
+/// Every string value in a summary JSON document (keys are skipped), so a
+/// search for "summary" does not match every meeting.
+fn summary_strings(json: &str) -> Vec<String> {
+    fn walk(v: &serde_json::Value, out: &mut Vec<String>) {
+        match v {
+            serde_json::Value::String(s) => out.push(s.clone()),
+            serde_json::Value::Array(a) => a.iter().for_each(|x| walk(x, out)),
+            serde_json::Value::Object(o) => o.values().for_each(|x| walk(x, out)),
+            _ => {}
+        }
+    }
+    let mut out = Vec::new();
+    match serde_json::from_str::<serde_json::Value>(json) {
+        Ok(v) => walk(&v, &mut out),
+        // Not JSON: treat the whole thing as plain text.
+        Err(_) => out.push(json.to_string()),
+    }
+    out
+}
+
+/// A snippet of `text` around the earliest of `terms`, or None if none occur.
+fn make_snippet(text: &str, terms: &[String]) -> Option<String> {
+    let chars: Vec<char> = text.chars().collect();
+    let lower: Vec<char> = text.to_lowercase().chars().collect();
+    // Lowercasing can change the char count (rare); fall back to no snippet then.
+    if lower.len() != chars.len() {
+        let lowered = text.to_lowercase();
+        if !terms.iter().any(|t| lowered.contains(t.as_str())) {
+            return None;
+        }
+        let s: String = chars.iter().take(SNIPPET_BEFORE + SNIPPET_AFTER).collect();
+        return Some(s.trim().to_string());
+    }
+    let mut best: Option<(usize, usize)> = None;
+    for term in terms {
+        let needle: Vec<char> = term.chars().collect();
+        if needle.is_empty() || needle.len() > lower.len() {
+            continue;
+        }
+        if let Some(pos) =
+            (0..=lower.len() - needle.len()).find(|&i| lower[i..i + needle.len()] == needle[..])
+        {
+            if best.is_none_or(|(p, _)| pos < p) {
+                best = Some((pos, needle.len()));
+            }
+        }
+    }
+    let (pos, len) = best?;
+    let start = pos.saturating_sub(SNIPPET_BEFORE);
+    let end = (pos + len + SNIPPET_AFTER).min(chars.len());
+    let mut out: String = chars[start..end].iter().collect::<String>();
+    out = out.split_whitespace().collect::<Vec<_>>().join(" ");
+    if start > 0 {
+        out.insert(0, '\u{2026}');
+    }
+    if end < chars.len() {
+        out.push('\u{2026}');
+    }
+    Some(out)
+}
+
 pub struct MeetingStore {
     conn: Mutex<Connection>,
 }
@@ -202,6 +293,108 @@ impl MeetingStore {
         Ok(rows)
     }
 
+    /// Search titles, summaries and transcripts. A meeting matches when every
+    /// word of `query` appears somewhere in it (case-insensitive). Newest
+    /// meetings come first. Matching is done here rather than with SQL `LIKE`
+    /// or FTS5 so it is Unicode aware (accents, Indic scripts) and needs no
+    /// index to keep in sync while a meeting is being recorded.
+    pub fn search(&self, query: &str) -> Result<Vec<MeetingSearchHit>> {
+        let terms = search_terms(query);
+        if terms.is_empty() {
+            return Ok(Vec::new());
+        }
+        let conn = self.lock()?;
+        let mut meetings = conn.prepare(
+            "SELECT id, title, started_at, ended_at, summary FROM meetings
+             ORDER BY started_at DESC, id DESC",
+        )?;
+        let mut segs = conn.prepare(
+            "SELECT text, start_ms FROM segments WHERE meeting_id = ?1 ORDER BY start_ms, id",
+        )?;
+        let rows = meetings
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, i64>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, i64>(2)?,
+                    row.get::<_, Option<i64>>(3)?,
+                    row.get::<_, Option<String>>(4)?,
+                ))
+            })?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
+
+        let mut hits = Vec::new();
+        for (id, title, started_at, ended_at, summary) in rows {
+            let summary_parts = summary.as_deref().map(summary_strings).unwrap_or_default();
+            let segments = segs
+                .query_map(params![id], |row| {
+                    Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+                })?
+                .collect::<std::result::Result<Vec<_>, _>>()?;
+
+            // Every term must occur somewhere in the meeting.
+            let haystack = format!(
+                "{}\n{}\n{}",
+                title,
+                summary_parts.join("\n"),
+                segments
+                    .iter()
+                    .map(|(t, _)| t.as_str())
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            )
+            .to_lowercase();
+            if !terms.iter().all(|t| haystack.contains(t.as_str())) {
+                continue;
+            }
+
+            // Best snippet: title, then summary, then transcript.
+            let mut found: Option<(&str, String, Option<i64>)> = None;
+            if let Some(s) = make_snippet(&title, &terms) {
+                found = Some(("title", s, None));
+            }
+            if found.is_none() {
+                for part in &summary_parts {
+                    if let Some(s) = make_snippet(part, &terms) {
+                        found = Some(("summary", s, None));
+                        break;
+                    }
+                }
+            }
+            if found.is_none() {
+                for (text, start_ms) in &segments {
+                    if let Some(s) = make_snippet(text, &terms) {
+                        found = Some(("transcript", s, Some(*start_ms)));
+                        break;
+                    }
+                }
+            }
+            // Terms spread across fields or segments: show the opening of the
+            // summary, or the title, so the row still has something to read.
+            let (field, snippet, start_ms) = found.unwrap_or_else(|| match summary_parts.first() {
+                Some(s) => (
+                    "summary",
+                    s.chars().take(SNIPPET_BEFORE + SNIPPET_AFTER).collect(),
+                    None,
+                ),
+                None => ("title", title.clone(), None),
+            });
+            hits.push(MeetingSearchHit {
+                id,
+                title,
+                started_at,
+                ended_at,
+                field: field.to_string(),
+                snippet,
+                start_ms,
+            });
+            if hits.len() >= MAX_SEARCH_HITS {
+                break;
+            }
+        }
+        Ok(hits)
+    }
+
     pub fn get(&self, id: i64) -> Result<Option<MeetingDetail>> {
         let conn = self.lock()?;
         let head = conn
@@ -291,6 +484,86 @@ mod tests {
         store.delete(id).unwrap();
         assert!(store.get(id).unwrap().is_none());
         let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn search_finds_title_summary_and_transcript() {
+        let (store, path) = temp_store();
+        let a = store.create("Budget sync", false, 1_000).unwrap();
+        store
+            .add_segment(a, "you", 4_000, "We should hire two engineers in March")
+            .unwrap();
+        store.finish(a, 1_100).unwrap();
+        let b = store.create("Weekly standup", false, 2_000).unwrap();
+        store
+            .add_segment(b, "others", 0, "The deploy failed overnight")
+            .unwrap();
+        store.finish(b, 2_100).unwrap();
+        store
+            .set_summary(
+                b,
+                r#"{"summary":"Rollback plan agreed","keyPoints":["Fix the pipeline"],"decisions":[]}"#,
+                None,
+            )
+            .unwrap();
+
+        // Title match, case-insensitive.
+        let hits = store.search("BUDGET").unwrap();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].id, a);
+        assert_eq!(hits[0].field, "title");
+
+        // Transcript match carries a snippet and the time it was said.
+        let hits = store.search("engineers").unwrap();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].field, "transcript");
+        assert_eq!(hits[0].start_ms, Some(4_000));
+        assert!(hits[0].snippet.contains("hire two engineers"));
+
+        // Summary text matches, summary keys do not.
+        let hits = store.search("rollback").unwrap();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].id, b);
+        assert_eq!(hits[0].field, "summary");
+        assert!(store.search("keyPoints").unwrap().is_empty());
+
+        // Every word must be present in the same meeting.
+        assert_eq!(store.search("deploy rollback").unwrap().len(), 1);
+        assert!(store.search("deploy engineers").unwrap().is_empty());
+
+        // Newest first when several match.
+        assert_eq!(store.search("the").unwrap()[0].id, b);
+        let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn search_ignores_blank_queries_and_handles_unicode_and_wildcards() {
+        let (store, path) = temp_store();
+        let id = store.create("Caf\u{e9} planning", false, 10).unwrap();
+        store.add_segment(id, "you", 0, "100% done_ok").unwrap();
+        assert!(store.search("   ").unwrap().is_empty());
+        assert!(store.search("").unwrap().is_empty());
+        // Accented, mixed case.
+        assert_eq!(store.search("CAF\u{c9}").unwrap().len(), 1);
+        // SQL wildcards are plain characters.
+        assert_eq!(store.search("100%").unwrap().len(), 1);
+        assert_eq!(store.search("done_ok").unwrap().len(), 1);
+        assert!(store.search("%").unwrap().len() == 1);
+        assert!(store.search("zzz").unwrap().is_empty());
+        // Deleted meetings are gone from results.
+        store.delete(id).unwrap();
+        assert!(store.search("planning").unwrap().is_empty());
+        let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn snippet_is_trimmed_around_the_match() {
+        let long = format!("{} needle {}", "a ".repeat(100), "b ".repeat(100));
+        let s = make_snippet(&long, &["needle".to_string()]).unwrap();
+        assert!(s.contains("needle"));
+        assert!(s.starts_with('\u{2026}') && s.ends_with('\u{2026}'));
+        assert!(s.chars().count() < 170);
+        assert!(make_snippet("nothing here", &["needle".to_string()]).is_none());
     }
 
     #[test]

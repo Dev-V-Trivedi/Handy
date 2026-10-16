@@ -407,6 +407,14 @@ async meetingGet(id: number) : Promise<Result<MeetingDetail | null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async meetingSearch(query: string) : Promise<Result<MeetingSearchHit[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("meeting_search", { query }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async meetingRename(id: number, title: string) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("meeting_rename", { id, title }) };
@@ -1197,6 +1205,7 @@ export type ActiveMeeting = { id: number; started_at: number; system_audio: bool
 export type LocalLlmStatus = { runner_installed: boolean; models: LocalModelStatus[]; running: string | null }
 export type LocalModelStatus = { id: string; name: string; size_mb: number; installed: boolean }
 export type MeetingRow = { id: number; title: string; started_at: number; ended_at: number | null; has_summary: boolean; segment_count: number }
+export type MeetingSearchHit = { id: number; title: string; started_at: number; ended_at: number | null; field: string; snippet: string; start_ms: number | null }
 export type MeetingSegment = { track: string; start_ms: number; text: string }
 export type MeetingDetail = { id: number; title: string; started_at: number; ended_at: number | null; summary: string | null; segments: MeetingSegment[] }
 export type OllamaStatus = { running: boolean; models: string[] }

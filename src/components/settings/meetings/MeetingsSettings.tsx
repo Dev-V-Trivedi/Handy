@@ -26,6 +26,7 @@ import {
   type ActiveMeeting,
   type MeetingDetail,
   type MeetingRow,
+  type MeetingSearchHit,
   type MeetingSegment,
 } from "@/bindings";
 import {
@@ -57,6 +58,38 @@ const formatDuration = (startedAt: number, endedAt: number | null) => {
 
 const speakerKey = (track: string) =>
   track === "you" ? "meetings.you" : "meetings.others";
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Snippet text with the searched words wrapped in <mark>. */
+const Highlighted: React.FC<{ text: string; query: string }> = ({
+  text,
+  query,
+}) => {
+  const words = query.split(/\s+/).filter(Boolean).map(escapeRegExp);
+  if (words.length === 0) return <>{text}</>;
+  const re = new RegExp(`(${words.join("|")})`, "gi");
+  return (
+    <>
+      {text.split(re).map((part, i) =>
+        i % 2 === 1 ? (
+          <mark key={i} className="rounded bg-logo-primary/30 px-0.5 text-text">
+            {part}
+          </mark>
+        ) : (
+          <React.Fragment key={i}>{part}</React.Fragment>
+        ),
+      )}
+    </>
+  );
+};
+
+const matchFieldKey = (field: string) =>
+  field === "title"
+    ? "meetings.matchTitle"
+    : field === "summary"
+      ? "meetings.matchSummary"
+      : "meetings.matchTranscript";
 
 const SegmentList: React.FC<{ segments: MeetingSegment[] }> = ({
   segments,
@@ -417,6 +450,7 @@ export const MeetingsSettings: React.FC = () => {
   const [live, setLive] = useState<MeetingSegment[]>([]);
   const [title, setTitle] = useState("");
   const [query, setQuery] = useState("");
+  const [hits, setHits] = useState<MeetingSearchHit[] | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [busy, setBusy] = useState(false);
   const [levels, setLevels] = useState({ you: 0, others: 0 });
@@ -428,6 +462,25 @@ export const MeetingsSettings: React.FC = () => {
     const res = await commands.meetingList();
     if (res.status === "ok") setRows(res.data);
   }, []);
+
+  // Search all meetings (title, summary, transcript) shortly after typing stops.
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) {
+      setHits(null);
+      return;
+    }
+    let stale = false;
+    const timer = setTimeout(() => {
+      void commands.meetingSearch(q).then((res) => {
+        if (!stale) setHits(res.status === "ok" ? res.data : []);
+      });
+    }, 200);
+    return () => {
+      stale = true;
+      clearTimeout(timer);
+    };
+  }, [query]);
 
   const loadActive = useCallback(async () => {
     const res = await commands.meetingActive();
@@ -758,46 +811,77 @@ export const MeetingsSettings: React.FC = () => {
         </select>
       </label>
       <SettingsGroup title={t("meetings.pastTitle")}>
-        {rows.length > 3 && (
+        {rows.length > 0 && (
           <div className="px-4 pt-3">
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("meetings.search")}
+              placeholder={t("meetings.searchPlaceholder")}
+              aria-label={t("meetings.search")}
             />
           </div>
         )}
         {rows.length === 0 ? (
           <p className="px-4 py-3 text-sm text-text/60">{t("meetings.none")}</p>
-        ) : (
-          rows
-            .filter((r) =>
-              r.title.toLowerCase().includes(query.trim().toLowerCase()),
-            )
-            .map((row) => (
+        ) : query.trim() ? (
+          hits === null ? null : hits.length === 0 ? (
+            <p className="px-4 py-3 text-sm text-text/60">
+              {t("meetings.noResults")}
+            </p>
+          ) : (
+            hits.map((hit) => (
               <button
-                key={row.id}
+                key={hit.id}
                 type="button"
-                disabled={active?.id === row.id}
-                onClick={() => setSelected(row.id)}
-                className="flex w-full items-center gap-3 px-4 py-3 text-start transition-colors hover:bg-mid-gray/10 disabled:cursor-default disabled:opacity-60"
+                disabled={active?.id === hit.id}
+                onClick={() => setSelected(hit.id)}
+                className="flex w-full flex-col gap-1 px-4 py-3 text-start transition-colors hover:bg-mid-gray/10 disabled:cursor-default disabled:opacity-60"
               >
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-text">
-                    {row.title}
-                  </div>
-                  <div className="text-xs text-text/50">
-                    {new Date(row.started_at * 1000).toLocaleString()}
-                    {row.ended_at
-                      ? ` · ${formatDuration(row.started_at, row.ended_at)}`
+                <div className="flex items-center gap-2">
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-text">
+                    {hit.title}
+                  </span>
+                  <Badge variant="secondary">
+                    {t(matchFieldKey(hit.field))}
+                    {hit.start_ms !== null
+                      ? ` ${formatClock(hit.start_ms)}`
                       : ""}
-                  </div>
+                  </Badge>
                 </div>
-                {row.has_summary && (
-                  <Badge variant="success">{t("meetings.summaryReady")}</Badge>
-                )}
+                <div className="text-xs text-text/50">
+                  {new Date(hit.started_at * 1000).toLocaleString()}
+                </div>
+                <p className="text-sm text-text/80">
+                  <Highlighted text={hit.snippet} query={query} />
+                </p>
               </button>
             ))
+          )
+        ) : (
+          rows.map((row) => (
+            <button
+              key={row.id}
+              type="button"
+              disabled={active?.id === row.id}
+              onClick={() => setSelected(row.id)}
+              className="flex w-full items-center gap-3 px-4 py-3 text-start transition-colors hover:bg-mid-gray/10 disabled:cursor-default disabled:opacity-60"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium text-text">
+                  {row.title}
+                </div>
+                <div className="text-xs text-text/50">
+                  {new Date(row.started_at * 1000).toLocaleString()}
+                  {row.ended_at
+                    ? ` \u00b7 ${formatDuration(row.started_at, row.ended_at)}`
+                    : ""}
+                </div>
+              </div>
+              {row.has_summary && (
+                <Badge variant="success">{t("meetings.summaryReady")}</Badge>
+              )}
+            </button>
+          ))
         )}
       </SettingsGroup>
     </div>

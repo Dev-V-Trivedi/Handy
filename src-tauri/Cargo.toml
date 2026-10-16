@@ -1,6 +1,6 @@
 [package]
 name = "handy"
-version = "0.5.6"
+version = "0.5.7"
 description = "Oshabe: private, local-first voice dictation"
 authors = ["Dev Trivedi", "cjpais"]
 edition = "2021"
