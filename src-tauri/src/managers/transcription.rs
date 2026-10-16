@@ -1839,7 +1839,9 @@ fn post_process_transcription_text(
 
         let normalized = normalize_transcription_output(&without_fillers);
         if settings.romanize_output {
-            crate::audio_toolkit::romanize::romanize_indic(&normalized)
+            crate::audio_toolkit::romanize::fix_language_names(
+                &crate::audio_toolkit::romanize::romanize_indic(&normalized),
+            )
         } else {
             normalized
         }

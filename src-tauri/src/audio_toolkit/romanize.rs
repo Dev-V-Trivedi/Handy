@@ -568,6 +568,73 @@ fn romanize_word(word: &[char], keep_schwa: bool) -> String {
     render(&items, keep_schwa, lips)
 }
 
+/// Common mis-hearings of language names, in lower case Roman letters. Speech
+/// models spell these by sound, so "Telugu" arrives as "telukut" or "telgu".
+const LANGUAGE_NAME_FIXES: &[(&str, &str)] = &[
+    ("telukut", "Telugu"),
+    ("telugoo", "Telugu"),
+    ("telgu", "Telugu"),
+    ("telagu", "Telugu"),
+    ("telegu", "Telugu"),
+    ("telugo", "Telugu"),
+    ("telku", "Telugu"),
+    ("kenad", "Kannada"),
+    ("kanad", "Kannada"),
+    ("kannad", "Kannada"),
+    ("kanada", "Kannada"),
+    ("kannara", "Kannada"),
+    ("guzaad", "Gujarati"),
+    ("gujrati", "Gujarati"),
+    ("gujarathi", "Gujarati"),
+    ("gujraati", "Gujarati"),
+    ("gujaraati", "Gujarati"),
+    ("inglesh", "English"),
+    ("inglish", "English"),
+    ("ingleesh", "English"),
+    ("marathee", "Marathi"),
+    ("marati", "Marathi"),
+    ("malayalum", "Malayalam"),
+    ("malayaalam", "Malayalam"),
+    ("punjaabi", "Punjabi"),
+    ("panjabi", "Punjabi"),
+    ("bangali", "Bengali"),
+    ("hinglish", "Hinglish"),
+];
+
+/// Spell language names properly when a model wrote them by sound. Only whole
+/// words from [`LANGUAGE_NAME_FIXES`] change, so ordinary words are never touched.
+pub fn fix_language_names(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut word = String::new();
+    let flush = |word: &mut String, out: &mut String| {
+        if word.is_empty() {
+            return;
+        }
+        let lower = word.to_lowercase();
+        match LANGUAGE_NAME_FIXES.iter().find(|(from, _)| *from == lower) {
+            // "Kanada" is a real place too: only fix it in the lower case form
+            // Whisper produces for the language ("kanada"), never "Kanada".
+            Some((from, to))
+                if *from != "kanada" || word.chars().next().is_some_and(|c| c.is_lowercase()) =>
+            {
+                out.push_str(to)
+            }
+            _ => out.push_str(word),
+        }
+        word.clear();
+    };
+    for c in text.chars() {
+        if c.is_alphabetic() {
+            word.push(c);
+        } else {
+            flush(&mut word, &mut out);
+            out.push(c);
+        }
+    }
+    flush(&mut word, &mut out);
+    out
+}
+
 /// Capitalise the first letter of the text and of each sentence.
 fn capitalise_sentences(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
@@ -697,6 +764,22 @@ mod tests {
         assert_eq!(romanize_indic("తెలుగు"), "Telugu");
         assert_eq!(romanize_indic("ગુજરાતી"), "Gujarati");
         assert_eq!(romanize_indic("ఇంగ్లీష్"), "English");
+    }
+
+    #[test]
+    fn misheard_language_names_are_fixed() {
+        assert_eq!(
+            fix_language_names("Aap telukut aur kenad mein baat karo, inglesh bhi"),
+            "Aap Telugu aur Kannada mein baat karo, English bhi"
+        );
+        // Whole words only, and real words are left alone.
+        assert_eq!(
+            fix_language_names("telugu is fine; Kanada trip"),
+            "telugu is fine; Kanada trip"
+        );
+        assert_eq!(fix_language_names("the marathon"), "the marathon");
+        // Devanagari output goes through the romanizer first.
+        assert_eq!(fix_language_names(&romanize_indic("तेलुकुट")), "Telugu");
     }
 
     #[test]
