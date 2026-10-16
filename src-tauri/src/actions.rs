@@ -382,6 +382,47 @@ pub(crate) struct ProcessedTranscription {
     pub post_process_prompt: Option<String>,
 }
 
+#[derive(Clone, serde::Serialize)]
+struct RuleRememberedEvent {
+    text: String,
+    /// `added`, `duplicate` or `full`.
+    status: &'static str,
+}
+
+/// If the dictation is a spoken "remember ..." command, save it as a rule in
+/// My Rules and tell the UI. Returns true when the text was such a command, so
+/// the caller skips AI cleanup and pasting.
+fn handle_remember_command(app: &AppHandle, transcription: &str) -> bool {
+    let mut settings = get_settings(app);
+    if !settings.voice_remember_enabled {
+        return false;
+    }
+    let Some(text) = crate::user_rules::extract_remember(transcription) else {
+        return false;
+    };
+    let millis = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    let outcome =
+        crate::user_rules::add_rule(&mut settings.user_rules, &text, format!("urule_{millis:x}"));
+    let status = match outcome {
+        crate::user_rules::RememberOutcome::Added => {
+            crate::settings::write_settings(app, settings);
+            let _ = app.emit(
+                "settings-changed",
+                serde_json::json!({ "setting": "user_rules" }),
+            );
+            "added"
+        }
+        crate::user_rules::RememberOutcome::Duplicate => "duplicate",
+        crate::user_rules::RememberOutcome::Full => "full",
+    };
+    debug!("Voice remember command handled: {status}");
+    let _ = app.emit("rule-remembered", RuleRememberedEvent { text, status });
+    true
+}
+
 pub(crate) async fn process_transcription_output(
     app: &AppHandle,
     transcription: &str,
@@ -732,6 +773,21 @@ impl ShortcutAction for TranscribeAction {
                                 transcription_time.elapsed(),
                                 utils::redact_text(&transcription)
                             );
+
+                            if handle_remember_command(&ah, &transcription) {
+                                // A voice command, not text to paste. The raw
+                                // words are still kept in history.
+                                if wav_saved {
+                                    if let Err(err) =
+                                        hm.save_entry(file_name, transcription, false, None, None)
+                                    {
+                                        error!("Failed to save history entry: {}", err);
+                                    }
+                                }
+                                utils::hide_recording_overlay(&ah);
+                                set_tray_state(&ah, TrayIconState::Idle);
+                                return;
+                            }
 
                             if post_process {
                                 if use_streaming_overlay {

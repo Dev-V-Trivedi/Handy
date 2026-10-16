@@ -13,6 +13,7 @@ export const UserRules: React.FC = React.memo(() => {
   const { t } = useTranslation();
   const { getSetting, updateSetting } = useSettings();
 
+  const voiceRemember = getSetting("voice_remember_enabled") ?? true;
   const stored = getSetting("user_rules");
   const [rules, setRules] = useState<UserRule[]>(stored ?? []);
 
@@ -37,6 +38,17 @@ export const UserRules: React.FC = React.memo(() => {
       <p className="text-xs text-mid-gray">
         {t("settings.postProcessing.userRules.description")}
       </p>
+      <ToggleSwitch
+        checked={voiceRemember}
+        onChange={(value) => updateSetting("voice_remember_enabled", value)}
+        isUpdating={false}
+        label={t("settings.postProcessing.userRules.voiceRemember.label")}
+        description={t(
+          "settings.postProcessing.userRules.voiceRemember.description",
+        )}
+        descriptionMode="inline"
+        grouped={true}
+      />
       {rules.map((rule) => (
         <div
           key={rule.id}

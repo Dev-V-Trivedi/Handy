@@ -619,7 +619,11 @@
         },
         "enabled": "On",
         "add": "Add rule",
-        "remove": "Remove"
+        "remove": "Remove",
+        "voiceRemember": {
+          "label": "Add rules by voice",
+          "description": "Start a dictation with \"Oshabe remember ...\" or \"Remember: ...\" and the rest is saved as a rule instead of being typed."
+        }
       }
     },
     "history": {
@@ -989,5 +993,10 @@
       "remove": "Remove",
       "add": "Add template"
     }
+  },
+  "rules": {
+    "remembered": "Rule saved",
+    "alreadyRemembered": "You already have this rule",
+    "full": "Too many rules saved. Remove one in My Rules first."
   }
 }

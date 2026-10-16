@@ -504,6 +504,10 @@ pub struct AppSettings {
     /// Standing instructions fed to every AI step ("use bullet points").
     #[serde(default)]
     pub user_rules: Vec<crate::user_rules::UserRule>,
+    /// Treat a dictation that starts with "Oshabe remember ..." or
+    /// "remember: ..." as a new rule for My Rules instead of pasting it.
+    #[serde(default = "default_voice_remember_enabled")]
+    pub voice_remember_enabled: bool,
     /// Id of the summary template used for meeting notes: a built-in id, a
     /// custom template id, or `default`.
     #[serde(default = "default_summary_template_id")]
@@ -607,6 +611,10 @@ fn default_start_hidden() -> bool {
 
 fn default_autostart_enabled() -> bool {
     false
+}
+
+fn default_voice_remember_enabled() -> bool {
+    true
 }
 
 fn default_summary_template_id() -> String {
@@ -1119,6 +1127,7 @@ pub fn get_default_settings() -> AppSettings {
         meeting_retention_days: 0,
         meeting_prompt_enabled: true,
         user_rules: Vec::new(),
+        voice_remember_enabled: true,
         summary_template_id: default_summary_template_id(),
         summary_templates: Vec::new(),
         app_tone_rules: crate::active_app::default_tone_rules(),

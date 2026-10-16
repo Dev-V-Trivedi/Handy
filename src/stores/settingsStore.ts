@@ -180,6 +180,8 @@ const settingUpdaters: {
   context_tone_enabled: (value) =>
     commands.changeContextToneEnabledSetting(value as boolean),
   user_rules: (value) => commands.updateUserRules(value as UserRule[]),
+  voice_remember_enabled: (value) =>
+    commands.changeVoiceRememberEnabledSetting(value as boolean),
   summary_templates: (value) =>
     commands.updateSummaryTemplates(value as SummaryTemplate[]),
   summary_template_id: (value) =>

@@ -719,6 +719,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_meeting_prompt_enabled_setting,
             shortcut::update_app_tone_rules,
             shortcut::update_user_rules,
+            shortcut::change_voice_remember_enabled_setting,
             shortcut::update_summary_templates,
             shortcut::change_summary_template_setting,
             shortcut::change_lazy_stream_close_setting,

@@ -186,6 +186,26 @@ function App() {
     };
   }, [t]);
 
+  // A spoken "remember ..." was saved as a rule instead of being pasted.
+  useEffect(() => {
+    const unlisten = listen<{ text: string; status: string }>(
+      "rule-remembered",
+      (event) => {
+        const { text, status } = event.payload;
+        if (status === "added") {
+          toast.success(t("rules.remembered"), { description: text });
+        } else if (status === "duplicate") {
+          toast.info(t("rules.alreadyRemembered"), { description: text });
+        } else {
+          toast.error(t("rules.full"));
+        }
+      },
+    );
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
   // A call app (Zoom, Meet, Teams...) came to the front: open Meetings and ask.
   useEffect(() => {
     const unlisten = listen<{ app: string }>("meeting-detected", (event) => {

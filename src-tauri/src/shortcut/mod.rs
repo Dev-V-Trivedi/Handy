@@ -1394,6 +1394,15 @@ pub fn update_user_rules(
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_voice_remember_enabled_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.voice_remember_enabled = enabled;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn update_summary_templates(
     app: AppHandle,
     templates: Vec<crate::summary_templates::SummaryTemplate>,
