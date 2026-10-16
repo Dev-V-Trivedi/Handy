@@ -512,6 +512,14 @@ export const MeetingsSettings: React.FC = () => {
           toast.warning(t("meetings.noSpeech"));
           return;
         }
+        if (e.payload.message === "too_slow") {
+          toast.warning(t("meetings.tooSlow"), { duration: 15000 });
+          return;
+        }
+        if (e.payload.message === "stopped_early") {
+          toast.warning(t("meetings.stoppedEarly"), { duration: 15000 });
+          return;
+        }
         toast.error(t("meetings.transcribeError"), {
           description: e.payload.message,
         });

@@ -13,8 +13,12 @@ fn manager(app: &AppHandle) -> Result<Arc<MeetingManager>, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub fn meeting_start(app: AppHandle, title: Option<String>) -> Result<ActiveMeeting, String> {
-    manager(&app)?.start(title)
+pub async fn meeting_start(app: AppHandle, title: Option<String>) -> Result<ActiveMeeting, String> {
+    // Opening audio devices can block for seconds. Never do that on the UI thread.
+    let mgr = manager(&app)?;
+    tauri::async_runtime::spawn_blocking(move || mgr.start(title))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]

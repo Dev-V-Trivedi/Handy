@@ -992,7 +992,9 @@
       "instructionsLabel": "Template instructions",
       "remove": "Remove",
       "add": "Add template"
-    }
+    },
+    "tooSlow": "The speech model is slower than the meeting, so notes will run behind. Pick a faster model (for example Whisper Large v3 Turbo or Small) in Models, and check Settings for GPU acceleration.",
+    "stoppedEarly": "Stopped early because transcription was behind. What was already transcribed is saved. A faster model avoids this."
   },
   "rules": {
     "remembered": "Rule saved",

@@ -438,9 +438,47 @@ struct Worker {
     recent_others: Vec<(i64, String)>,
     error_reported: bool,
     saved: usize,
+    /// Pieces in a row that took longer to transcribe than they lasted.
+    slow_streak: u32,
+    slow_reported: bool,
+}
+
+/// After stopping, the worker keeps transcribing what is still queued. When the
+/// model is slower than real time that queue can take minutes, so give up on
+/// the rest after this long and keep what is already saved.
+const STOP_DRAIN_BUDGET: Duration = Duration::from_secs(90);
+/// A piece is "slow" when transcribing it took this many times its length.
+const SLOW_FACTOR: f32 = 1.2;
+
+/// Did transcribing `audio_secs` of speech in `took_secs` fall behind real time?
+fn is_slow(audio_secs: f32, took_secs: f32) -> bool {
+    audio_secs > 0.0 && took_secs > audio_secs * SLOW_FACTOR
 }
 
 impl Worker {
+    /// Log how fast the model is and warn once when it cannot keep up.
+    fn note_speed(&mut self, audio_secs: f32, took_secs: f32) {
+        info!(
+            "Meeting {}: transcribed {:.1}s of audio in {:.1}s",
+            self.meeting_id, audio_secs, took_secs
+        );
+        if is_slow(audio_secs, took_secs) {
+            self.slow_streak += 1;
+        } else {
+            self.slow_streak = 0;
+        }
+        if self.slow_streak >= 2 && !self.slow_reported {
+            self.slow_reported = true;
+            let _ = self.app.emit(
+                "meeting-error",
+                ErrorEvent {
+                    meeting_id: self.meeting_id,
+                    message: "too_slow".to_string(),
+                },
+            );
+        }
+    }
+
     fn wait_for_model(&self, tm: &TranscriptionManager) -> bool {
         if tm.is_model_loaded() {
             return true;
@@ -469,7 +507,11 @@ impl Worker {
             return;
         }
 
-        let text = match tm.transcribe(samples) {
+        let audio_secs = samples.len() as f32 / TARGET_RATE as f32;
+        let started = Instant::now();
+        let result = tm.transcribe(samples);
+        self.note_speed(audio_secs, started.elapsed().as_secs_f32());
+        let text = match result {
             Ok(t) => t.trim().to_string(),
             Err(e) => {
                 warn!("Meeting chunk failed: {}", e);
@@ -535,7 +577,7 @@ fn run_worker(
     store: Arc<MeetingStore>,
     meeting_id: i64,
     rx: Receiver<(Track, Vec<f32>)>,
-    _stop: Arc<AtomicBool>,
+    stop: Arc<AtomicBool>,
     paused: Arc<AtomicBool>,
     paused_ms: Arc<AtomicI64>,
     started: Instant,
@@ -547,13 +589,28 @@ fn run_worker(
         recent_others: Vec::new(),
         error_reported: false,
         saved: 0,
+        slow_streak: 0,
+        slow_reported: false,
     };
     let mut bufs = [TrackBuf::new(Track::You), TrackBuf::new(Track::Others)];
     let mut level = [0.0f32; 2];
     let mut last_level_emit = Instant::now();
     let mut was_paused = false;
+    let mut stop_seen_at: Option<Instant> = None;
+    let mut gave_up = false;
 
     loop {
+        if stop.load(Ordering::SeqCst) {
+            let since = *stop_seen_at.get_or_insert_with(Instant::now);
+            if since.elapsed() > STOP_DRAIN_BUDGET {
+                warn!(
+                    "Meeting {}: transcription is behind, dropping the queued audio",
+                    meeting_id
+                );
+                gave_up = true;
+                break;
+            }
+        }
         let is_paused = paused.load(Ordering::SeqCst);
         if is_paused && !was_paused {
             // Transcribe what was said before the pause.
@@ -602,8 +659,18 @@ fn run_worker(
         }
     }
 
-    for buf in bufs.iter_mut() {
-        worker.flush(buf);
+    if gave_up {
+        let _ = worker.app.emit(
+            "meeting-error",
+            ErrorEvent {
+                meeting_id,
+                message: "stopped_early".to_string(),
+            },
+        );
+    } else {
+        for buf in bufs.iter_mut() {
+            worker.flush(buf);
+        }
     }
     debug!("Meeting {} worker finished", meeting_id);
     worker.saved
@@ -679,6 +746,14 @@ mod tests {
         assert!(!is_echo("okay thanks", &others, 12_000)); // too short to judge
         let old = vec![(0, "we should ship the update on friday".to_string())];
         assert!(!is_echo("ship the update on friday", &old, 200_000));
+    }
+
+    #[test]
+    fn slow_detection_compares_against_real_time() {
+        assert!(is_slow(10.0, 30.0));
+        assert!(!is_slow(10.0, 8.0));
+        assert!(!is_slow(10.0, 11.0)); // a little over is still fine
+        assert!(!is_slow(0.0, 5.0));
     }
 
     #[test]
