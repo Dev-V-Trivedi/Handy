@@ -1394,6 +1394,27 @@ pub fn update_user_rules(
 
 #[tauri::command]
 #[specta::specta]
+pub fn update_summary_templates(
+    app: AppHandle,
+    templates: Vec<crate::summary_templates::SummaryTemplate>,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.summary_templates = crate::summary_templates::sanitize(templates);
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_summary_template_setting(app: AppHandle, id: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.summary_template_id = id;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn update_app_tone_rules(
     app: AppHandle,
     rules: Vec<crate::active_app::AppToneRule>,

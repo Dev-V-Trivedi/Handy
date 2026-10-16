@@ -968,6 +968,26 @@
     "noResults": "No meetings match your search.",
     "matchTitle": "Title",
     "matchSummary": "Summary",
-    "matchTranscript": "Transcript"
+    "matchTranscript": "Transcript",
+    "templates": {
+      "label": "Summary template",
+      "default": "Standard summary",
+      "builtin": {
+        "standup": "Standup",
+        "client_call": "Client call",
+        "interview": "Interview",
+        "lecture": "Lecture",
+        "sales_call": "Sales call"
+      },
+      "hint": "Changes what the summary focuses on. It applies to the next summary you make, including Regenerate.",
+      "showEditor": "My templates",
+      "hideEditor": "Hide my templates",
+      "namePlaceholder": "Template name, for example Board meeting",
+      "nameLabel": "Template name",
+      "instructionsPlaceholder": "What should the summary focus on? For example: list every vote and who proposed it.",
+      "instructionsLabel": "Template instructions",
+      "remove": "Remove",
+      "add": "Add template"
+    }
   }
 }

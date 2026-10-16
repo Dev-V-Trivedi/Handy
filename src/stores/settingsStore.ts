@@ -6,6 +6,7 @@ import type {
   AudioDevice,
   AppToneRule,
   UserRule,
+  SummaryTemplate,
   PostProcessApiFormat,
   ChineseScript,
   TranscribeAcceleratorSetting,
@@ -179,6 +180,10 @@ const settingUpdaters: {
   context_tone_enabled: (value) =>
     commands.changeContextToneEnabledSetting(value as boolean),
   user_rules: (value) => commands.updateUserRules(value as UserRule[]),
+  summary_templates: (value) =>
+    commands.updateSummaryTemplates(value as SummaryTemplate[]),
+  summary_template_id: (value) =>
+    commands.changeSummaryTemplateSetting(value as string),
   app_tone_rules: (value) =>
     commands.updateAppToneRules(value as AppToneRule[]),
   append_trailing_space: (value) =>

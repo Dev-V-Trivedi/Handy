@@ -25,6 +25,7 @@ mod secure_input;
 mod settings;
 mod shortcut;
 mod signal_handle;
+mod summary_templates;
 mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
@@ -718,6 +719,8 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_meeting_prompt_enabled_setting,
             shortcut::update_app_tone_rules,
             shortcut::update_user_rules,
+            shortcut::update_summary_templates,
+            shortcut::change_summary_template_setting,
             shortcut::change_lazy_stream_close_setting,
             shortcut::change_vad_enabled_setting,
             shortcut::change_vad_backend_setting,

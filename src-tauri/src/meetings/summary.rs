@@ -213,7 +213,15 @@ pub async fn summarize(app: &AppHandle, store: &MeetingStore, id: i64) -> Result
         )
     };
 
-    let reply = ask(app, SYSTEM_PROMPT, input, true).await?;
+    let settings = get_settings(app);
+    let system = format!(
+        "{SYSTEM_PROMPT}{}",
+        crate::summary_templates::instructions(
+            &settings.summary_templates,
+            &settings.summary_template_id
+        )
+    );
+    let reply = ask(app, &system, input, true).await?;
     let summary = parse_summary(&reply);
     let title = summary
         .get("title")

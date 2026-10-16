@@ -504,6 +504,13 @@ pub struct AppSettings {
     /// Standing instructions fed to every AI step ("use bullet points").
     #[serde(default)]
     pub user_rules: Vec<crate::user_rules::UserRule>,
+    /// Id of the summary template used for meeting notes: a built-in id, a
+    /// custom template id, or `default`.
+    #[serde(default = "default_summary_template_id")]
+    pub summary_template_id: String,
+    /// Summary templates the user wrote.
+    #[serde(default)]
+    pub summary_templates: Vec<crate::summary_templates::SummaryTemplate>,
     #[serde(default = "crate::active_app::default_tone_rules")]
     pub app_tone_rules: Vec<crate::active_app::AppToneRule>,
     #[serde(default)]
@@ -600,6 +607,10 @@ fn default_start_hidden() -> bool {
 
 fn default_autostart_enabled() -> bool {
     false
+}
+
+fn default_summary_template_id() -> String {
+    crate::summary_templates::DEFAULT_TEMPLATE_ID.to_string()
 }
 
 fn default_meeting_prompt_enabled() -> bool {
@@ -1108,6 +1119,8 @@ pub fn get_default_settings() -> AppSettings {
         meeting_retention_days: 0,
         meeting_prompt_enabled: true,
         user_rules: Vec::new(),
+        summary_template_id: default_summary_template_id(),
+        summary_templates: Vec::new(),
         app_tone_rules: crate::active_app::default_tone_rules(),
         mute_while_recording: false,
         append_trailing_space: false,

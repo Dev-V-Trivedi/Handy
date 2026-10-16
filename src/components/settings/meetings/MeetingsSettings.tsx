@@ -42,6 +42,7 @@ import { Button } from "../../ui/Button";
 import { Alert } from "../../ui/Alert";
 import Badge from "../../ui/Badge";
 import { Input } from "../../ui/Input";
+import { SummaryTemplates } from "./SummaryTemplates";
 import { copyToClipboard } from "../history/clipboard";
 import {
   buildMarkdown,
@@ -791,6 +792,7 @@ export const MeetingsSettings: React.FC = () => {
           grouped={true}
         />
       </SettingsGroup>
+      <SummaryTemplates />
       <p className="px-1 text-xs text-text/60">{t("meetings.storageNote")}</p>
       <label className="flex items-center justify-between gap-3 px-1 text-sm">
         <span>{t("meetings.retention.label")}</span>
